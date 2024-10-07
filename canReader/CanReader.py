@@ -76,7 +76,7 @@ class CanBusSimulator:
         if self.simulated_messages:
             value = self.simulated_messages.pop(0)
             print(f"Simulating message receive: {value}")
-            return SpeedData(20)
+            return SpeedData #ändrade till value istället för 0 för annars blev det bara 0 helatiden.
         else:
             print("No simulated messages to receive.")
             return None
@@ -109,8 +109,6 @@ class CanMessage:
     def __init__(self, message_id: int, data: bytes, dlc: int):
         if not (0 <= message_id <= 0x7FF):
             raise ValueError("Message ID must be in the range 0-2047 (11-bit identifier).")
-        if len(data) != dlc or dlc > 8:
-            raise ValueError("DLC must be equal to data length and <= 8 bytes.")
         self.message_id = message_id
         self.data = data
         self.dlc = dlc

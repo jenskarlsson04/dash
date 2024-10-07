@@ -1,7 +1,7 @@
 # main.py
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
-from Pages.Speed_page import SpeedPage, Speeddata  # Import the SpeedPage and Speeddata class
+from Pages.Speed_page import SpeedPage  # Import the SpeedPage and Speeddata class
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -10,9 +10,6 @@ class MainScreen(Screen):
         self.speed_page = SpeedPage()
         self.add_widget(self.speed_page)
 
-        # Simulate CAN data reception by directly calling process_can_data
-        # Replace this with real CAN data handler calls in your implementation
-        self.speed_page.process_can_data(Speeddata(85))  # Example of Speeddata input
 
 class SpeedApp(App):
     def build(self):
