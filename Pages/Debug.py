@@ -1,7 +1,8 @@
-from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import Screen
 
-class Debug(BoxLayout):
+class Debug(Screen):
     def __init__(self, **kwargs):
         super(Debug, self).__init__(**kwargs)
         self.orientation = 'horizontal'
