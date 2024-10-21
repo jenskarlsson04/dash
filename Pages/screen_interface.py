@@ -1,8 +1,8 @@
 
 
 class ScreenInterface:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        self.name = self.__class__.__name__
         self.screen_switcher = None
 
     def add_screen_switcher(self, func):
@@ -21,3 +21,16 @@ class ScreenInterface:
         :return:
         """
         pass
+
+
+if __name__ == '__main__':
+    # testing
+    screen = ScreenInterface()
+
+    class Parent(ScreenInterface):
+        def __init__(self):
+            super().__init__()
+            print('Parent class is called', self.name)
+
+    parent = Parent()
+
