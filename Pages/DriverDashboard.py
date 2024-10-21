@@ -1,4 +1,6 @@
 import random
+from select import kqueue
+
 from kivy.app import App
 import os
 from kivy.uix.label import Label
@@ -9,7 +11,7 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from kivy.clock import Clock
-
+from.screen_interface import ScreenInterface
 # Import TimeTableManager
 from Pages.time_table_manager import TimeTableManager
 
@@ -17,9 +19,10 @@ from Pages.time_table_manager import TimeTableManager
 from Pages.custom_progress_bar import CustomProgressBar
 
 # Main Dashboard Page
-class DriverDashboard(Screen):
+class DriverDashboard(Screen, ScreenInterface):
     def __init__(self, **kwargs):
         super(DriverDashboard, self).__init__(**kwargs)
+        super(ScreenInterface, self).__init__()
         self.orientation = 'horizontal'
 
         # Initialize Time Table Manager
