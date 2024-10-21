@@ -8,6 +8,7 @@ from kivy.config import Config
 
 Config.set("graphics", "width", "1024")
 Config.set("graphics", "height", "600")
+Config.write()
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
