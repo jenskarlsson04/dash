@@ -5,7 +5,7 @@ from kivy.config import Config
 from kivy.clock import Clock
 from pages.DriverDashboard import DriverDashboard
 from pages.Clockscreen import ClockScreen
-from screen_swticher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
+from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
 # Config window size
 Config.set("graphics", "width", "1024")
