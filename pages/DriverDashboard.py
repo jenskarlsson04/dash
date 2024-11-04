@@ -18,8 +18,6 @@ from pages.custom_progress_bar import CustomProgressBar
 class DriverDashboard(Screen):
     def __init__(self, **kwargs):
         super(DriverDashboard, self).__init__(**kwargs)
-        self.orientation = 'horizontal'
-        self.clock_event = None
         # Initialize Time Table Manager
         self.time_table_manager = TimeTableManager()
 

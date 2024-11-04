@@ -5,6 +5,7 @@ from kivy.config import Config
 from kivy.clock import Clock
 from pages.DriverDashboard import DriverDashboard
 from pages.Clockscreen import ClockScreen
+from pages.Debug import DebugScreen
 from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
 # Config window size
@@ -37,7 +38,7 @@ class DriverDash(App):
 
         # Add screens to the manager
         sm.add_screen(DriverDashboard(name="dashboard"))
-        sm.add_screen(ClockScreen(name="clock"))
+        sm.add_screen(DebugScreen(name="debug"))
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
