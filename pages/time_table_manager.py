@@ -1,8 +1,13 @@
+
+
 class TimeTableManager:
     def __init__(self):
+        self.soc = None
         self.lap_times = []  # List to store lap times (up to 5)
         self.energy_data = []  # List to store SOC used for each lap
         self.all_time_best_lap = None  # Store the all-time best lap time
+
+
 
     def add_lap_time(self, lap_time, soc_used):
         """
@@ -27,6 +32,7 @@ class TimeTableManager:
 
         return best_lap_time, self.all_time_best_lap, self.lap_times, self.energy_data
 
+
     def update_lap_display(self, lap_labels, time_labels, energy_labels):
         """
         Updates the lap display labels with the current lap times and SOC used values.
@@ -41,6 +47,7 @@ class TimeTableManager:
 
         # Loop through the laps and update the labels
         for i, (lap_time, soc_used) in enumerate(zip(self.lap_times, self.energy_data)):
+
             # Update the lap time label
             time_labels[i].text = self.format_time(lap_time)
 

@@ -1,29 +1,48 @@
 # main.py
+
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from Pages.DriverDashboard import DriverDashboard
 from kivy.config import Config
+from kivy.clock import Clock
+from pages.DriverDashboard import DriverDashboard
+from pages.Clockscreen import ClockScreen
+from screen_swticher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
-# Config windows size
-
+# Config window size
 Config.set("graphics", "width", "1024")
 Config.set("graphics", "height", "600")
 Config.write()
 
-class MainScreen(Screen):
+class CentralizedScreenSwitcher(CustomScreenSwitcher):
     def __init__(self, **kwargs):
-        super(MainScreen, self).__init__(**kwargs)
-        # Create an instance of SpeedPage and add it to the screen
-        self.DriverDash = DriverDashboard()
-        self.add_widget(self.DriverDash)
+        super().__init__(**kwargs)
+        self.clock_event = None
 
+    def on_current_screen(self, *args):
+        # Cancel any existing clock event before starting a new one
+        if self.clock_event:
+            self.clock_event.cancel()
+
+        # Start a new clock event that updates the currently active screen
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.1)
+
+    def update_active_screen(self, dt):
+        # Call a `refresh` method on the active screen, if it exists
+        if hasattr(self.current_screen, "refresh"):
+            self.current_screen.refresh()
 
 class DriverDash(App):
     def build(self):
-        # Create a ScreenManager and add the MainScreen
-        sm = ScreenManager()
-        sm.add_widget(MainScreen(name='main'))
+        # Use CentralizedScreenSwitcher instead of the default CustomScreenSwitcher
+        sm = CentralizedScreenSwitcher()
+
+        # Add screens to the manager
+        sm.add_screen(DriverDashboard(name="dashboard"))
+        sm.add_screen(ClockScreen(name="clock"))
+
+        # Bind to detect screen changes and reset the clock update
+        sm.bind(current=sm.on_current_screen)
+
         return sm
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     DriverDash().run()
