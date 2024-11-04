@@ -1,66 +1,63 @@
-# main.py
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.config import Config
-from kivy.core.window import Window
-
-# Set window size
-Config.set("graphics", "width", "1024")
-Config.set("graphics", "height", "600")
-Config.set("graphics", "resizable", "0")   # Disable resizing
-Config.write()
-
-# Alternatively, you can set it using the Window object
-Window.size = (1024, 600)
+from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
+from kivy.clock import Clock
+from random import choice
+from datetime import datetime
 
 
-# Define the first screen
-class ScreenOne(Screen):
+class ErrorLogScreen(BoxLayout):
     def __init__(self, **kwargs):
-        super(ScreenOne, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical')
+        super().__init__(**kwargs)
+        self.orientation = 'vertical'
 
-        # Add a button to switch to ScreenTwo
-        switch_btn = Button(text='Go to Screen Two', size_hint=(0.3, 0.2))
-        switch_btn.bind(on_press=self.switch_to_screen_two)
+        # Scrollable area for error messages
+        scroll_view = ScrollView(size_hint=(1, 0.9))
+        self.error_list = BoxLayout(orientation='vertical', size_hint_y=None)
+        self.error_list.bind(minimum_height=self.error_list.setter('height'))
+        scroll_view.add_widget(self.error_list)
 
-        layout.add_widget(switch_btn)
-        self.add_widget(layout)
+        # Example error messages to randomly display
+        self.errors = [
+            "BMS: over-temperature",
+            "BMS: over-voltage",
+            "MOTOR TEMP: 90% of critical level",
+            "SHUTDOWN CIRCUIT: open"
+        ]
 
-    def switch_to_screen_two(self, instance):
-        self.manager.current = 'screen_two'
+        # Add title header
+        header = BoxLayout(size_hint_y=None, height=40)
+        header.add_widget(Label(text="[b]Error message[/b]", markup=True, color=(0, 1, 1, 1), size_hint_x=0.8))
+        header.add_widget(Label(text="[b]Time[/b]", markup=True, color=(0, 1, 1, 1), size_hint_x=0.2))
+        self.add_widget(header)
+
+        # Add scroll view to the layout
+        self.add_widget(scroll_view)
+
+        # Schedule a function to update the error log every few seconds
+        Clock.schedule_interval(self.update_log, 2)
+
+    def update_log(self, dt):
+        # Pick a random error message
+        error_message = choice(self.errors)
+
+        # Get the current time
+        current_time = datetime.now().strftime("%H:%M:%S")
+
+        # Add new message with timestamp to the log
+        log_entry = BoxLayout(size_hint_y=None, height=30)
+        log_entry.add_widget(Label(text=error_message, size_hint_x=0.8))
+        log_entry.add_widget(Label(text=current_time, size_hint_x=0.2))
+
+        # Add the new log entry to the top of the list
+        self.error_list.add_widget(log_entry, index=0)
 
 
-# Define the second screen
-class ScreenTwo(Screen):
-    def __init__(self, **kwargs):
-        super(ScreenTwo, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical')
-
-        # Add a button to switch back to ScreenOne
-        switch_btn = Button(text='Go to Screen One', size_hint=(0.3, 0.2))
-        switch_btn.bind(on_press=self.switch_to_screen_one)
-
-        layout.add_widget(switch_btn)
-        self.add_widget(layout)
-
-    def switch_to_screen_one(self, instance):
-        self.manager.current = 'screen_one'
-
-
-# Create the main application class
-class MyScreenApp(App):
+class ErrorLogApp(App):
     def build(self):
-        sm = ScreenManager()
-
-        # Add screens to the ScreenManager
-        sm.add_widget(ScreenOne(name='screen_one'))
-        sm.add_widget(ScreenTwo(name='screen_two'))
-
-        return sm
+        return ErrorLogScreen()
 
 
 if __name__ == '__main__':
-    MyScreenApp().run()
+    ErrorLogApp().run()
