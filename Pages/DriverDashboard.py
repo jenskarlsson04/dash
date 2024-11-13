@@ -12,13 +12,14 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
-from pkg_resources import non_empty_lines
+from screen_interface import ScreenInterface
 
 
 # Main Dashboard Page
-class DriverDashboard(Screen):  # Changed to inherit from Screen
+class DriverDashboard(Screen, ScreenInterface):  # Changed to inherit from Screen
     def __init__(self, **kwargs):
         super(DriverDashboard, self).__init__(**kwargs)
+        super(DriverDashboard, self).__init__()
         self.orientation = 'horizontal'
 
         # Use a main BoxLayout to contain the dashboard elements
@@ -69,8 +70,6 @@ class DriverDashboard(Screen):  # Changed to inherit from Screen
         with self.canvas:
             Color(1, 1, 1, 1)  # Set line color to red (RGBA format)
             Line(points=[870, 0, 870, 600], width=3)
-
-
 
         self.add_widget(main_layout)
 

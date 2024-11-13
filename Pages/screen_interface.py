@@ -12,7 +12,6 @@ class ScreenInterface:
         :return: None
         """
         self.screen_switcher = func
-        pass
 
     def update_screen(self, data):
         """
@@ -20,7 +19,6 @@ class ScreenInterface:
         :param data: The can data.
         :return:
         """
-        pass
 
 
 if __name__ == '__main__':
