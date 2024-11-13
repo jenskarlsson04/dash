@@ -201,12 +201,7 @@ class DriverDashboard(Screen):
         self.cooling_temp_threshold_high = 70
         self.inverter_temp_threshold_high = 70
 
-        # ---- Updating the values randomly ----
-        #Clock.schedule_interval(self.update_screen, 0.5)
-
-        # Progress bar animation to simulate progress from left to right
-        #Clock.schedule_interval(self.update_progress_bar, 0.0)
-
+    # Using refresh to refresh the screen values.
 
     def refresh(self, data_type=None):
         # Update speed

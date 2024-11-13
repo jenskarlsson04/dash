@@ -4,7 +4,6 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.clock import Clock
 from pages.DriverDashboard import DriverDashboard
-from pages.Clockscreen import ClockScreen
 from pages.Debug import DebugScreen
 from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
@@ -24,7 +23,7 @@ class CentralizedScreenSwitcher(CustomScreenSwitcher):
             self.clock_event.cancel()
 
         # Start a new clock event that updates the currently active screen
-        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.1)
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.5)
 
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists
