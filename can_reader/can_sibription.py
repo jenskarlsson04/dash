@@ -45,15 +45,14 @@ def publish_message(can_message: can.Message):
 
 if __name__ == '__main__':
 
+    temp = 0
 
     def print_message(message):
-        print(message.parsed_data.temperature_c)
+        temp = message.parsed_data.temperature_c
 
     subscribe_can_message(canparser.MotorTemperatureData, print_message)
 
     publish_message(can.Message(arbitration_id=0x181, data=[0x49, 0x13, 0x25, 0x00]))
-
-    input()
 
 
 
