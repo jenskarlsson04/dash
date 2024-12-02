@@ -11,9 +11,9 @@ from widgets.BatteryWidget import BatteryWidget
 from widgets.Statusbar import Statusbar
 
 # Main Dashboard Page
-class Dash2(Screen):
+class Dash(Screen):
     def __init__(self, **kwargs):
-        super(Dash2, self).__init__(**kwargs)
+        super(Dash, self).__init__(**kwargs)
         # Initialize Time Table Manager
         self.time_table_manager = TimeTableManager(total_laps=22)
 
@@ -140,7 +140,7 @@ class Dash2(Screen):
 class DashboardApp(App):
     def build(self):
         Window.size = (1024, 600)  # Set a larger window size for better layout
-        return Dash2()
+        return Dash()
 
 
 if __name__ == '__main__':
