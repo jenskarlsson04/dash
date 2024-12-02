@@ -1,4 +1,5 @@
 import random
+import can
 from kivy.app import App
 import os
 from kivy.uix.label import Label
@@ -8,10 +9,11 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
-from kivy.clock import Clock
-
+import canparser
+from can_reader import subscribe_can_message
+from can_reader import publish_message
 from pages.time_table_manager import TimeTableManager
-from pages.custom_progress_bar import CustomProgressBar
+from widgets.custom_progress_bar import CustomProgressBar
 
 
 # Main Dashboard Page
@@ -20,7 +22,19 @@ class DriverDashboard(Screen):
         super(DriverDashboard, self).__init__(**kwargs)
         # Initialize Time Table Manager
         self.time_table_manager = TimeTableManager()
-
+        # Can subs
+        # Inverter
+       # subscribe_can_message(canparser.MotorTemperatureData, self.update_motor_temp)
+        subscribe_can_message(canparser.InverterTemperatureData, self.update_inverter_temp)
+        #subscribe_can_message(canparser.InverterErrorsData, self.update_inverter_error)
+      #  subscribe_can_message(canparser.VcuStateData, self.update_vcu_state)
+        # Variables to update
+        self.inverter_temp_value = 0
+      #  self.update_inverter_error_state = False
+      #  self.update_inverter_warning_state = False
+      #  self.error = list
+      #  self.warning = list
+        #self.motor_temp_value = 0
         # Use a main FloatLayout to contain the dashboard elements, this allows for layering
         main_layout = FloatLayout()
 
@@ -109,7 +123,7 @@ class DriverDashboard(Screen):
         lap_times_grid.add_widget(Label(text='% Used', font_size='20sp', bold=True, color=(1, 1, 1, 1)))
 
         # Create Lap Time Labels
-        self.lap_labels = []  # List of lap number labels (left column)
+     #   self.lap_labels = []  # List of lap number labels (left column)
         self.time_labels = []  # List of time labels (middle column)
         self.energy_labels = []  # List of percentage/energy labels (right column)
 
@@ -118,15 +132,15 @@ class DriverDashboard(Screen):
 
         # Add empty labels initially (we will update them dynamically)
         for i in range(5):  # Showing up to 5 laps at a time
-            lap_label = Label(text=f"{i + 1}", font_size='22sp', color=(0, 1, 1, 1))
+           # lap_label = Label(text=f"{i + 1}", font_size='22sp', color=(0, 1, 1, 1))
             time_label = Label(text="--:--:--", font_size='22sp', color=(1, 1, 1, 1))
             percent_label = Label(text="--", font_size='22sp', color=(1, 1, 1, 1))
 
-            self.lap_labels.append(lap_label)
+#            self.lap_labels.append(lap_label)
             self.time_labels.append(time_label)
             self.energy_labels.append(percent_label)
 
-            lap_times_grid.add_widget(lap_label)
+#            lap_times_grid.add_widget(lap_label)
             lap_times_grid.add_widget(time_label)
             lap_times_grid.add_widget(percent_label)
 
@@ -203,7 +217,8 @@ class DriverDashboard(Screen):
 
     # Using refresh to refresh the screen values.
 
-    def refresh(self, data_type=None):
+    def refresh(self):
+
         # Update speed
         self.speed = random.randint(0, 120)
         self.speed_label.text = f'{self.speed}'
@@ -221,10 +236,10 @@ class DriverDashboard(Screen):
         self.avgeng(self.time_table_manager.energy_data, self.time_table_manager.lap_times)
 
         # Simulate new temperature values between 22 and 100°C
-        cool_loop_temp_value = random.randint(22, 100)
-        inverter_temp_value = random.randint(22, 100)
+        #cool_loop_temp_value = random.randint(22, 100)
+        #inverter_temp_value = random.randint(22, 100)
        # self.cool_loop_temp.text = f"{cool_loop_temp_value} C"
-        self.inverter_temp.text = f"{inverter_temp_value} C"
+        self.inverter_temp.text = f"{self.inverter_temp_value} C"
 
         # Check if cooling loop temperature is within the threshold and change the color dynamically
        # if cool_loop_temp_value > self.cooling_temp_threshold_high:
@@ -232,10 +247,10 @@ class DriverDashboard(Screen):
        # else:
            # self.cool_loop_temp.color = (1, 1, 1, 1)
 
-        if inverter_temp_value > self.inverter_temp_threshold_high:
-            self.inverter_temp.color = (1, 0, 0, 1)
-        else:
-            self.inverter_temp.color = (1, 1, 1, 1)
+      #  if self.inverter_temp_value > self.inverter_temp_threshold_high:
+     #       self.inverter_temp.color = (1, 0, 0, 1)
+     #   else:
+      #      self.inverter_temp.color = (1, 1, 1, 1)
 
         # Check battery SOC to change the colour
 
@@ -250,7 +265,7 @@ class DriverDashboard(Screen):
         best_lap, all_time_best_lap, lap_times, energy_data = self.time_table_manager.add_lap_time(new_lap_time, soc_used)
 
         # Update the lap display labels
-        self.time_table_manager.update_lap_display(self.lap_labels, self.time_labels, self.energy_labels)
+       # self.time_table_manager.update_lap_display(self.lap_labels, self.time_labels, self.energy_labels)
 
         # Update the "BEST LAP" label to display the all-time best lap
         if all_time_best_lap:
@@ -258,9 +273,32 @@ class DriverDashboard(Screen):
 
         # Update last lap comparison (green/yellow)
         last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
+        print(last_lap_color)
         self.last_lap_time_label.color = (0, 1, 0, 1) if last_lap_color == 'green' else (1, 1, 0, 1)
         self.last_lap_time_label.text = f'Last Lap: {self.format_time(new_lap_time)}'
+        publish_message(can.Message(arbitration_id=0x181, data=[0x49, 0x13, 0x25, 0x00]))
 
+    # Inverter Update Section
+   # def update_inverter_error(self, message:canparser.InverterErrorsData):
+   #     self.update_inverter_error_state = bool(message.has_error)
+   #     self.update_inverter_warning_state = bool(message.has_warning)
+   #     self.error = list(message.decoded_errors)
+   #     self.warning = list(message.decoded_warnings)
+    def update_inverter_temp(self, message):
+       self.inverter_temp_value = round(message.parsed_data.temperature_c)
+  #  def update_motor_temp(self, message):
+  #      self.motor_temp_value = round(message.parsed_data.temperature_c)
+    # Vcu update Section
+   # def update_vcu(self, message:canparser.VcuStateData):
+   #     self.update_vcu_state = bool(message.canparser.VcuStateData)
+
+
+    # BTMU Update section
+
+   # def update_soc(self, message):
+   #     self.soc = round(message.parsed_data.)
+   # def bat_temp(self, message):
+    #    self.bat_temp_value = round(message.parsed_data.)
 
     def avgeng(self, energy_data, lap_times):
         englap = 0
