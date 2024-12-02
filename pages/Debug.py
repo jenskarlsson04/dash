@@ -1,111 +1,95 @@
+import os
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Rectangle
 from kivy.clock import Clock
-from random import choice
-from datetime import datetime
-from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 
-# Set window size to 1024x600 for development on desktop (remove if deploying to a fixed screen device)
-Window.size = (1024, 600)
 
-
-class DebugScreen(Screen):
+class DriverDashboard(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # Bakgrundsfärg
+        with self.canvas.before:
+            Color(0, 0, 0, 1)  # Svart bakgrund
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size=self.update_rect, pos=self.update_rect)
 
-        # Main layout for DebugScreen
-        layout = FloatLayout()
-        self.add_widget(layout)
+        # LOGO och TITEL
+        self.add_widget(Label(text="[Logo]", font_size="40sp", color=(1, 1, 1, 0.5),
+                              pos_hint={"center_x": 0.5, "center_y": 0.9}))
+        self.add_widget(Label(text="Orion", font_size="35sp", color=(0.5, 0.8, 1, 1),
+                              pos_hint={"center_x": 0.5, "center_y": 0.85}))
 
-        # Title label at the top
-        title = Label(
-            text="[b]Debug[/b]",
-            markup=True,
-            font_size=40,  # Larger font for prominent title
-            color=(0.3, 0.6, 1, 1),
-            size_hint=(None, None),
-            pos_hint={'x': 0.05, 'top': 0.98}
+        # VÄRDEDATA (vänster kolumn)
+        self.pack_current_label = self.create_data_label("PACK CURRENT", "0.00 A", 0.2, 0.75)
+        self.pack_volt_label = self.create_data_label("PACK VOLT", "000 V", 0.2, 0.65)
+        self.pack_soc_label = self.create_data_label("PACK SOC", "0.00 %", 0.2, 0.55)
+        self.max_cell_temp_label = self.create_data_label("MAX CELL TEMP", "000 C", 0.2, 0.45)
+        self.min_cell_temp_label = self.create_data_label("MIN CELL TEMP", "000 C", 0.2, 0.35)
+
+        # VÄRDEDATA (höger kolumn)
+        self.max_cell_volt_label = self.create_data_label("MAX CELL VOLT", "000 V", 0.7, 0.75)
+        self.min_cell_volt_label = self.create_data_label("MIN CELL VOLT", "000 V", 0.7, 0.65)
+
+        # SYSTEMSTATUS (längst ner)
+        self.system_status_label = Label(
+            text="Systems: Connected",
+            font_size="20sp",
+            bold=True,
+            color=(0, 1, 0, 1),
+            pos_hint={"center_x": 0.5, "center_y": 0.1}
         )
-        layout.add_widget(title)
+        self.add_widget(self.system_status_label)
 
-        # Header for the error log table
-        header_layout = BoxLayout(orientation='horizontal', size_hint=(0.9, None), height=50,
-                                  pos_hint={'x': 0.05, 'top': 0.88})
-        header_layout.add_widget(Label(
-            text="[b]Error message[/b]",
-            markup=True,
-            color=(0.3, 0.6, 1, 1),
-            font_size=28,  # Larger font for headers
-            size_hint_x=0.7
-        ))
-        header_layout.add_widget(Label(
-            text="[b]Time[/b]",
-            markup=True,
-            color=(0.3, 0.6, 1, 1),
-            font_size=28,  # Larger font for headers
-            size_hint_x=0.3
-        ))
-        layout.add_widget(header_layout)
+        # Simulera uppdatering av värden
+        Clock.schedule_interval(self.update_values, 1)
 
-        # Scrollable area for error messages
-        scroll_view = ScrollView(size_hint=(0.9, 0.75), pos_hint={'x': 0.05, 'top': 0.85})
-        self.error_list = BoxLayout(orientation='vertical', size_hint_y=None, spacing=15)
-        self.error_list.bind(minimum_height=self.error_list.setter('height'))
-        scroll_view.add_widget(self.error_list)
+    def update_rect(self, *args):
+        """Uppdatera bakgrundens storlek och position."""
+        self.rect.size = self.size
+        self.rect.pos = self.pos
 
-        # Add the scroll view to the main layout
-        layout.add_widget(scroll_view)
+    def create_data_label(self, title, value, x, y):
+        """Skapa en etikett för en datapunkt."""
+        self.add_widget(Label(text=title, font_size="18sp", color=(0.5, 0.8, 1, 1),
+                              pos_hint={"center_x": x, "center_y": y + 0.05}))
+        value_label = Label(text=value, font_size="20sp", color=(1, 1, 1, 1),
+                            pos_hint={"center_x": x, "center_y": y})
+        self.add_widget(value_label)
+        return value_label
 
-        # Example error messages
-        self.errors = [
-            "BMS: over-temperature",
-            "BMS: over-voltage",
-            "MOTOR TEMP: 90% of critical level",
-            "SHUTDOWN CIRCUIT: open"
-        ]
+    def update_values(self, dt):
+        """Simulera och uppdatera dashboardvärden."""
+        # Simulerade värden
+        pack_current = round(10 * (1 - 0.5), 2)
+        pack_volt = 240
+        max_cell_volt = 4.2
+        min_cell_volt = 3.5
+        pack_soc = 85.5
+        max_cell_temp = 40
+        min_cell_temp = 22
 
-        # Schedule a function to update the error log every few seconds
+        # Uppdatera etiketter
+        self.pack_current_label.text = f"{pack_current:.2f} A"
+        self.pack_volt_label.text = f"{pack_volt} V"
+        self.max_cell_volt_label.text = f"{max_cell_volt:.2f} V"
+        self.min_cell_volt_label.text = f"{min_cell_volt:.2f} V"
+        self.pack_soc_label.text = f"{pack_soc:.2f} %"
+        self.max_cell_temp_label.text = f"{max_cell_temp} C"
+        self.min_cell_temp_label.text = f"{min_cell_temp} C"
 
-
-    def refresh(self):
-        # Pick a random error message
-        error_message = choice(self.errors)
-
-        # Get the current time with seconds
-        current_time = datetime.now().strftime("%H:%M:%S")
-
-        # Create a log entry layout with larger font sizes for better readability
-        log_entry = BoxLayout(size_hint_y=None, height=50)  # Larger height for readability
-        log_entry.add_widget(Label(
-            text=error_message,
-            font_size=30,  # Larger font for log entries
-            color=(1, 1, 1, 1),
-            size_hint_x=0.7
-        ))
-        log_entry.add_widget(Label(
-            text=current_time,
-            font_size=30,  # Larger font for log entries
-            color=(1, 1, 1, 1),
-            size_hint_x=0.3
-        ))
-
-        # Add the new log entry to the top of the list
-        self.error_list.add_widget(log_entry, index=0)
-
-        # Limit the number of entries displayed to avoid overfilling the screen
-        if len(self.error_list.children) > 8:  # Adjusted for 1024x600 resolution with larger text
-            self.error_list.remove_widget(self.error_list.children[-1])
+        # Växla systemstatus
+        self.system_status_label.text = "Systems: Connected"
+        self.system_status_label.color = (0, 1, 0, 1)
 
 
-# Standalone app to test DebugScreen
-class DebugApp(App):
+class DashboardApp(App):
     def build(self):
-        return DebugScreen(name="debug_screen")
+        Window.size = (800, 480)  # Anpassa storlek
+        return DriverDashboard()
 
 
 if __name__ == '__main__':
-    DebugApp().run()
+    DashboardApp().run()

@@ -1,16 +1,17 @@
 # main.py
 
 from kivy.app import App
-from kivy.config import Config
 from kivy.clock import Clock
-from pages.DriverDashboard import DriverDashboard
-from pages.Debug import DebugScreen
-from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
+from kivy.core.window import Window
+from pages.Dash2 import Dash2
 
+from pages.DriverDashboard import DriverDashboard
+#from pages.Debug import DebugScreen
+from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 # Config window size
-Config.set("graphics", "width", "1024")
-Config.set("graphics", "height", "600")
-Config.write()
+Window.size = (1024, 600)
+
+Window.minimum_width, Window.minimum_height = (1024, 600)
 
 class CentralizedScreenSwitcher(CustomScreenSwitcher):
     def __init__(self, **kwargs):
@@ -23,7 +24,7 @@ class CentralizedScreenSwitcher(CustomScreenSwitcher):
             self.clock_event.cancel()
 
         # Start a new clock event that updates the currently active screen
-        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.5)
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 1)
 
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists
@@ -36,8 +37,9 @@ class DriverDash(App):
         sm = CentralizedScreenSwitcher()
 
         # Add screens to the manager
-        sm.add_screen(DriverDashboard(name="dashboard"))
-        sm.add_screen(DebugScreen(name="debug"))
+        sm.add_screen(Dash2(name="dashboard2"))
+      #  sm.add_screen(DriverDashboard(name="dashboard"))
+        #sm.add_screen(DebugScreen(name="debug"))
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
