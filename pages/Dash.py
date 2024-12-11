@@ -19,13 +19,15 @@ class Dash(Screen):
 
         # Can subscriptions
 
+
+
         # Variables to update
         self.inverter_temp_value = 0
         self.soc = 100  # Track remaining SOC
         self.last_soc = 100  # Track SOC at the start of the lap
         self.lap_counter = 0  # Track total number of laps
         self.error = False # looks for error, if no error dont make place for message window
-        self.canisup = True # Sets CAN as up
+        self.canisup = False # Sets CAN as up
         self.batterythreshold = 4.55 # % 4.55% per lap for 22 laps covvage.
         self.laps = 22
 
@@ -67,7 +69,7 @@ class Dash(Screen):
 
         # Add the battery symbol widget
         if not self.error:  # Introducing the possibility to move the icon when a error is displayed.
-            self.battery_widget = BatteryWidget(size_hint=(None, None), size=(700, 300), pos_hint={'x': 0.33, 'y': 0.3})
+            self.battery_widget = BatteryWidget(size_hint=(None, None), size=(700, 300), pos_hint={'x': 0.25, 'y': 0.28})
             main_layout.add_widget(self.battery_widget)
 
         # Battery threshold
@@ -89,22 +91,22 @@ class Dash(Screen):
     def refresh(self):
         """Refresh the dashboard values."""
         # Update speed
+        #self.speed = 120
         self.speed = random.randint(0, 120)
         self.top_progress_bar1.set_value(self.speed)
         self.top_progress_bar2.set_value(self.speed)
         self.top_progress_bar3.set_value(self.speed)
 
-
         # Update last lap time
         new_lap_time = self.generate_random_time()
         result = self.time_table_manager.add_lap_time(new_lap_time)
         last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
-        self.last_lap_time_label.color = (0, 1, 0, 1) if last_lap_color == 'green' else (1, 1, 0, 1)
+        self.last_lap_time_label.color = (0, 1, 0, 1) if last_lap_color == 'green' else (1, 0.85, 0, 1)
         self.last_lap_time_label.text = f'Last Lap: {self.format_time(new_lap_time)}'
 
         # Simulate battery SOC
-        print(result['laps_remaining'])
-        print(result['required_soc'])
+        #print(result['laps_remaining'])
+       # print(result['required_soc'])
         self.soc = max(self.soc - random.randint(1, 10), 0)
 
         # Update battery color based on SOC
