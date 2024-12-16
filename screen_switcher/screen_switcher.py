@@ -3,6 +3,8 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from itertools import cycle
 from kivy.core.window import Window
+from kivy.clock import Clock
+
 
 class CustomScreenSwitcher(ScreenManager):
     def __init__(self, **kwargs):
@@ -10,6 +12,21 @@ class CustomScreenSwitcher(ScreenManager):
         self.list_of_screens = []
         self.cycle_screen = None
         Window.bind(on_key_down=self.on_key_down)
+
+        self.clock_event = None
+
+    def on_current_screen(self, *args):
+        # Cancel any existing clock event before starting a new one
+        if self.clock_event:
+            self.clock_event.cancel()
+
+        # Start a new clock event that updates the currently active screen
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 1)
+
+    def update_active_screen(self, dt):
+        # Call a `refresh` method on the active screen, if it exists
+
+        self.current_screen.refresh()
 
     def add_screen(self, widget: Screen):
         self.list_of_screens.append(widget)
