@@ -1,15 +1,18 @@
-from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.widget import Widget
 from kivy.graphics import Rectangle, Color
+from kivy.properties import StringProperty
 
 
-class BatteryWidget(FloatLayout):
-    """Widget for the battery symbol with dynamic color."""
+class BatteryWidget(Widget):
+    battery_color = StringProperty("green")  # Dynamic property for the color
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.battery_color = "green"  # Initial color
-        self.draw_battery()
+        self.bind(pos=self.update_graphics, size=self.update_graphics)
+        self.bind(battery_color=self.update_graphics)
+        self.update_graphics()
 
-    def draw_battery(self):
+    def update_graphics(self, *args):
         """Draw the battery outline and fill dynamically based on size."""
         self.canvas.clear()
         outline_width = self.width
@@ -18,14 +21,14 @@ class BatteryWidget(FloatLayout):
         with self.canvas:
             # Draw battery outline
             Color(0.5, 0.5, 0.5, 1)  # Grey color
-            self.outline = Rectangle(
-                pos=(self.x, self.y), size=(outline_width, outline_height)
+            Rectangle(
+                pos=self.pos, size=(outline_width, outline_height)
             )
 
             # Draw battery terminal
             terminal_width = outline_width * 0.1
             terminal_height = outline_height * 0.3
-            self.terminal = Rectangle(
+            Rectangle(
                 pos=(self.x + outline_width, self.y + (outline_height - terminal_height) / 2),
                 size=(terminal_width, terminal_height),
             )
@@ -40,7 +43,7 @@ class BatteryWidget(FloatLayout):
 
             # Draw battery fill (always full)
             fill_padding = 5  # Add padding inside the outline
-            self.fill = Rectangle(
+            Rectangle(
                 pos=(self.x + fill_padding, self.y + fill_padding),
                 size=(outline_width - 2 * fill_padding, outline_height - 2 * fill_padding),
             )
@@ -48,4 +51,3 @@ class BatteryWidget(FloatLayout):
     def update_color(self, color):
         """Update the battery fill color."""
         self.battery_color = color
-        self.draw_battery()

@@ -1,7 +1,6 @@
 import can
 from .can_sibription import publish_message
 from threading import Thread
-from canparser import MotorTemperatureData
 
 
 class CanClass:

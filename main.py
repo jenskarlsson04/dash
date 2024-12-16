@@ -9,10 +9,6 @@ from pages.DriverDashboard import DriverDashboard
 from pages.Inverter import Inverter
 #from pages.Debug import DebugScreen
 from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
-# Config window size
-Window.size = (1024, 600)
-
-Window.minimum_width, Window.minimum_height = (1024, 600)
 
 class CentralizedScreenSwitcher(CustomScreenSwitcher):
     def __init__(self, **kwargs):

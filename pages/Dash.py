@@ -69,7 +69,7 @@ class Dash(Screen):
 
         # Add the battery symbol widget
         if not self.error:  # Introducing the possibility to move the icon when a error is displayed.
-            self.battery_widget = BatteryWidget(size_hint=(None, None), size=(700, 300), pos_hint={'x': 0.25, 'y': 0.28})
+            self.battery_widget = BatteryWidget(size_hint=(0.3, 0.2), pos_hint={'x': 0.35, 'y': 0.35})
             main_layout.add_widget(self.battery_widget)
 
         # Battery threshold
