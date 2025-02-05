@@ -74,8 +74,8 @@ class Dash(Screen):
 
         # Battery threshold
 
-        self.batterythreshold_label = Label(text='', font_size='70sp', bold=True, color=(1, 0, 0, 1),
-                                      size_hint=(1, 0), pos_hint={'x': 0, 'y': 0.2})
+        self.batterythreshold_label = Label(text='', font_size='60sp', bold=True, color=(1, 0, 0, 1),
+                                      size_hint=(1, 0), pos_hint={'x': 0, 'y': 0.22})
         main_layout.add_widget(self.batterythreshold_label)
 
         # Add the status bar
