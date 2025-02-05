@@ -1,19 +1,33 @@
 from kivy.app import App
 from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from kivy.graphics import Color, Line
 from kivy.core.window import Window
-import os
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
+import os
 import canparser
 from can_reader import subscribe_can_message
 
 
+# Separator-widget som ritar en horisontell linje
+class Separator(Widget):
+    def __init__(self, **kwargs):
+        super(Separator, self).__init__(**kwargs)
+        with self.canvas:
+            Color(1, 1, 2, 0.5)
+            self.line = Line(points=[], width=8)
+        self.bind(pos=self.update_line, size=self.update_line)
+
+    def update_line(self, *args):
+        self.line.points = [self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height / 2]
+
+
 class Inverter(Screen):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(Inverter, self).__init__(**kwargs)
         # Variabler för data
         self.inverter_temp = 0
         self.motortemp = 0
@@ -23,190 +37,248 @@ class Inverter(Screen):
         self.errors = []
         self.warnings = []
 
-        # Huvudlayout
-        main_layout = FloatLayout()
+        # Huvudlayout: Vertikal BoxLayout med header, separator och innehåll
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
 
-        # Huvudetikett
-        self.inverter_label = Label(
-            text='Inverter', font_size='70sp', size_hint=(0.2, 0.1),
-            pos_hint={'x': 0, 'y': 0.88}, color=(0, 1, 1, 1)
-        )
-
+        # 1. HEADER (Debug - Logo - Inverter)
+        header_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.15))
         self.debug_label = Label(
-            text='Debug', font_size='70sp', size_hint=(0.2, 0.1),
-            pos_hint={'x': 0.81, 'y': 0.88}, color=(0, 1, 1, 1)
+            text='Debug',
+            font_size='70sp',
+            size_hint_x=0.3,
+            color=(0, 1, 1, 1),
+            halign='left',
+            valign='middle'
         )
-
-        # Logotyp med låg opacitet
+#        self.debug_label.bind(size=self._update_text_size)
         image_path = os.path.join('./images/logo.png')
         self.logo_image = Image(
             source=image_path,
             opacity=0.15,
             allow_stretch=True,
             keep_ratio=True,
-            size_hint=(0.15, 0.15),
-            pos_hint={'center_x': 0.5, 'center_y': 0.93}
+            size_hint_x=0.4
         )
+        self.inverter_label = Label(
+            text='Inverter',
+            font_size='70sp',
+            size_hint_x=0.3,
+            color=(0, 1, 1, 1),
+            halign='right',
+            valign='middle'
+        )
+#        self.inverter_label.bind(size=self._update_text_size)
+        header_layout.add_widget(self.debug_label)
+        header_layout.add_widget(self.logo_image)
+        header_layout.add_widget(self.inverter_label)
 
-        # Invertertemperatur
-        self.inverter_temp_label = Label(
-            text='Inverter Temp', font_size='80sp', size_hint=(0.36, 0.2),
-            pos_hint={'x': 0, 'y': 0.59}, color=(0, 1, 1, 1)
+        # 2. SEPARATOR (Linje direkt under headern)
+        separator = Separator(size_hint=(1, None), height=5)
+
+        # 3. CONTENT (Temperatur- samt fel-/varningssektioner)
+        content_layout = BoxLayout(orientation='horizontal', spacing=10, size_hint=(1, 0.85))
+
+        # Vänster innehåll: Temperaturavsnitt
+        left_content = BoxLayout(orientation='vertical', spacing=10, size_hint=(0.5, 1))
+
+        # Inverter Temperature-container
+        inverter_temp_container = BoxLayout(orientation='vertical', size_hint=(1, 0.5))
+        self.inverter_temp_text_label = Label(
+            text='Inverter Temp',
+            font_size='80sp',
+            halign='left',
+            valign='middle',
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1)
         )
+#        self.inverter_temp_text_label.bind(size=self._update_text_size)
+        inverter_temp_container.add_widget(self.inverter_temp_text_label)
+
+        inverter_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.inverter_temp_value_label = Label(
-            text='000', font_size='120sp', size_hint=(0.15, 0.1),
-            pos_hint={'x': 0.03, 'y': 0.49}, color=(1, 1, 1, 1)
+            text='000',
+            font_size='120sp',
+            halign='left',
+            valign='middle',
+            size_hint_x=None,
+            width=150,  # Fast bredd så att värdet ser konsekvent ut
+            color=(1, 1, 1, 1)
         )
+#        self.inverter_temp_value_label.bind(size=self._update_text_size)
+        inverter_value_layout.add_widget(self.inverter_temp_value_label)
         self.inverter_unit_label = Label(
-            text='°C', font_size='120sp', size_hint=(0.1, 0.1),
-            pos_hint={'x': 0.19, 'y': 0.49}, color=(1, 1, 1, 1)
+            text='°C',
+            font_size='120sp',
+            halign='right',
+            valign='middle',
+            size_hint_x=None,
+            width=60,  # Fast bredd för enhet
+            color=(1, 1, 1, 1)
         )
+#        self.inverter_unit_label.bind(size=self._update_text_size)
+        inverter_value_layout.add_widget(self.inverter_unit_label)
+        inverter_temp_container.add_widget(inverter_value_layout)
+        left_content.add_widget(inverter_temp_container)
 
-        # Motortemperatur
-        self.motortemp_label = Label(
-            text='Motor Temp', font_size='80sp', size_hint=(0.32, 0.2),
-            pos_hint={'x': 0, 'y': 0.29}, color=(0, 1, 1, 1)
+        # Motor Temperature-container
+        motor_temp_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.5))
+        self.motortemp_text_label = Label(
+            text='Motor Temp',
+            font_size='80sp',
+            halign='left',
+            valign='middle',
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1)
         )
+#        self.motortemp_text_label.bind(size=self._update_text_size)
+        motor_temp_container.add_widget(self.motortemp_text_label)
+
+        motor_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.motortemp_value_label = Label(
-            text='000', font_size='120sp', size_hint=(0.15, 0.1),
-            pos_hint={'x': 0.03, 'y': 0.19}, color=(1, 1, 1, 1)
+            text='000',
+            font_size='120sp',
+            halign='left',
+            valign='middle',
+            size_hint_x=None,
+            width=150,
+            color=(1, 1, 1, 1)
         )
+#        self.motortemp_value_label.bind(size=self._update_text_size)
+        motor_value_layout.add_widget(self.motortemp_value_label)
         self.motortemp_unit_label = Label(
-            text='°C', font_size='120sp', size_hint=(0.1, 0.1),
-            pos_hint={'x': 0.19, 'y': 0.19}, color=(1, 1, 1, 1)
+            text='°C',
+            font_size='120sp',
+            halign='right',
+            valign='middle',
+            size_hint_x=None,
+            width=60,
+            color=(1, 1, 1, 1)
         )
+#        self.motortemp_unit_label.bind(size=self._update_text_size)
+        motor_value_layout.add_widget(self.motortemp_unit_label)
+        motor_temp_container.add_widget(motor_value_layout)
+        left_content.add_widget(motor_temp_container)
 
-        # ScrollView för fel
+        # Höger innehåll: Fel- och varningssektioner (innehållet placeras högerut)
+        right_content = BoxLayout(orientation='vertical', spacing=10, size_hint=(0.5, 1))
+
+        # Fel-sektion
+        error_section = BoxLayout(orientation='vertical', spacing=20, size_hint=(1, 0.5))
+        error_title_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.2))
         self.errors_label = Label(
-            text='Inverter Errors', font_size='50sp', size_hint=(0.2, 0.1),
-            pos_hint={'x': 0.561, 'y': 0.63}, color=(0, 1, 1, 1)
+            text='Inverter Errors',
+            font_size='50sp',
+            halign='right',
+            valign='middle',
+            size_hint=(0.7, 1),
+            color=(0, 1, 1, 1)
         )
+#        self.errors_label.bind(size=self._update_text_size)
+        error_title_layout.add_widget(self.errors_label)
         self.errors_amount_label = Label(
-            text='(0)', font_size='50sp', size_hint=(0.1, 0.1),
-            pos_hint={'x': 0.82, 'y': 0.63}, color=(0, 1, 1, 1)
+            text='(0)',
+            font_size='50sp',
+            halign='right',
+            valign='middle',
+            size_hint=(0.3, 1),
+            color=(0, 1, 1, 1)
         )
-        self.scroll_view_errors = ScrollView(
-            size_hint=(1.5, 0.4),
-            pos_hint={'x': -0.561, 'y': 0.24},
-            do_scroll_x=False,
-            do_scroll_y=True
-        )
-        self.errors_content_layout = FloatLayout(size_hint_y=0.7)
+#        self.errors_amount_label.bind(size=self._update_text_size)
+        error_title_layout.add_widget(self.errors_amount_label)
+        error_section.add_widget(error_title_layout)
+
+        self.scroll_view_errors = ScrollView(size_hint=(1, 0.8), do_scroll_x=False, do_scroll_y=True)
+        self.errors_content_layout = BoxLayout(orientation='vertical', spacing=5, size_hint_y=None)
+        self.errors_content_layout.bind(minimum_height=self.errors_content_layout.setter('height'))
         self.scroll_view_errors.add_widget(self.errors_content_layout)
+        error_section.add_widget(self.scroll_view_errors)
+        right_content.add_widget(error_section)
 
-        # ScrollView för varningar
+        # Varnings-sektion
+        warn_section = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.5))
+        warn_title_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.2))
         self.warn_label = Label(
-            text='Inverter Warnings', font_size='50sp', size_hint=(0.2, 0.1),
-            pos_hint={'x': 0.585, 'y': 0.33}, color=(0, 1, 1, 1)
+            text='Inverter Warnings',
+            font_size='50sp',
+            halign='right',
+            valign='middle',
+            size_hint=(0.7, 1),
+            color=(0, 1, 1, 1)
         )
+        #self.warn_label.bind(size=self._update_text_size)
+        warn_title_layout.add_widget(self.warn_label)
         self.warn_amount_label = Label(
-            text='(0)', font_size='50sp', size_hint=(0.1, 0.1),
-            pos_hint={'x': 0.82, 'y': 0.33}, color=(0, 1, 1, 1)
+            text='(0)',
+            font_size='50sp',
+            halign='right',
+            valign='middle',
+            size_hint=(0.3, 1),
+            color=(0, 1, 1, 1)
         )
-        self.scroll_view_warn = ScrollView(
-            size_hint=(1.5, 0.4),
-            pos_hint={'x': -0.561, 'y': -0.05},
-            do_scroll_x=False,
-            do_scroll_y=True
-        )
-        self.warn_content_layout = FloatLayout(size_hint_y=0.7)
+        #self.warn_amount_label.bind(size=self._update_text_size)
+        warn_title_layout.add_widget(self.warn_amount_label)
+        warn_section.add_widget(warn_title_layout)
+
+        self.scroll_view_warn = ScrollView(size_hint=(1, 0.8), do_scroll_x=False, do_scroll_y=True)
+        self.warn_content_layout = BoxLayout(orientation='vertical', spacing=5, size_hint_y=None)
+        self.warn_content_layout.bind(minimum_height=self.warn_content_layout.setter('height'))
         self.scroll_view_warn.add_widget(self.warn_content_layout)
+        warn_section.add_widget(self.scroll_view_warn)
+        right_content.add_widget(warn_section)
 
+        content_layout.add_widget(left_content)
+        content_layout.add_widget(right_content)
 
+        # Lägg ihop alla delar i huvudlayouten
+        main_layout.add_widget(header_layout)
+        main_layout.add_widget(separator)
+        main_layout.add_widget(content_layout)
 
-        # Linje högst upp
-
-        with main_layout.canvas:
-            Color(1, 1, 2, 0.5)  # grey line
-            # Line placed dynamically based on screen height and width
-            Line(points=[0, Window.height * 1.20, Window.width * 1.5, Window.height * 1.20], width=8)
-
-
-
-
-        # Lägg till widgets till huvudlayouten
-        main_layout.add_widget(self.inverter_label)
-        main_layout.add_widget(self.debug_label)
-        main_layout.add_widget(self.logo_image)
-        main_layout.add_widget(self.inverter_temp_label)
-        main_layout.add_widget(self.inverter_temp_value_label)
-        main_layout.add_widget(self.inverter_unit_label)
-        main_layout.add_widget(self.motortemp_label)
-        main_layout.add_widget(self.motortemp_value_label)
-        main_layout.add_widget(self.motortemp_unit_label)
-        main_layout.add_widget(self.errors_label)
-        main_layout.add_widget(self.errors_amount_label)
-        main_layout.add_widget(self.scroll_view_errors)
-        main_layout.add_widget(self.warn_label)
-        main_layout.add_widget(self.warn_amount_label)
-        main_layout.add_widget(self.scroll_view_warn)
-
-        # Lägg till layouten till skärmen
         self.add_widget(main_layout)
 
+   # def _update_text_size(self, instance, value):
+    #    instance.text_size = instance.size
 
     def refresh(self):
-        # Randomize temperatures
-        #self.inverter_temp = random.randint(0, 120)
-        # self.motortemp = random.randint(0, 120)
+        # Uppdatera temperaturer
         self.inverter_temp_value_label.text = f'{self.inverter_temp}'
         self.motortemp_value_label.text = f'{self.motortemp}'
 
-
-        # Error handling
+        # Uppdatera fel
         error_count = len(self.errors)
         self.errors_amount_label.text = f'({error_count})'
-        self.errors_content_layout.clear_widgets()  # Clear old widgets
-        display_errors = self.errors[:2]
-        item_height = 50  # Height of each error label
-        item_margin = 110  # Margin/spacing between each label
-        self.errors_content_layout.height = max(len(display_errors) * (item_height + item_margin), self.scroll_view_errors.height)
-
-        for i, error in enumerate(display_errors):
+        self.errors_content_layout.clear_widgets()
+        for error in self.errors[:2]:
             label = Label(
                 text=error,
                 font_size='42sp',
-                size_hint=(0.2, 0.6),
-                size=(400, item_height),
-                text_size=(400, 450),  # Set the text wrapping width
-                halign='left',  # Horizontal alignment
-                valign='middle',  # Vertical alignment
-                pos_hint={
-                    'x': 0.743,
-                    'y': 1 - ((i + 1) * (item_height + item_margin) / self.errors_content_layout.height)
-                },
-                color=(1, 0, 0, 1)  # Red text for errors
+                size_hint_y=None,
+                height=60,
+                halign='right',
+                valign='middle',
+                color=(1, 0, 0, 1)
             )
-            label.bind(size=lambda instance, size: setattr(instance, 'text_size', size))  # Wrap text dynamically
+            #label.bind(size=self._update_text_size)
             self.errors_content_layout.add_widget(label)
 
-        # Warning handling
+        # Uppdatera varningar
         warn_count = len(self.warnings)
-        display_warn = self.warnings[:2]
         self.warn_amount_label.text = f'({warn_count})'
-        self.warn_content_layout.clear_widgets()  # Clear old widgets
-        self.warn_content_layout.height = max(len(display_warn) * (item_height + item_margin), self.scroll_view_warn.height)
-
-        for i, warn in enumerate(display_warn):
+        self.warn_content_layout.clear_widgets()
+        for warn in self.warnings[:2]:
             label = Label(
                 text=warn,
                 font_size='42sp',
-                size_hint=(0.33, 0.54),
-                size=(500, item_height),
-                text_size=(400, 450),  # Set the text wrapping width
-                halign='left',  # Horizontal alignment
-                valign='middle',  # Vertical alignment
-                pos_hint={
-                    'x': 0.743,
-                    'y': 1 - ((i + 1) * (item_height + item_margin) / self.warn_content_layout.height)
-                },
-                color=(1, 0, 0, 1)  # Red text for errors
+                size_hint_y=None,
+                height=60,
+                halign='right',
+                valign='middle',
+                color=(1, 0, 0, 1)
             )
-            label.bind(size=lambda instance, size: setattr(instance, 'text_size', size))  # Wrap text dynamically
+            #label.bind(size=self._update_text_size)
             self.warn_content_layout.add_widget(label)
 
-
-    # simulating different errors
+    # CAN-meddelandeuppdaterare
     def update_motor_temp(self, message):
         self.motortemp = round(message.parsed_data.temperature_c)
 
@@ -219,7 +291,7 @@ class Inverter(Screen):
         if message.parsed_data.decoded_warnings:
             self.warnings = [warning.type for warning in message.parsed_data.decoded_warnings]
 
-# Main App Class
+
 class InverterDebug(App):
     def build(self):
         return Inverter()
