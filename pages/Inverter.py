@@ -86,7 +86,7 @@ class Inverter(Screen):
         inverter_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.4), spacing=5)
         self.inverter_temp_value_label = Label(
             text='000',
-            font_size='120sp',
+            font_size='90sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -97,7 +97,7 @@ class Inverter(Screen):
         inverter_value_layout.add_widget(self.inverter_temp_value_label)
         self.inverter_unit_label = Label(
             text='°C',
-            font_size='120sp',
+            font_size='90sp',
             halign='left',
             valign='middle',
             size_hint_x=0.5,
@@ -125,7 +125,7 @@ class Inverter(Screen):
         motor_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.motortemp_value_label = Label(
             text='000',
-            font_size='120sp',
+            font_size='90sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -136,7 +136,7 @@ class Inverter(Screen):
         motor_value_layout.add_widget(self.motortemp_value_label)
         self.motortemp_unit_label = Label(
             text='°C',
-            font_size='120sp',
+            font_size='90sp',
             halign='left',
             valign='middle',
             size_hint_x=0.5,
@@ -238,7 +238,7 @@ class Inverter(Screen):
         for i, error in enumerate(errors_to_show):
             label = Label(
                 text=error,
-                font_size='55sp',
+                font_size='35sp',
                 size_hint_y=None,
                 height=80,  # increased height for better spacing
                 halign='right',
@@ -259,7 +259,7 @@ class Inverter(Screen):
         for i, warn in enumerate(warnings_to_show):
             label = Label(
                 text=warn,
-                font_size='44sp',
+                font_size='30sp',
                 size_hint_y=None,
                 height=75,  # increased height
                 halign='right',
