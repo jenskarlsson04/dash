@@ -240,7 +240,7 @@ class Inverter(Screen):
                 text=error,
                 font_size='35sp',
                 size_hint_y=None,
-                height=80,  # increased height for better spacing
+                height=45,  # increased height for better spacing
                 halign='right',
                 valign='middle',
                 color=(1, 0, 0, 1)
@@ -261,7 +261,7 @@ class Inverter(Screen):
                 text=warn,
                 font_size='30sp',
                 size_hint_y=None,
-                height=75,  # increased height
+                height=45,  # increased height
                 halign='right',
                 valign='middle',
                 color=(1, 0, 0, 1)
