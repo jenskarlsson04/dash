@@ -6,6 +6,7 @@ from kivy.properties import BooleanProperty
 
 class Statusbar(FloatLayout):
     """Widget for the status bar with dynamic color and text based on a boolean status."""
+
     status = BooleanProperty(False)  # Default status is False (Disconnected)
 
     def __init__(self, **kwargs):

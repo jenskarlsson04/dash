@@ -21,15 +21,16 @@ class BatteryWidget(Widget):
         with self.canvas:
             # Draw battery outline
             Color(0.5, 0.5, 0.5, 1)  # Grey color
-            Rectangle(
-                pos=self.pos, size=(outline_width, outline_height)
-            )
+            Rectangle(pos=self.pos, size=(outline_width, outline_height))
 
             # Draw battery terminal
             terminal_width = outline_width * 0.1
             terminal_height = outline_height * 0.3
             Rectangle(
-                pos=(self.x + outline_width, self.y + (outline_height - terminal_height) / 2),
+                pos=(
+                    self.x + outline_width,
+                    self.y + (outline_height - terminal_height) / 2,
+                ),
                 size=(terminal_width, terminal_height),
             )
 
@@ -45,7 +46,10 @@ class BatteryWidget(Widget):
             fill_padding = 5  # Add padding inside the outline
             Rectangle(
                 pos=(self.x + fill_padding, self.y + fill_padding),
-                size=(outline_width - 2 * fill_padding, outline_height - 2 * fill_padding),
+                size=(
+                    outline_width - 2 * fill_padding,
+                    outline_height - 2 * fill_padding,
+                ),
             )
 
     def update_color(self, color):

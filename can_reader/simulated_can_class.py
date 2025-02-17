@@ -18,7 +18,13 @@ class SimulatedCanClass:
         self._bus1 = can.Bus("test", interface="virtual")
         self._bus2 = can.Bus("test", interface="virtual")
 
-        generators = [*VCU_generators, *Orion_generators, *BTMU_generators, *Inverter_generators, *Tscu_generators]
+        generators = [
+            *VCU_generators,
+            *Orion_generators,
+            *BTMU_generators,
+            *Inverter_generators,
+            *Tscu_generators,
+        ]
         on_new_message = lambda message: self._bus1.send(message)
         simulation_speed = 1.0
 
