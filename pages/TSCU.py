@@ -79,7 +79,7 @@ class TSCU(Screen):
         tscu_state_container = BoxLayout(orientation='vertical', size_hint=(1, 0.25)) # 1/3 av vänster sida
         self.TSCU_STATE_text_label = Label(
             text='TSCU STATE',
-            font_size='80sp',
+            font_size='40sp',
             halign='left',
             valign='middle',
             size_hint=(1, 0.4),
@@ -91,7 +91,7 @@ class TSCU(Screen):
         tscu_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.4), spacing=5)
         self.tscu_state_label = Label(
             text='N/A',
-            font_size='90sp',
+            font_size='60sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -107,7 +107,7 @@ class TSCU(Screen):
         tscu_mode_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.25)) #change #1
         self.tscu_mode_text_label = Label( #2
             text='TSCU MODE',
-            font_size='80sp',
+            font_size='40sp',
             halign='left',
             valign='middle',
             size_hint=(1, 0.4),
@@ -119,7 +119,7 @@ class TSCU(Screen):
         tscu_mode_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5) #3
         self.tscu_mode_label = Label( #change to #3, #4
             text='N/A',
-            font_size='90sp',
+            font_size='60sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -136,7 +136,7 @@ class TSCU(Screen):
         airplus_state_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.25))
         self.airplus_state_text_label = Label(
             text='AIR+',
-            font_size='80sp',
+            font_size='40sp',
             halign='left',
             valign='middle',
             size_hint=(1, 0.4),
@@ -148,7 +148,7 @@ class TSCU(Screen):
         airplus_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.airplus_state_label = Label(
             text='N/A',
-            font_size='90sp',
+            font_size='60sp',
             halign='left',
             valign='middle',
             size_hint_x=0.2,
@@ -164,7 +164,7 @@ class TSCU(Screen):
         airminus_state_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.25))
         self.airminus_state_text_label = Label(
             text='AIR-',
-            font_size='80sp',
+            font_size='40sp',
             halign='left',
             valign='middle',
             size_hint=(1, 0.4),
@@ -176,7 +176,7 @@ class TSCU(Screen):
         airminus_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.airminus_state_label = Label(
             text='N/A',
-            font_size='90sp',
+            font_size='60sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -198,7 +198,7 @@ class TSCU(Screen):
         self.cell_max_temp_text_label = Label(  # 2
             text='Cell Max Temp',
             font_size='40sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint=(1, 0.2),
             color=(0, 1, 1, 1)
@@ -210,7 +210,7 @@ class TSCU(Screen):
         self.cell_max_value_label = Label(  # change to #3, #4
             text='000',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.7,
             width=160,
@@ -221,7 +221,7 @@ class TSCU(Screen):
         self.cell_max_temp_unit_label = Label(
             text='°C',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.2,
             width=60,
@@ -237,7 +237,7 @@ class TSCU(Screen):
         self.cell_min_temp_text_label = Label(  # 2
             text='Cell Min Temp',
             font_size='40sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1)
@@ -249,7 +249,7 @@ class TSCU(Screen):
         self.cell_min_value_label = Label(  # change to #3, #4
             text='000',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.7,
             width=160,
@@ -260,7 +260,7 @@ class TSCU(Screen):
         self.cell_min_temp_unit_label = Label(
             text='°C',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.2,
             width=60,
@@ -272,49 +272,13 @@ class TSCU(Screen):
         middle_content.add_widget(cell_min_temp_container)
 
         # LV-bat temp-container
-        LV_bat_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.5))  # change #1
-        self.lv_bat_voltage_text_label = Label(  # 2
-            text='LV Bat Volt',
-            font_size='40sp',
-            halign='right',
-            valign='middle',
-            size_hint=(1, 0.4),
-            color=(0, 1, 1, 1)
-        )
-        self.lv_bat_voltage_text_label.bind(size=self._update_text_size)  # change to #2
-        LV_bat_container.add_widget(self.lv_bat_voltage_text_label)  # change to #1 and #2
 
-        lv_bat_value = BoxLayout(orientation='horizontal', size_hint=(1, 0.33), spacing=5)  # 3
-        self.lv_bat_value_label = Label(  # change to #3, #4
-            text='000',
-            font_size='60sp',
-            halign='right',
-            valign='middle',
-            size_hint_x=0.7,
-            width=160,
-            color=(1, 1, 1, 1)
-        )
-        self.lv_bat_value_label.bind(size=self._update_text_size)  # change to #4
-        lv_bat_value.add_widget(self.lv_bat_value_label)
-        self.lv_bat_unit_label = Label(
-            text='V',
-            font_size='60sp',
-            halign='right',
-            valign='middle',
-            size_hint_x=0.2,
-            width=60,
-            color=(1, 1, 1, 1)
-        )
-        self.lv_bat_unit_label.bind(size=self._update_text_size)
-        lv_bat_value.add_widget(self.lv_bat_unit_label)
-        LV_bat_container.add_widget(lv_bat_value)
-        middle_content.add_widget(LV_bat_container)
 
         pack_current_container = BoxLayout(orientation='vertical', size_hint=(1, 0.33))  # 1/3 av vänster sida
         self.Pack_Current_text_label = Label(
             text='Pack Current',
             font_size='40sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1)
@@ -326,7 +290,7 @@ class TSCU(Screen):
         self.current_value_value_label = Label(
             text='000',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.7,
             width=160,  # Fast bredd så att värdet ser konsekvent ut
@@ -337,7 +301,7 @@ class TSCU(Screen):
         self.current_unit_label = Label(
             text='A',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.2,
             width=60,  # Fast bredd för enhet
@@ -352,7 +316,7 @@ class TSCU(Screen):
         self.pack_soc_text_label = Label(  # 2
             text='Pack SOC',
             font_size='40sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1)
@@ -364,7 +328,7 @@ class TSCU(Screen):
         self.soc_value_label = Label(  # change to #3, #4
             text='000',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.7,
             width=160,
@@ -375,7 +339,7 @@ class TSCU(Screen):
         self.soc_unit_label = Label(
             text='%',
             font_size='60sp',
-            halign='right',
+            halign='left',
             valign='middle',
             size_hint_x=0.2,
             width=60,
@@ -385,6 +349,44 @@ class TSCU(Screen):
         soc_value_layout.add_widget(self.soc_unit_label)
         pack_soc_container.add_widget(soc_value_layout)
         middle_content.add_widget(pack_soc_container)
+
+        pack_voltage_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.33))
+        self.pack_voltage_text_label = Label(
+            text='Pack Voltage',
+            font_size='40sp',
+            halign='left',
+            valign='middle',
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1)
+        )
+        self.pack_voltage_text_label.bind(size=self._update_text_size)
+        pack_voltage_container.add_widget(self.pack_voltage_text_label)
+
+        voltage_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
+        self.voltage_value_label = Label(
+            text='000',
+            font_size='60sp',
+            halign='left',
+            valign='middle',
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1)
+        )
+        self.voltage_value_label.bind(size=self._update_text_size)
+        voltage_value_layout.add_widget(self.voltage_value_label)
+        self.voltage_unit_label = Label(
+            text='V',
+            font_size='60sp',
+            halign='left',
+            valign='middle',
+            size_hint_x=0.2,
+            width=60,
+            color=(1, 1, 1, 1)
+        )
+        self.voltage_unit_label.bind(size=self._update_text_size)
+        voltage_value_layout.add_widget(self.voltage_unit_label)
+        pack_voltage_container.add_widget(voltage_value_layout)
+        middle_content.add_widget(pack_voltage_container)
 
 
         # Höger innehåll: Fel- och varningssektioner (placeras högerut)
@@ -528,20 +530,20 @@ class TSCU(Screen):
 
         right_content.add_widget(inv95p_status_container)
 
-        pack_voltage_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.33))
-        self.pack_voltage_text_label = Label(
-            text='Pack Voltage',
+        LV_bat_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.5))  # change #1
+        self.lv_bat_voltage_text_label = Label(  # 2
+            text='LV Bat Volt',
             font_size='40sp',
             halign='right',
             valign='middle',
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1)
         )
-        self.pack_voltage_text_label.bind(size=self._update_text_size)
-        pack_voltage_container.add_widget(self.pack_voltage_text_label)
+        self.lv_bat_voltage_text_label.bind(size=self._update_text_size)  # change to #2
+        LV_bat_container.add_widget(self.lv_bat_voltage_text_label)  # change to #1 and #2
 
-        voltage_value_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
-        self.voltage_value_label = Label(
+        lv_bat_value = BoxLayout(orientation='horizontal', size_hint=(1, 0.33), spacing=5)  # 3
+        self.lv_bat_value_label = Label(  # change to #3, #4
             text='000',
             font_size='60sp',
             halign='right',
@@ -550,9 +552,9 @@ class TSCU(Screen):
             width=160,
             color=(1, 1, 1, 1)
         )
-        self.voltage_value_label.bind(size=self._update_text_size)
-        voltage_value_layout.add_widget(self.voltage_value_label)
-        self.voltage_unit_label = Label(
+        self.lv_bat_value_label.bind(size=self._update_text_size)  # change to #4
+        lv_bat_value.add_widget(self.lv_bat_value_label)
+        self.lv_bat_unit_label = Label(
             text='V',
             font_size='60sp',
             halign='right',
@@ -561,10 +563,10 @@ class TSCU(Screen):
             width=60,
             color=(1, 1, 1, 1)
         )
-        self.voltage_unit_label.bind(size=self._update_text_size)
-        voltage_value_layout.add_widget(self.voltage_unit_label)
-        pack_voltage_container.add_widget(voltage_value_layout)
-        right_content.add_widget(pack_voltage_container)
+        self.lv_bat_unit_label.bind(size=self._update_text_size)
+        lv_bat_value.add_widget(self.lv_bat_unit_label)
+        LV_bat_container.add_widget(lv_bat_value)
+        right_content.add_widget(LV_bat_container)
 
 
         content_layout.add_widget(left_content)
