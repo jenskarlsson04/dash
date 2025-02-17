@@ -1,4 +1,6 @@
 import can
+
+from can_simulator_er25.src.generators.tscu import Tscu_generators
 from can_simulator_er25.src.simulation import Simulation
 from can_simulator_er25.src.generators.vcu import VCU_generators
 from can_simulator_er25.src.generators.orion import Orion_generators
@@ -16,7 +18,7 @@ class SimulatedCanClass:
         self._bus1 = can.Bus("test", interface="virtual")
         self._bus2 = can.Bus("test", interface="virtual")
 
-        generators = [*VCU_generators, *Orion_generators, *BTMU_generators, *Inverter_generators]
+        generators = [*VCU_generators, *Orion_generators, *BTMU_generators, *Inverter_generators, *Tscu_generators]
         on_new_message = lambda message: self._bus1.send(message)
         simulation_speed = 1.0
 
