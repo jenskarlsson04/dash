@@ -1,5 +1,6 @@
 import can
 
+from can_simulator_er25.src.generators.analogcanconv import AnalogCanConverter_generators
 from can_simulator_er25.src.generators.tscu import Tscu_generators
 from can_simulator_er25.src.simulation import Simulation
 from can_simulator_er25.src.generators.vcu import VCU_generators
@@ -24,9 +25,10 @@ class SimulatedCanClass:
             *BTMU_generators,
             *Inverter_generators,
             *Tscu_generators,
+            *AnalogCanConverter_generators
         ]
         on_new_message = lambda message: self._bus1.send(message)
-        simulation_speed = 1.0
+        simulation_speed = 5
 
         self.can_simulation = Simulation(generators, on_new_message, simulation_speed)
 
