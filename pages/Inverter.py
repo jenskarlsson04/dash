@@ -12,20 +12,6 @@ import canparser
 from can_reader import subscribe_can_message
 
 
-# Separator-widget som ritar en horisontell linje
-class Separator(Widget):
-    def __init__(self, **kwargs):
-        super(Separator, self).__init__(**kwargs)
-        with self.canvas:
-            Color(1, 1, 2, 0.5)
-            self.line = Line(points=[], width=8)
-        self.bind(pos=self.update_line, size=self.update_line)
-
-    def update_line(self, *args):
-        self.line.points = [self.x, self.y + self.height / 2,
-                            self.x + self.width, self.y + self.height / 2]
-
-
 class Inverter(Screen):
     def __init__(self, **kwargs):
         super(Inverter, self).__init__(**kwargs)
@@ -71,8 +57,12 @@ class Inverter(Screen):
         header_layout.add_widget(self.logo_image)
         header_layout.add_widget(self.inverter_label)
 
-        # 2. SEPARATOR (Linje direkt under headern)
-        separator = Separator(size_hint=(1, None), height=5)
+        # 2. SEPARATOR (Linje direkt under headern) - integrated here
+        separator = Widget(size_hint=(1, None), height=5)
+        with separator.canvas:
+            Color(1, 1, 2, 0.5)
+            self.separator_line = Line(points=[], width=8)
+        separator.bind(pos=self._update_separator, size=self._update_separator)
 
         # 3. CONTENT (Temperatur- samt fel-/varningssektioner)
         content_layout = BoxLayout(orientation='horizontal', spacing=10, size_hint=(1, 0.85))
@@ -100,7 +90,7 @@ class Inverter(Screen):
             halign='left',
             valign='middle',
             size_hint_x=0.3,
-            width=150,  # Fast bredd så att värdet ser konsekvent ut
+            width=160,  # Fast bredd så att värdet ser konsekvent ut
             color=(1, 1, 1, 1)
         )
         self.inverter_temp_value_label.bind(size=self._update_text_size)
@@ -110,7 +100,7 @@ class Inverter(Screen):
             font_size='120sp',
             halign='left',
             valign='middle',
-            size_hint_x=0.3,
+            size_hint_x=0.5,
             width=60,  # Fast bredd för enhet
             color=(1, 1, 1, 1)
         )
@@ -139,7 +129,7 @@ class Inverter(Screen):
             halign='left',
             valign='middle',
             size_hint_x=0.3,
-            width=150,
+            width=160,
             color=(1, 1, 1, 1)
         )
         self.motortemp_value_label.bind(size=self._update_text_size)
@@ -149,7 +139,7 @@ class Inverter(Screen):
             font_size='120sp',
             halign='left',
             valign='middle',
-            size_hint_x=0.3,
+            size_hint_x=0.5,
             width=60,
             color=(1, 1, 1, 1)
         )
@@ -215,7 +205,7 @@ class Inverter(Screen):
         warn_section.add_widget(warn_title_layout)
 
         self.scroll_view_warn = ScrollView(size_hint=(1, 0.8), do_scroll_x=False, do_scroll_y=True)
-        self.warn_content_layout = BoxLayout(orientation='vertical', spacing=5, size_hint_y=None)
+        self.warn_content_layout = BoxLayout(orientation='vertical', spacing=10, size_hint_y=None)
         self.warn_content_layout.bind(minimum_height=self.warn_content_layout.setter('height'))
         self.scroll_view_warn.add_widget(self.warn_content_layout)
         warn_section.add_widget(self.scroll_view_warn)
@@ -257,7 +247,6 @@ class Inverter(Screen):
             )
             label.bind(size=self._update_text_size)
             self.errors_content_layout.add_widget(label)
-            # Add a spacer only between messages (not after the last one)
             if i < len(errors_to_show) - 1:
                 spacer = Widget(size_hint_y=None, height=30)
                 self.errors_content_layout.add_widget(spacer)
@@ -295,6 +284,11 @@ class Inverter(Screen):
             self.errors = [error.type for error in message.parsed_data.decoded_errors]
         if message.parsed_data.decoded_warnings:
             self.warnings = [warning.type for warning in message.parsed_data.decoded_warnings]
+
+    def _update_separator(self, instance, value):
+        # Update the separator line's points based on the widget's current position and size
+        self.separator_line.points = [instance.x, instance.y + instance.height / 2,
+                                        instance.x + instance.width, instance.y + instance.height / 2]
 
 
 class InverterDebug(App):
