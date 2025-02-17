@@ -9,6 +9,8 @@ from pages.time_table_manager import TimeTableManager
 from widgets.custom_progress_bar import CustomProgressBar
 from widgets.BatteryWidget import BatteryWidget
 from widgets.Statusbar import Statusbar
+import canparser
+from can_reader import subscribe_can_message
 
 
 # Main Dashboard Page
@@ -16,19 +18,25 @@ class Dash(Screen):
     def __init__(self, **kwargs):
         super(Dash, self).__init__(**kwargs)
         # Initialize Time Table Manager
-        self.time_table_manager = TimeTableManager(total_laps=22)
 
-        # Can subscriptions
+        # Can subscribtions
+
+        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.update_speed)
+        subscribe_can_message(canparser.OrionPowerData, self.update_soc)
+
+
+        self.time_table_manager = TimeTableManager(total_laps=22)
 
         # Variables to update
         self.inverter_temp_value = 0
-        self.soc = 100  # Track remaining SOC
+        self.soc = 0  # Track remaining SOC
         self.last_soc = 100  # Track SOC at the start of the lap
         self.lap_counter = 0  # Track total number of laps
+        self.speed = 0
         self.error = (
             False  # looks for error, if no error dont make place for message window
         )
-        self.canisup = False  # Sets CAN as up
+        self.canisup = True  # Sets CAN as up
         self.batterythreshold = 4.55  # % 4.55% per lap for 22 laps covvage.
         self.laps = 22
 
@@ -125,7 +133,7 @@ class Dash(Screen):
         """Refresh the dashboard values."""
         # Update speed
         # self.speed = 120
-        self.speed = random.randint(0, 120)
+        #self.speed = random.randint(0, 120)
         self.top_progress_bar1.set_value(self.speed)
         self.top_progress_bar2.set_value(self.speed)
         self.top_progress_bar3.set_value(self.speed)
@@ -138,11 +146,13 @@ class Dash(Screen):
             (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
         )
         self.last_lap_time_label.text = f"Last Lap: {self.format_time(new_lap_time)}"
+        #self.last_lap_time_label.text = f'{self.speed}' #speed debug
+        #self.last_lap_time_label.text = f'{self.soc}' #soc debug
 
         # Simulate battery SOC
-        # print(result['laps_remaining'])
+        # print(reslt['laps_remaining'])
         # print(result['required_soc'])
-        self.soc = max(self.soc - random.randint(1, 10), 0)
+        #self.soc = max(self.soc - random.randint(1, 10), 0)
 
         # Update battery color based on SOC
         if not result["sufficient_soc"]:
@@ -171,11 +181,17 @@ class Dash(Screen):
         """Generate a random time in milliseconds between 10 and 180 seconds."""
         return random.randint(10000, 180000)
 
+    def update_speed(self, message):
+        rad_s = round(message.parsed_data.wheel_speed_l_rad_per_sec)
+        self.speed = round(rad_s * 3.6 * 0.2032) # Rad/s to kmh converter with 8 inch wheels.
+
+    def update_soc(self, message):
+        self.soc = round(100*message.parsed_data.pack_soc_ratio)
+
 
 # Main App Class
 class DashboardApp(App):
     def build(self):
-        Window.size = (1024, 600)  # Set a larger window size for better layout
         return Dash()
 
 
