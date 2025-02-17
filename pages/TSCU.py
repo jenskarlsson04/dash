@@ -91,11 +91,11 @@ class TSCU(Screen):
         tscu_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.4), spacing=5)
         self.tscu_state_label = Label(
             text='N/A',
-            font_size='60sp',
+            font_size='45sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
-            width=160,  # Fast bredd så att värdet ser konsekvent ut
+            width=170,  # Fast bredd så att värdet ser konsekvent ut
             color=(1, 1, 1, 1)
         )
         self.tscu_state_label.bind(size=self._update_text_size)
