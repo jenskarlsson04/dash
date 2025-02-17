@@ -1,0 +1,3 @@
+[submodule "can_simulator_er25"]
+	path = can_simulator_er25
+	url = git@gitlab.liu.se:liu-fs/electronics-er25/can_simulator_er25.git
