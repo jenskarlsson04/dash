@@ -5,10 +5,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
-from pages.time_table_manager import TimeTableManager
-from widgets.custom_progress_bar import CustomProgressBar
-from widgets.BatteryWidget import BatteryWidget
-from widgets.Statusbar import Statusbar
+from gui.pages.time_table_manager import TimeTableManager
+from gui.widgets.custom_progress_bar import CustomProgressBar
+from gui.widgets.BatteryWidget import BatteryWidget
+from gui.widgets.Statusbar import Statusbar
 
 # Main Dashboard Page
 class Dash(Screen):

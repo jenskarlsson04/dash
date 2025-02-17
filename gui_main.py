@@ -1,11 +1,11 @@
 import os
 os.environ['KIVY_NO_FILELOG'] = '1'  # eliminate file log
 from kivy.app import App
-from pages.Dash import Dash
-from pages.Inverter import Inverter
-from pages.Orion import Orion
-from pages.TSCU import TSCU
-from screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
+from gui.pages.Dash import Dash
+from gui.pages.Inverter import Inverter
+from gui.pages.Orion import Orion
+from gui.pages.TSCU import TSCU
+from gui.screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
 
 class MainApp(App):
