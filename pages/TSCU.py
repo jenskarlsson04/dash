@@ -119,7 +119,7 @@ class TSCU(Screen):
         tscu_mode_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5) #3
         self.tscu_mode_label = Label( #change to #3, #4
             text='N/A',
-            font_size='60sp',
+            font_size='45sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -148,7 +148,7 @@ class TSCU(Screen):
         airplus_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.airplus_state_label = Label(
             text='N/A',
-            font_size='60sp',
+            font_size='45sp',
             halign='left',
             valign='middle',
             size_hint_x=0.2,
@@ -176,7 +176,7 @@ class TSCU(Screen):
         airminus_state_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.6), spacing=5)
         self.airminus_state_label = Label(
             text='N/A',
-            font_size='60sp',
+            font_size='45sp',
             halign='left',
             valign='middle',
             size_hint_x=0.3,
@@ -189,6 +189,35 @@ class TSCU(Screen):
         airminus_state_container.add_widget(airminus_state_layout)
 
         left_content.add_widget(airminus_state_container)
+
+        SDC_status_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.2))  # change #1
+        self.SDC_status_text_label = Label(  # 2
+            text='TSCU SDC',
+            font_size='40sp',
+            halign='left',
+            valign='middle',
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1)
+        )
+        self.SDC_status_text_label.bind(size=self._update_text_size)  # change to #2
+        SDC_status_container.add_widget(self.SDC_status_text_label)  # change to #1 and #2
+
+        SDC_status_value = BoxLayout(orientation='horizontal', size_hint=(1, 0.33), spacing=5)  # 3
+        self.SDC_status_value_label = Label(  # change to #3, #4
+            text='N/A',
+            font_size='45sp',
+            halign='left',
+            valign='middle',
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1)
+        )
+        self.SDC_status_value_label.bind(size=self._update_text_size)  # change to #4
+        SDC_status_value.add_widget(self.SDC_status_value_label)
+        SDC_status_container.add_widget(SDC_status_value)
+        left_content.add_widget(SDC_status_container)
+
+
 
         middle_content = BoxLayout(orientation='vertical', spacing=5, size_hint=(0.33, 1))
 
@@ -414,37 +443,6 @@ class TSCU(Screen):
         error_title_layout.add_widget(self.errors_amount_label)
         error_section.add_widget(error_title_layout)
         right_content.add_widget(error_section)
-
-
-
-
-        # Cell max temp-container
-        SDC_status_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.2))  # change #1
-        self.SDC_status_text_label = Label(  # 2
-            text='TSCU SDC',
-            font_size='50sp',
-            halign='left',
-            valign='middle',
-            size_hint=(1, 0.4),
-            color=(0, 1, 1, 1)
-        )
-        self.SDC_status_text_label.bind(size=self._update_text_size)  # change to #2
-        SDC_status_container.add_widget(self.SDC_status_text_label)  # change to #1 and #2
-
-        SDC_status_value = BoxLayout(orientation='horizontal', size_hint=(1, 0.33), spacing=5)  # 3
-        self.SDC_status_value_label = Label(  # change to #3, #4
-            text='LOW',
-            font_size='40sp',
-            halign='left',
-            valign='middle',
-            size_hint_x=0.7,
-            width=160,
-            color=(1, 1, 1, 1)
-        )
-        self.SDC_status_value_label.bind(size=self._update_text_size)  # change to #4
-        SDC_status_value.add_widget(self.SDC_status_value_label)
-        SDC_status_container.add_widget(SDC_status_value)
-        left_content.add_widget(SDC_status_container)
 
         # LV-bat temp-container
         tsact_status_container = BoxLayout(orientation='vertical', spacing=5, size_hint=(1, 0.2))  # change #1
