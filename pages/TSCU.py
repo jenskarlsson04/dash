@@ -11,6 +11,20 @@ import canparser
 from can_reader import subscribe_can_message
 
 
+class OutlinedBox(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        with self.canvas.before:
+            Color(0.5, 0.5, 0.5, 1)  # Grey color (RGBA)
+            self.border = Line(rectangle=(self.x, self.y, self.width, self.height), width=2)
+
+        # Update border when size or position changes
+        self.bind(pos=self.update_border, size=self.update_border)
+
+    def update_border(self, *args):
+        self.border.rectangle = (self.x, self.y, self.width, self.height)
+
+
 class TSCU(Screen):
     def __init__(self, **kwargs):
         super(TSCU, self).__init__(**kwargs)
@@ -18,6 +32,7 @@ class TSCU(Screen):
         subscribe_can_message(canparser.TscuData, self.update_tscu_state)
         subscribe_can_message(canparser.OrionPowerData, self.update_pack_info)
         subscribe_can_message(canparser.OrionTempData, self.update_cell_temp)
+        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.lv_bat)
         self.pack_current = 0
         self.pack_voltage = 0
         self.cell_temp_min = 0
@@ -76,13 +91,13 @@ class TSCU(Screen):
             self.separator_line = Line(points=[], width=8)
         separator.bind(pos=self._update_separator, size=self._update_separator)
 
-        # 3. CONTENT (Temperatur- samt fel-/varningssektioner)
+        # 3. CONTENT
         content_layout = BoxLayout(
             orientation="horizontal", spacing=10, size_hint=(1, 0.85)
         )
 
-        # Vänster innehåll: Temperaturavsnitt
-        left_content = BoxLayout(
+        # Vänster innehåll
+        left_content = OutlinedBox(
             orientation="vertical", spacing=10, size_hint=(0.33, 1)
         )
 
@@ -234,14 +249,14 @@ class TSCU(Screen):
         )  # change to #1 and #2
 
         SDC_status_value = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.33), spacing=5
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
         )  # 3
         self.SDC_status_value_label = Label(  # change to #3, #4
             text="N/A",
             font_size="45sp",
             halign="left",
             valign="middle",
-            size_hint_x=0.7,
+            size_hint_x=0.4,
             width=160,
             color=(1, 1, 1, 1),
         )
@@ -250,7 +265,7 @@ class TSCU(Screen):
         SDC_status_container.add_widget(SDC_status_value)
         left_content.add_widget(SDC_status_container)
 
-        middle_content = BoxLayout(
+        middle_content = OutlinedBox(
             orientation="vertical", spacing=5, size_hint=(0.33, 1)
         )
 
@@ -472,8 +487,8 @@ class TSCU(Screen):
         middle_content.add_widget(pack_voltage_container)
 
         # Höger innehåll: Fel- och varningssektioner (placeras högerut)
-        right_content = BoxLayout(
-            orientation="vertical", spacing=10, size_hint=(0.33, 1)
+        right_content = OutlinedBox(
+            orientation="vertical", spacing=5, size_hint=(0.33, 1)
         )
 
         error_section = BoxLayout(orientation="vertical", size_hint=(1, 0.2))
@@ -490,7 +505,7 @@ class TSCU(Screen):
         self.errors_label.bind(size=self._update_text_size)
 
         error_amount = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.2), spacing=5
+            orientation="horizontal", size_hint=(1, 0.2)
         )  # 3
         self.error_amount_label = Label(  # change to #3, #4
             text="0",
@@ -498,7 +513,6 @@ class TSCU(Screen):
             halign="left",
             valign="middle",
             size_hint_x=0.7,
-            width=160,
             color=(1, 1, 1, 1),
         )
         self.error_amount_label.bind(size=self._update_text_size)  # change to #4
@@ -510,14 +524,14 @@ class TSCU(Screen):
 
         # LV-bat temp-container
         tsact_status_container = BoxLayout(
-            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+            orientation="vertical", size_hint=(1, 0.2)
         )  # change #1
         self.tsact_status_text_label = Label(  # 2
             text="TSACT",
             font_size="40sp",
             halign="left",
             valign="middle",
-            size_hint=(1, 0.4),
+            size_hint=(1, 0.2),
             color=(0, 1, 1, 1),
         )
         self.tsact_status_text_label.bind(size=self._update_text_size)  # change to #2
@@ -550,7 +564,7 @@ class TSCU(Screen):
             font_size="40sp",
             halign="left",
             valign="middle",
-            size_hint=(1, 0.4),
+            size_hint=(1, 0.2),
             color=(0, 1, 1, 1),
         )
         self.pre_status_text_label.bind(size=self._update_text_size)  # change to #2
@@ -710,6 +724,9 @@ class TSCU(Screen):
     def update_cell_temp(self, message):
         self.cell_temp_max = round(message.parsed_data.pack_max_cell_temp_c)
         self.cell_temp_min = round(message.parsed_data.pack_min_cell_temp_c)
+
+    def lv_bat(self, message):
+        self.lv_bat_voltage = round(message.parsed_data.voltage_volts,2)
 
 
     def _update_separator(self, instance, value):
