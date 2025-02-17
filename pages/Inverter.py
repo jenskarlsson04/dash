@@ -205,7 +205,7 @@ class Inverter(Screen):
 
         # Varnings-sektion
         warn_section = BoxLayout(orientation="vertical", spacing=20, size_hint=(1, 0.4))
-        warn_title_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))
+        warn_title_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.4))
         self.warn_label = Label(
             text="Inverter Warnings",
             font_size="50sp",
@@ -268,7 +268,7 @@ class Inverter(Screen):
                 text=error,
                 font_size="35sp",
                 size_hint_y=None,
-                height=45,  # increased height for better spacing
+                height=60,  # increased height for better spacing
                 halign="right",
                 valign="middle",
                 color=(1, 0, 0, 1),
@@ -287,9 +287,9 @@ class Inverter(Screen):
         for i, warn in enumerate(warnings_to_show):
             label = Label(
                 text=warn,
-                font_size="30sp",
+                font_size="35sp",
                 size_hint_y=None,
-                height=45,  # increased height
+                height=60,  # increased height
                 halign="right",
                 valign="middle",
                 color=(1, 0, 0, 1),
