@@ -21,7 +21,7 @@ class CustomScreenSwitcher(ScreenManager):
             self.clock_event.cancel()
 
         # Start a new clock event that updates the currently active screen
-        self.clock_event = Clock.schedule_interval(self.update_active_screen, 1)
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.16)
 
     #  self.change_screen = Clock.schedule_interval(self.debugchange, 5) use is no keyboard is avaliable for raspbeery
 
