@@ -19,4 +19,5 @@ class CanClass:
     def read_can(self):
         while True:
             message = self.can.recv(self.can_recv_timeout_sec)
-            publish_message(message)
+            if message:
+                publish_message(message)
