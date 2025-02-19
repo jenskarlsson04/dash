@@ -263,7 +263,7 @@ class TSAC(Screen):
         )  # change #1
         self.cell_max_temp_text_label = Label(  # 2
             text="Cell Max",
-            font_size="30sp",
+            font_size="40sp",
             halign="left",
             valign="middle",
             size_hint=(1, 0.2),
@@ -450,7 +450,7 @@ class TSAC(Screen):
         )
         self.voltage_value_label = Label(
             text="000",
-            font_size="45sp",
+            font_size="35sp",
             halign="left",
             valign="middle",
             size_hint_x=0.7,
