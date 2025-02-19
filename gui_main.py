@@ -1,5 +1,11 @@
 import os
 os.environ['KIVY_NO_FILELOG'] = '1'  # eliminate file log
+from kivy.config import Config
+#Config.set('graphics', 'fullscreen', 1)
+Config.set('graphics', 'width', 1024)
+Config.set('graphics', 'height', 600)
+Config.set('graphics', 'dpi', '96')  # Adjust as needed
+
 from kivy.app import App
 from gui.pages.Dash import Dash
 from gui.pages.Inverter import Inverter
