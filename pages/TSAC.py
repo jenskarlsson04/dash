@@ -693,12 +693,20 @@ class TSAC(Screen):
     def update_tscu_state(self, message):
         self.tscu_state = message.parsed_data.state.name
         self.tscu_mode = message.parsed_data.mode.name
-        self.airplus_state = message.parsed_data.state_r_air_p
-        self.airminus_state = message.parsed_data.state_r_air_m
+        if message.parsed_data.state_r_air_p:
+            self.airplus_state = "OPEN"
+        else: self.airplus_state = "CLOSED"
+        if message.parsed_data.state_r_air_m:
+            self.airminus_state = "OPEN"
+        else: self.airminus_state = "CLOSED"
+
         if message.parsed_data.decoded_errors:
             self.errors = [error.type for error in message.parsed_data.decoded_errors]
         self.inv95p = message.parsed_data.state_inv95_p
         self.sdc = message.parsed_data.state_sdc
+        if message.parsed_data.state_sdc:
+            self.sdc = "CLOSED"
+        else: self.sdc = "OPEN"
         self.tsact = message.parsed_data.state_tsact
         self.pre = message.parsed_data.state_r_pre
 
@@ -713,7 +721,7 @@ class TSAC(Screen):
         self.cell_temp_min = round(message.parsed_data.pack_min_cell_temp_c)
 
     def lv_bat(self, message):
-        self.lv_bat_voltage = round(message.parsed_data.voltage_volts,2)
+        self.lv_bat_voltage = round(message.parsed_data.voltage_volts,1)
 
 
     def _update_separator(self, instance, value):
