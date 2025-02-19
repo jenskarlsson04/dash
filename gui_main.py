@@ -5,6 +5,7 @@ from kivy.config import Config
 Config.set("graphics", "width", "1024")
 Config.set("graphics", "height", "600")
 Config.set("graphics", "dpi", "96")
+Config.set("graphics", "show_cursor", "0")
 from pages.Dash2 import Dash2
 from pages.Inverter import Inverter
 from pages.TSAC import TSAC
