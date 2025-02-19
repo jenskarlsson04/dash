@@ -11,6 +11,7 @@ from widgets.OutlinedBox import OutlinedBox
 from widgets.BatteryWidget import BatteryWidget
 from widgets.Statusbar import Statusbar
 import canparser
+from kivy.graphics import Rectangle
 from can_reader import subscribe_can_message
 from kivy.graphics import Color, Line
 
@@ -186,7 +187,11 @@ class Dash2(Screen):
 
         middle_section = OutlinedBox(orientation='vertical', spacing=10, size_hint=(0.33, 1))
 
+
+        # Battery threshold
+
         middle_upper = OutlinedBox(orientation='vertical', spacing=10, size_hint=(1, 0.7))
+
 
         # VCU Status
 

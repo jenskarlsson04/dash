@@ -1,5 +1,3 @@
-# screen_switcher.py
-
 from kivy.uix.screenmanager import ScreenManager, Screen
 from itertools import cycle
 from kivy.core.window import Window
@@ -12,8 +10,8 @@ class CustomScreenSwitcher(ScreenManager):
         self.list_of_screens = []
         self.cycle_screen = None
         Window.bind(on_key_down=self.on_key_down)
-
         self.clock_event = None
+        self.auto_switch_event = Clock.schedule_interval(self.switch_to_next, 10)  # Automatically switch screens every 5 sec
 
     def on_current_screen(self, *args):
         # Cancel any existing clock event before starting a new one
@@ -23,37 +21,32 @@ class CustomScreenSwitcher(ScreenManager):
         # Start a new clock event that updates the currently active screen
         self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.16)
 
-    #  self.change_screen = Clock.schedule_interval(self.debugchange, 5) use is no keyboard is avaliable for raspbeery
-
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists
-
-        self.current_screen.refresh()
+        if self.current_screen and hasattr(self.current_screen, "refresh"):
+            self.current_screen.refresh()
 
     def add_screen(self, widget: Screen):
         self.list_of_screens.append(widget)
         self.add_widget(widget)
         self.cycle_screen = cycle(self.list_of_screens)
 
-    def switch_to_next(self):
+    def switch_to_next(self, dt=None):
         # Stop the clock on the current screen before switching
-        if hasattr(self.current_screen, "on_pre_leave"):
+        if self.current_screen and hasattr(self.current_screen, "on_pre_leave"):
             self.current_screen.on_pre_leave()
 
         # Switch to the next screen
-        next_screen = next(self.cycle_screen)
-        self.current = next_screen.name
+        if self.cycle_screen:
+            next_screen = next(self.cycle_screen)
+            self.current = next_screen.name
 
         # Start the clock on the newly active screen
-        if hasattr(self.current_screen, "on_pre_enter"):
+        if self.current_screen and hasattr(self.current_screen, "on_pre_enter"):
             self.current_screen.on_pre_enter()
 
     def on_key_down(self, window, key, *args):
-        if key == ord("k"):
-            self.switch_to_next()
-
-    # use if no keyboard is avalible
-
-
-# def debugchange(self, window, *args, **kwargs):
-#     self.switch_to_next()
+        # Uncomment this if you want manual screen switching with a key press
+        # if key == ord("k"):
+        #     self.switch_to_next()
+        pass

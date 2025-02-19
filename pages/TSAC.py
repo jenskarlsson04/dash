@@ -108,7 +108,7 @@ class TSAC(Screen):
         )
         self.tscu_state_label = Label(
             text="N/A",
-            font_size="45sp",
+            font_size="35sp",
             halign="left",
             valign="middle",
             size_hint_x=0.3,
@@ -450,7 +450,7 @@ class TSAC(Screen):
         )
         self.voltage_value_label = Label(
             text="000",
-            font_size="35sp",
+            font_size="45sp",
             halign="left",
             valign="middle",
             size_hint_x=0.7,
@@ -563,7 +563,7 @@ class TSAC(Screen):
             orientation="horizontal", size_hint=(1, 0.2), spacing=5
         )  # 3
         self.pre_value_label = Label(  # change to #3, #4
-            text="OPEN",
+            text="0",
             font_size="45sp",
             halign="left",
             valign="middle",
@@ -594,10 +594,10 @@ class TSAC(Screen):
         )  # change to #1 and #2
 
         inv95p_value = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.2), spacing=5
+            orientation="horizontal", size_hint=(1, 0.5), spacing=5
         )  # 3
         self.inv95p_value_label = Label(  # change to #3, #4
-            text="LOW",
+            text="0",
             font_size="45sp",
             halign="left",
             valign="middle",
@@ -619,7 +619,7 @@ class TSAC(Screen):
             font_size="40sp",
             halign="left",
             valign="middle",
-            size_hint=(1, 0.4),
+            size_hint=(1, 0.3),
             color=(0, 1, 1, 1),
         )
         self.lv_bat_voltage_text_label.bind(size=self._update_text_size)  # change to #2
@@ -628,7 +628,7 @@ class TSAC(Screen):
         )  # change to #1 and #2
 
         lv_bat_value = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.2), spacing=5
+            orientation="horizontal", size_hint=(1, 0.5), spacing=5
         )  # 3
         self.lv_bat_value_label = Label(  # change to #3, #4
             text="000",
