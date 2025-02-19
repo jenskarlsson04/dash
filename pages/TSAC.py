@@ -9,25 +9,12 @@ from kivy.uix.scrollview import ScrollView
 import os
 import canparser
 from can_reader import subscribe_can_message
+from widgets.OutlinedBox import OutlinedBox
 
 
-class OutlinedBox(BoxLayout):
+class TSAC(Screen):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        with self.canvas.before:
-            Color(0.5, 0.5, 0.5, 1)  # Grey color (RGBA)
-            self.border = Line(rectangle=(self.x, self.y, self.width, self.height), width=2)
-
-        # Update border when size or position changes
-        self.bind(pos=self.update_border, size=self.update_border)
-
-    def update_border(self, *args):
-        self.border.rectangle = (self.x, self.y, self.width, self.height)
-
-
-class TSCU(Screen):
-    def __init__(self, **kwargs):
-        super(TSCU, self).__init__(**kwargs)
+        super(TSAC, self).__init__(**kwargs)
         # Variabler för data
         subscribe_can_message(canparser.TscuData, self.update_tscu_state)
         subscribe_can_message(canparser.OrionPowerData, self.update_pack_info)
@@ -275,8 +262,8 @@ class TSCU(Screen):
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )  # change #1
         self.cell_max_temp_text_label = Label(  # 2
-            text="Cell Max Temp",
-            font_size="40sp",
+            text="Cell Max",
+            font_size="30sp",
             halign="left",
             valign="middle",
             size_hint=(1, 0.2),
@@ -318,7 +305,7 @@ class TSCU(Screen):
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )
         self.cell_min_temp_text_label = Label(
-            text="Cell Min Temp",
+            text="Cell Min",
             font_size="40sp",
             halign="left",
             valign="middle",
@@ -739,10 +726,10 @@ class TSCU(Screen):
         ]
 
 
-class TSCUApp(App):
+class TSACApp(App):
     def build(self):
-        return TSCU()
+        return TSAC()
 
 
 if __name__ == "__main__":
-    TSCU().run()
+    TSAC().run()

@@ -4,7 +4,7 @@ os.environ["KIVY_NO_FILELOG"] = "1"  # eliminate file log
 from kivy.config import Config
 from pages.Dash2 import Dash2
 from pages.Inverter import Inverter
-from pages.TSCU import TSCU
+from pages.TSAC import TSAC
 from pages.Dash import Dash
 Config.set("graphics", "width", "1024")
 Config.set("graphics", "height", "600")
@@ -22,11 +22,11 @@ class MainApp(App):
         sm = CustomScreenSwitcher()
 
         # Add screens to the screen manager
-        sm.add_screen(Dash2(name="dashboard2"))
+        #sm.add_screen(Dash2(name="dashboard2"))
         #sm.add_screen(Inverter(name="inverter"))
         #sm.add_screen(Dash(name="Dashboard"))
         # sm.add_screen(Orion(name="orion"))
-        #sm.add_screen(TSCU(name="tscu"))
+        sm.add_screen(TSAC(name="tsac"))
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
