@@ -2,13 +2,13 @@ import os
 
 os.environ["KIVY_NO_FILELOG"] = "1"  # eliminate file log
 from kivy.config import Config
+Config.set("graphics", "width", "1024")
+Config.set("graphics", "height", "600")
+Config.set("graphics", "dpi", "96")
 from pages.Dash2 import Dash2
 from pages.Inverter import Inverter
 from pages.TSAC import TSAC
 from pages.Dash import Dash
-Config.set("graphics", "width", "1024")
-Config.set("graphics", "height", "600")
-Config.set("graphics", "dpi", "96")
 
 from kivy.app import App
 from screen_switcher.screen_switcher import (
