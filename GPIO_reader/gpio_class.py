@@ -1,14 +1,21 @@
-from dataclasses import dataclass
 import time
-from threading import Thread
-import Simalted_GPIO as pigpio
 from GPIO_reader.gpio_subscription import publish_message
+from GPIO_reader.GPIO_datamodel import GPIO_PIN
+
+GPIO_DEBUG = False
+
+if not GPIO_DEBUG:
+    import GPIO_reader.Simalted_GPIO as pigpio
+else:
+    import pigpio
+
+def set_debug():
+    global GPIO_DEBUG
+    GPIO_DEBUG = True
 
 
-@dataclass
-class GPIO_PIN:
-    pin: int
-
+btn_lap = GPIO_PIN(22)
+btn_screen = GPIO_PIN(27)
 
 
 class GIPOConfiguration:
@@ -27,8 +34,8 @@ class GIPOConfiguration:
 
         self.pi = pigpio.pi()
 
-        self.btn_lap = GPIO_PIN(22)
-        self.btn_screen = GPIO_PIN(27)
+        self.btn_lap = btn_lap
+        self.btn_screen = btn_screen
 
         self.time_button_press_down = {}
 
@@ -46,6 +53,7 @@ class GIPOConfiguration:
         # falling edge
         self.pi.callback(self.btn_lap.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
         self.pi.callback(self.btn_screen.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
+
 
 
 
@@ -76,6 +84,7 @@ class GIPOConfiguration:
         else:
             self.__handle_press_up(gpio)
 
+gpio = GIPOConfiguration()
 
 if __name__ == "__main__":
 

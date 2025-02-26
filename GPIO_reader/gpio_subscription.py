@@ -1,4 +1,4 @@
-from GPIO_reader.gpio_class import GPIO_PIN
+from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
 
 listeners = {}
