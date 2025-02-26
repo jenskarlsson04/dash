@@ -18,7 +18,7 @@ class CustomScreenSwitcher(ScreenManager):
         self.clock_event = None
 
 
-        subscribe_gpio_pint(21)
+#        subscribe_gpio_pint(21)
 
     def on_current_screen(self, *args):
         # Cancel any existing clock event before starting a new one
