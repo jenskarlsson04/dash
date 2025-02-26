@@ -39,7 +39,7 @@ class Inverter(Screen):
             halign="left",
             valign="middle",
         )
-        image_path = os.path.join("./images/logo.png")
+        image_path = os.path.join("./gui/images/logo.png")
         self.logo_image = Image(
             source=image_path,
             opacity=0.15,

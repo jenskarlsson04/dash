@@ -6,7 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 import os
-from widgets.OutlinedBox import OutlinedBox
+from gui.widgets.OutlinedBox import OutlinedBox
 from shared_data import SharedDataDriver
 
 
@@ -29,7 +29,7 @@ class TSAC(Screen):
             halign="left",
             valign="middle",
         )
-        image_path = os.path.join("./images/logo.png")
+        image_path = os.path.join("./gui/images/logo.png")
         self.logo_image = Image(
             source=image_path,
             opacity=0.15,

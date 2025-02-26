@@ -8,9 +8,9 @@ Config.set('graphics', 'dpi', '96')  # Adjust as needed
 
 from kivy.app import App
 from gui.pages.Dash import Dash
+from gui.pages.Dash2 import Dash2
 from gui.pages.Inverter import Inverter
-from gui.pages.Orion import Orion
-from gui.pages.TSCU import TSCU
+from gui.pages.TSAC import TSAC
 from gui.screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
 

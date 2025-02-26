@@ -13,12 +13,12 @@ from kivy.uix.popup import Popup
 from kivy.core.window import Window
 
 # Import lap time handler
-from pages.time_table_manager import TimeTableManager
+from gui.pages.time_table_manager import TimeTableManager
 
 # Import Custom widgets
-from widgets import CustomProgressBar
-from widgets import OutlinedBox
-from widgets import BatteryWidget
+from gui.widgets import CustomProgressBar
+from gui.widgets import OutlinedBox
+from gui.widgets import BatteryWidget
 
 # Import can stuff
 import canparser

@@ -9,10 +9,6 @@ from gui.pages.time_table_manager import TimeTableManager
 from gui.widgets.custom_progress_bar import CustomProgressBar
 from gui.widgets.BatteryWidget import BatteryWidget
 from gui.widgets.Statusbar import Statusbar
-from pages.time_table_manager import TimeTableManager
-from widgets.custom_progress_bar import CustomProgressBar
-from widgets.BatteryWidget import BatteryWidget
-from widgets.Statusbar import Statusbar
 import canparser
 from can_reader import subscribe_can_message
 
