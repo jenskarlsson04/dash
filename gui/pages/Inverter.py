@@ -276,7 +276,7 @@ class Inverter(Screen):
             label.bind(size=self._update_text_size)
             self.errors_content_layout.add_widget(label)
             if i < len(errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=30)
+                spacer = Widget(size_hint_y=None, height=10)
                 self.errors_content_layout.add_widget(spacer)
 
         # Uppdatera varningar
@@ -297,7 +297,7 @@ class Inverter(Screen):
             label.bind(size=self._update_text_size)
             self.warn_content_layout.add_widget(label)
             if i < len(warnings_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=30)
+                spacer = Widget(size_hint_y=None, height=10)
                 self.warn_content_layout.add_widget(spacer)
 
     # CAN-meddelandeuppdaterare
