@@ -61,25 +61,19 @@ class DismissablePopup(Popup):
 class Dash2(Screen):
     def __init__(self, **kwargs):
         super(Dash2, self).__init__(**kwargs)
-        self.shareddata = SharedDataDriver()
+        self.SharedData = SharedDataDriver()
         # Initialize Time Table Manager
-        subscribe_can_message(
-            canparser.AnalogCanConverterSensorReadingsDataF, self.update_speed
-        )
         subscribe_can_message(canparser.VcuStateData, self.update_status)
         subscribe_can_message(canparser.OrionPowerData, self.update_soc)
 
         self.time_table_manager = TimeTableManager(total_laps=22)
 
         # Variables to update
-        self.speed = 80
-        self.soc = 0  # Track remaining SOC
         self.last_soc = 0  # Track SOC at the start of the lap
         self.lap_counter = 0  # Track total number of laps
         self.laps = 22
         self.lvbat = 12
         self.state = "N/A"
-        self.errors = ["Hej igen", "fixa", "error hanterare"]
 
         # For controlling the error popup as a queue:
         self.error_popup = None
@@ -351,9 +345,11 @@ class Dash2(Screen):
         self.add_widget(root_layout)
 
     def refresh(self):
-        self.top_progress_bar1.set_value(self.speed)
-        self.top_progress_bar2.set_value(self.speed)
-        self.top_progress_bar3.set_value(self.speed)
+        self.top_progress_bar1.set_value(self.SharedData.speed)
+        self.top_progress_bar2.set_value(self.SharedData.speed)
+        self.top_progress_bar3.set_value(self.SharedData.speed)
+
+        self.lvbat = self.SharedData.lvvoltage
 
         # Old lap time logic
         new_lap_time = self.generate_random_time()
@@ -369,16 +365,10 @@ class Dash2(Screen):
             self.battery_widget.update_color("green")
 
         # Update errors
-        error_count = len(self.shareddata.faults)
+        error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
         self.errors_content_layout.clear_widgets()
-        errors_to_show = list(self.shareddata.faults)
-
-        # Update errors
-        error_count = len(self.shareddata.faults)
-        self.errors_amount_label.text = f"({error_count})"
-        self.errors_content_layout.clear_widgets()
-        errors_to_show = list(self.shareddata.faults)
+        errors_to_show = list(self.SharedData.faults)
 
         # Only consider errors without a dot for popups.
         active_errors = {err for err in errors_to_show if not err.startswith(".")}
@@ -389,14 +379,13 @@ class Dash2(Screen):
             if err not in self.pending_error_messages:
                 self.pending_error_messages.append(err)
                 self.shown_errors.add(err)  # mark permanently as shown
-                print("Pending errors:", self.pending_error_messages)
 
         # If no popup is active, show the next pending error.
         if self.error_popup is None and self.pending_error_messages:
             self.show_next_error_popup()
 
         # Display all errors in the error content layout.
-        for i, error in enumerate(errors_to_show[:5]):
+        for i, error in enumerate(errors_to_show[:4]):
             if error.startswith("."):
                 display_error = error[1:]  # Remove the leading dot
                 error_color = (1, 0.5, 0, 1)  # Orange
@@ -422,11 +411,11 @@ class Dash2(Screen):
 
         # Update other values
         self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
-        self.speed_value_label.text = f"{self.speed}"
-        self.LV_value_label.text = f"{self.lvbat} V"
-        self.LV_value_label.color = (1, 0, 0, 1) if self.lvbat < 9.5 else (1, 1, 1, 1)
+        self.speed_value_label.text = f"{self.SharedData.speed}"
+        self.LV_value_label.text = f"{self.SharedData.lvvoltage} V"
+        self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
         self.status_value_label.text = f"{self.state}"
-        self.soc_value_label.text = f"{self.soc}%"
+        self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
@@ -457,12 +446,8 @@ class Dash2(Screen):
         milliseconds = time_in_ms % 1000
         return f"{minutes:02}:{seconds:02}:{milliseconds:03}"
 
-    def update_speed(self, message):
-        rad_s = round(message.parsed_data.wheel_speed_l_rad_per_sec)
-        self.speed = round(
-            rad_s * 3.6 * 0.2032
-        )  # Rad/s to km/h converter with 8 inch wheels.
-        self.lvbat = round(message.parsed_data.voltage_volts, 1)
+
+
 
     def update_status(self, message):
         self.state = message.parsed_data.state.name

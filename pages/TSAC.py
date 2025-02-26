@@ -5,38 +5,16 @@ from kivy.graphics import Color, Line
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
-from kivy.uix.scrollview import ScrollView
 import os
-import canparser
-from can_reader import subscribe_can_message
 from widgets.OutlinedBox import OutlinedBox
+from shared_data import SharedDataDriver
 
 
 class TSAC(Screen):
     def __init__(self, **kwargs):
         super(TSAC, self).__init__(**kwargs)
-        # Variabler för data
-        subscribe_can_message(canparser.TscuData, self.update_tscu_state)
-        subscribe_can_message(canparser.OrionPowerData, self.update_pack_info)
-        subscribe_can_message(canparser.OrionTempData, self.update_cell_temp)
-        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.lv_bat)
-        self.pack_current = 0
-        self.pack_voltage = 0
-        self.cell_temp_min = 0
-        self.cell_temp_max = 0
-        self.pack_soc = 0
-        self.lv_bat_voltage = 12.3
-        self.tscu_state = 0
-        self.tscu_mode = 0
-        self.airplus_state = 0
-        self.airminus_state = 0
-        self.errors = []
-        self.version = 0
-        self.pre = 0
-        self.inv95p = 0
-        self.sdc = 0
-        self.tsact = 0
-        # self.lv_bat_voltage = 12.3
+        self.SharedData = SharedDataDriver()
+
         # Huvudlayout: Vertikal BoxLayout med header, separator och innehåll
 
         main_layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
@@ -84,7 +62,7 @@ class TSAC(Screen):
         )
 
         # Vänster innehåll
-        left_content = OutlinedBox(
+        middle_content = OutlinedBox(
             orientation="vertical", spacing=10, size_hint=(0.33, 1)
         )
 
@@ -118,7 +96,7 @@ class TSAC(Screen):
         self.tscu_state_label.bind(size=self._update_text_size)
         tscu_state_layout.add_widget(self.tscu_state_label)
         tscu_state_container.add_widget(tscu_state_layout)
-        left_content.add_widget(tscu_state_container)
+        middle_content.add_widget(tscu_state_container)
 
         # Pack SOC-container
         tscu_mode_container = BoxLayout(
@@ -151,7 +129,7 @@ class TSAC(Screen):
         tscu_mode_layout.add_widget(self.tscu_mode_label)
 
         tscu_mode_container.add_widget(tscu_mode_layout)
-        left_content.add_widget(tscu_mode_container)
+        middle_content.add_widget(tscu_mode_container)
 
         # Motor Temperature-container
         airplus_state_container = BoxLayout(
@@ -184,7 +162,7 @@ class TSAC(Screen):
         airplus_state_layout.add_widget(self.airplus_state_label)
 
         airplus_state_container.add_widget(airplus_state_layout)
-        left_content.add_widget(airplus_state_container)
+        middle_content.add_widget(airplus_state_container)
         # Motor Temperature-container
         airminus_state_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
@@ -217,7 +195,7 @@ class TSAC(Screen):
 
         airminus_state_container.add_widget(airminus_state_layout)
 
-        left_content.add_widget(airminus_state_container)
+        middle_content.add_widget(airminus_state_container)
 
         SDC_status_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
@@ -250,9 +228,9 @@ class TSAC(Screen):
         self.SDC_status_value_label.bind(size=self._update_text_size)  # change to #4
         SDC_status_value.add_widget(self.SDC_status_value_label)
         SDC_status_container.add_widget(SDC_status_value)
-        left_content.add_widget(SDC_status_container)
+        middle_content.add_widget(SDC_status_container)
 
-        middle_content = OutlinedBox(
+        left_content = OutlinedBox(
             orientation="vertical", spacing=5, size_hint=(0.33, 1)
         )
 
@@ -298,7 +276,7 @@ class TSAC(Screen):
         self.cell_max_temp_unit_label.bind(size=self._update_text_size)
         cell_max_value.add_widget(self.cell_max_temp_unit_label)
         cell_max_temp_container.add_widget(cell_max_value)
-        middle_content.add_widget(cell_max_temp_container)
+        left_content.add_widget(cell_max_temp_container)
 
         # Cell max temp-container
         cell_min_temp_container = BoxLayout(
@@ -343,7 +321,7 @@ class TSAC(Screen):
         self.cell_min_temp_unit_label.bind(size=self._update_text_size)
         cell_min_value.add_widget(self.cell_min_temp_unit_label)
         cell_min_temp_container.add_widget(cell_min_value)
-        middle_content.add_widget(cell_min_temp_container)
+        left_content.add_widget(cell_min_temp_container)
 
         # LV-bat temp-container
 
@@ -387,7 +365,7 @@ class TSAC(Screen):
         self.current_unit_label.bind(size=self._update_text_size)
         current_value_layout.add_widget(self.current_unit_label)
         pack_current_container.add_widget(current_value_layout)
-        middle_content.add_widget(pack_current_container)
+        left_content.add_widget(pack_current_container)
 
         pack_soc_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
@@ -429,7 +407,7 @@ class TSAC(Screen):
         self.soc_unit_label.bind(size=self._update_text_size)
         soc_value_layout.add_widget(self.soc_unit_label)
         pack_soc_container.add_widget(soc_value_layout)
-        middle_content.add_widget(pack_soc_container)
+        left_content.add_widget(pack_soc_container)
 
         pack_voltage_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
@@ -471,7 +449,7 @@ class TSAC(Screen):
         self.voltage_unit_label.bind(size=self._update_text_size)
         voltage_value_layout.add_widget(self.voltage_unit_label)
         pack_voltage_container.add_widget(voltage_value_layout)
-        middle_content.add_widget(pack_voltage_container)
+        left_content.add_widget(pack_voltage_container)
 
         # Höger innehåll: Fel- och varningssektioner (placeras högerut)
         right_content = OutlinedBox(
@@ -655,6 +633,7 @@ class TSAC(Screen):
         LV_bat_container.add_widget(lv_bat_value)
         right_content.add_widget(LV_bat_container)
 
+
         content_layout.add_widget(left_content)
         content_layout.add_widget(middle_content)
         content_layout.add_widget(right_content)
@@ -672,56 +651,36 @@ class TSAC(Screen):
 
     def refresh(self):
         # Uppdatera temperaturer
-        self.tscu_state_label.text = f"{self.tscu_state}"
-        self.tscu_mode_label.text = f"{self.tscu_mode}"
-        self.airplus_state_label.text = f"{self.airplus_state}"
-        self.airminus_state_label.text = f"{self.airminus_state}"
-        self.tsact_status_label.text = f"{self.tsact}"
-        self.inv95p_value_label.text = f"{self.inv95p}"
-        self.SDC_status_value_label.text = f"{self.sdc}"
-        self.pre_value_label.text = f"{self.pre}"
-        error_count = len(self.errors)
-        self.error_amount_label.text = f"{error_count}"
-        self.current_value_value_label.text = f"{self.pack_current}"
-        self.soc_value_label.text = f"{self.pack_soc}"
-        self.voltage_value_label.text = f"{self.pack_voltage}"
-        self.cell_min_value_label.text = f"{self.cell_temp_max}"
-        self.cell_max_value_label.text = f"{self.cell_temp_min}"
-        self.lv_bat_value_label.text = f"{self.lv_bat_voltage}"
+        self.tscu_state_label.text = f"{self.SharedData.tscu_state}"
+        self.tscu_mode_label.text = f"{self.SharedData.tscu_mode}"
+        self.airplus_state_label.text = f"{self.SharedData.airplus_state}"
+        self.airminus_state_label.text = f"{self.SharedData.airminus_state}"
+        self.tsact_status_label.text = f"{self.SharedData.tsact}"
+        self.inv95p_value_label.text = f"{self.SharedData.inv95p}"
+        self.SDC_status_value_label.text = f"{self.SharedData.sdc}"
+        self.pre_value_label.text = f"{self.SharedData.pre}"
 
-    # CAN-meddelandeuppdaterare
-    def update_tscu_state(self, message):
-        self.tscu_state = message.parsed_data.state.name
-        self.tscu_mode = message.parsed_data.mode.name
-        if message.parsed_data.state_r_air_p:
-            self.airplus_state = "OPEN"
-        else: self.airplus_state = "CLOSED"
-        if message.parsed_data.state_r_air_m:
-            self.airminus_state = "OPEN"
-        else: self.airminus_state = "CLOSED"
+        #LV BAT
+        self.lv_bat_value_label.text = f"{self.SharedData.lvvoltage}"
 
-        if message.parsed_data.decoded_errors:
-            self.errors = [error.type for error in message.parsed_data.decoded_errors]
-        self.inv95p = message.parsed_data.state_inv95_p
-        self.sdc = message.parsed_data.state_sdc
-        if message.parsed_data.state_sdc:
-            self.sdc = "CLOSED"
-        else: self.sdc = "OPEN"
-        self.tsact = message.parsed_data.state_tsact
-        self.pre = message.parsed_data.state_r_pre
+        if self.SharedData.tscu_fault:
+            self.error_amount_label.text = "N/A"
+        else:
+            error_count = len(self.SharedData.tscu_errors)
+            self.error_amount_label.text = f"{error_count}"
 
 
-    def update_pack_info(self, message):
-        self.pack_soc = round(100 * (message.parsed_data.pack_soc_ratio))
-        self.pack_current = round(message.parsed_data.pack_current_A)
-        self.pack_voltage = round(message.parsed_data.pack_voltage_v)
+        if self.SharedData.orionpower_fault:
+            self.current_value_value_label.text = "N/A"
+            self.soc_value_label.text = "N/A"
+            self.voltage_value_label.text = "N/A"
+        else:
+            self.current_value_value_label.text = f"{self.SharedData.orioncurrent}"
+            self.soc_value_label.text = f"{self.SharedData.orionsoc}"
+            self.voltage_value_label.text = f"{self.SharedData.orionvoltage}"
 
-    def update_cell_temp(self, message):
-        self.cell_temp_max = round(message.parsed_data.pack_max_cell_temp_c)
-        self.cell_temp_min = round(message.parsed_data.pack_min_cell_temp_c)
-
-    def lv_bat(self, message):
-        self.lv_bat_voltage = round(message.parsed_data.voltage_volts,1)
+        self.cell_min_value_label.text = f"{self.SharedData.packtemp_min}"
+        self.cell_max_value_label.text = f"{self.SharedData.packtemp_max}"
 
 
     def _update_separator(self, instance, value):
