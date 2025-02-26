@@ -1,9 +1,18 @@
 from dataclasses import dataclass
 import time
-from threading import Thread
-import Simalted_GPIO as pigpio
 from GPIO_reader.gpio_subscription import publish_message
+from GPIO_reader import btn_lap, btn_screen
 
+GPIO_DEBUG = False
+
+if GPIO_DEBUG:
+    import GPIO_reader.Simalted_GPIO as pigpio
+else:
+    import pigpio
+
+def set_debug():
+    global GPIO_DEBUG
+    GPIO_DEBUG = True
 
 @dataclass
 class GPIO_PIN:
@@ -27,8 +36,8 @@ class GIPOConfiguration:
 
         self.pi = pigpio.pi()
 
-        self.btn_lap = GPIO_PIN(22)
-        self.btn_screen = GPIO_PIN(27)
+        self.btn_lap = btn_lap
+        self.btn_screen = btn_screen
 
         self.time_button_press_down = {}
 
@@ -77,6 +86,7 @@ class GIPOConfiguration:
         else:
             self.__handle_press_up(gpio)
 
+gpio = GIPOConfiguration()
 
 if __name__ == "__main__":
 
