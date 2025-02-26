@@ -80,6 +80,7 @@ class GIPOConfiguration:
         """
         Change place on press down and upp if pull up or pull down
         """
+        print(type(gpio))
         if level == 1:
             self.__handle_press_down(gpio)
         else:
