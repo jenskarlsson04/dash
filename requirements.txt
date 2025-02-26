@@ -1,4 +1,4 @@
 --index-url https://gitlab.liu.se/api/v4/projects/43928/packages/pypi/simple
 Kivy
-canparser==1.6.1
+canparser==1.7.0
 python-can

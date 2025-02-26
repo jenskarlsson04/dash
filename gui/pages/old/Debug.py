@@ -17,21 +17,43 @@ class DriverDashboard(FloatLayout):
         self.bind(size=self.update_rect, pos=self.update_rect)
 
         # LOGO och TITEL
-        self.add_widget(Label(text="[Logo]", font_size="40sp", color=(1, 1, 1, 0.5),
-                              pos_hint={"center_x": 0.5, "center_y": 0.9}))
-        self.add_widget(Label(text="Orion", font_size="35sp", color=(0.5, 0.8, 1, 1),
-                              pos_hint={"center_x": 0.5, "center_y": 0.85}))
+        self.add_widget(
+            Label(
+                text="[Logo]",
+                font_size="40sp",
+                color=(1, 1, 1, 0.5),
+                pos_hint={"center_x": 0.5, "center_y": 0.9},
+            )
+        )
+        self.add_widget(
+            Label(
+                text="Orion",
+                font_size="35sp",
+                color=(0.5, 0.8, 1, 1),
+                pos_hint={"center_x": 0.5, "center_y": 0.85},
+            )
+        )
 
         # VÄRDEDATA (vänster kolumn)
-        self.pack_current_label = self.create_data_label("PACK CURRENT", "0.00 A", 0.2, 0.75)
+        self.pack_current_label = self.create_data_label(
+            "PACK CURRENT", "0.00 A", 0.2, 0.75
+        )
         self.pack_volt_label = self.create_data_label("PACK VOLT", "000 V", 0.2, 0.65)
         self.pack_soc_label = self.create_data_label("PACK SOC", "0.00 %", 0.2, 0.55)
-        self.max_cell_temp_label = self.create_data_label("MAX CELL TEMP", "000 C", 0.2, 0.45)
-        self.min_cell_temp_label = self.create_data_label("MIN CELL TEMP", "000 C", 0.2, 0.35)
+        self.max_cell_temp_label = self.create_data_label(
+            "MAX CELL TEMP", "000 C", 0.2, 0.45
+        )
+        self.min_cell_temp_label = self.create_data_label(
+            "MIN CELL TEMP", "000 C", 0.2, 0.35
+        )
 
         # VÄRDEDATA (höger kolumn)
-        self.max_cell_volt_label = self.create_data_label("MAX CELL VOLT", "000 V", 0.7, 0.75)
-        self.min_cell_volt_label = self.create_data_label("MIN CELL VOLT", "000 V", 0.7, 0.65)
+        self.max_cell_volt_label = self.create_data_label(
+            "MAX CELL VOLT", "000 V", 0.7, 0.75
+        )
+        self.min_cell_volt_label = self.create_data_label(
+            "MIN CELL VOLT", "000 V", 0.7, 0.65
+        )
 
         # SYSTEMSTATUS (längst ner)
         self.system_status_label = Label(
@@ -39,7 +61,7 @@ class DriverDashboard(FloatLayout):
             font_size="20sp",
             bold=True,
             color=(0, 1, 0, 1),
-            pos_hint={"center_x": 0.5, "center_y": 0.1}
+            pos_hint={"center_x": 0.5, "center_y": 0.1},
         )
         self.add_widget(self.system_status_label)
 
@@ -53,10 +75,20 @@ class DriverDashboard(FloatLayout):
 
     def create_data_label(self, title, value, x, y):
         """Skapa en etikett för en datapunkt."""
-        self.add_widget(Label(text=title, font_size="18sp", color=(0.5, 0.8, 1, 1),
-                              pos_hint={"center_x": x, "center_y": y + 0.05}))
-        value_label = Label(text=value, font_size="20sp", color=(1, 1, 1, 1),
-                            pos_hint={"center_x": x, "center_y": y})
+        self.add_widget(
+            Label(
+                text=title,
+                font_size="18sp",
+                color=(0.5, 0.8, 1, 1),
+                pos_hint={"center_x": x, "center_y": y + 0.05},
+            )
+        )
+        value_label = Label(
+            text=value,
+            font_size="20sp",
+            color=(1, 1, 1, 1),
+            pos_hint={"center_x": x, "center_y": y},
+        )
         self.add_widget(value_label)
         return value_label
 
@@ -91,5 +123,5 @@ class DashboardApp(App):
         return DriverDashboard()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     DashboardApp().run()

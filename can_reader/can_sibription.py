@@ -43,8 +43,7 @@ def publish_message(can_message: can.Message):
             callback(hub_message)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
 
     def print_message(message):
         print(message.parsed_data.temperature_c)
@@ -54,9 +53,6 @@ if __name__ == '__main__':
     publish_message(can.Message(arbitration_id=0x181, data=[0x49, 0x13, 0x25, 0x00]))
 
     input()
-
-
-
 
 
 # from dataclasses import dataclass

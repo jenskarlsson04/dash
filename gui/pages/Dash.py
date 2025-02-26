@@ -9,21 +9,27 @@ from gui.pages.time_table_manager import TimeTableManager
 from gui.widgets.custom_progress_bar import CustomProgressBar
 from gui.widgets.BatteryWidget import BatteryWidget
 from gui.widgets.Statusbar import Statusbar
+import canparser
+from can_reader import subscribe_can_message
+
 
 # Main Dashboard Page
 class Dash(Screen):
     def __init__(self, **kwargs):
         super(Dash, self).__init__(**kwargs)
         # Initialize Time Table Manager
+
+        # Can subscribtions
+
+        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.update_speed)
+        subscribe_can_message(canparser.OrionPowerData, self.update_soc)
+
+
         self.time_table_manager = TimeTableManager(total_laps=22)
-
-        # Can subscriptions
-
-
 
         # Variables to update
         self.inverter_temp_value = 0
-        self.soc = 100  # Track remaining SOC
+        self.soc = 0  # Track remaining SOC
         self.last_soc = 100  # Track SOC at the start of the lap
         self.lap_counter = 0  # Track total number of laps
         self.error = False # looks for error, if no error dont make place for message window
@@ -59,7 +65,7 @@ class Dash(Screen):
       #  main_layout.add_widget(self.logo_image)
 
         # Use a BoxLayout for the actual dashboard UI Uppdatera för att inte ha left section!!
-        ui_layout = BoxLayout(orientation='horizontal', size_hint=(1, 1))
+        ui_layout = BoxLayout(orientation="horizontal", size_hint=(1, 1))
 
         left_section = FloatLayout(size_hint=(0.6, 1))
         self.last_lap_time_label = Label(text='Last Lap: --:--:--', font_size='70sp', bold=True, color=(1, 1, 1, 1),
@@ -91,8 +97,8 @@ class Dash(Screen):
     def refresh(self):
         """Refresh the dashboard values."""
         # Update speed
-        #self.speed = 120
-        self.speed = random.randint(0, 120)
+        # self.speed = 120
+        #self.speed = random.randint(0, 120)
         self.top_progress_bar1.set_value(self.speed)
         self.top_progress_bar2.set_value(self.speed)
         self.top_progress_bar3.set_value(self.speed)
@@ -101,8 +107,12 @@ class Dash(Screen):
         new_lap_time = self.generate_random_time()
         result = self.time_table_manager.add_lap_time(new_lap_time)
         last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
-        self.last_lap_time_label.color = (0, 1, 0, 1) if last_lap_color == 'green' else (1, 0.85, 0, 1)
-        self.last_lap_time_label.text = f'Last Lap: {self.format_time(new_lap_time)}'
+        self.last_lap_time_label.color = (
+            (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
+        )
+        self.last_lap_time_label.text = f"Last Lap: {self.format_time(new_lap_time)}"
+        #self.last_lap_time_label.text = f'{self.speed}' #speed debug
+        #self.last_lap_time_label.text = f'{self.soc}' #soc debug
 
         # Simulate battery SOC
         #print(result['laps_remaining'])
@@ -137,6 +147,13 @@ class Dash(Screen):
         """Generate a random time in milliseconds between 10 and 180 seconds."""
         return random.randint(10000, 180000)
 
+    def update_speed(self, message):
+        rad_s = round(message.parsed_data.wheel_speed_l_rad_per_sec)
+        self.speed = round(rad_s * 3.6 * 0.2032) # Rad/s to kmh converter with 8 inch wheels.
+
+    def update_soc(self, message):
+        self.soc = round(100*message.parsed_data.pack_soc_ratio)
+
 
 # Main App Class
 class DashboardApp(App):
@@ -145,5 +162,5 @@ class DashboardApp(App):
         return Dash()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     DashboardApp().run()

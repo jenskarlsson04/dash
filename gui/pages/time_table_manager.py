@@ -40,10 +40,14 @@ class TimeTableManager:
 
         # Check if SOC is sufficient for remaining laps
         laps_remaining = self.total_laps - self.completed_laps
-        avg_energy_per_lap = sum(self.energy_data) / len(self.energy_data) if self.energy_data else 0
-        required_soc = (avg_energy_per_lap * laps_remaining) # Delat på 2 pga 11 var endurence sen bryta ström.
-       # print(required_soc)
-       # print(new_soc)
+        avg_energy_per_lap = (
+            sum(self.energy_data) / len(self.energy_data) if self.energy_data else 0
+        )
+        required_soc = (
+            avg_energy_per_lap * laps_remaining
+        )  # Delat på 2 pga 11 var endurence sen bryta ström.
+        # print(required_soc)
+        # print(new_soc)
         # Return whether the remaining SOC is sufficient
         return {
             "best_lap_time": min(self.lap_times),
@@ -62,9 +66,9 @@ class TimeTableManager:
         Returns 'green' if faster than the previous lap, 'yellow' otherwise.
         """
         if len(self.lap_times) > 1 and new_lap_time < self.lap_times[-2]:
-            return 'green'
+            return "green"
         else:
-            return 'yellow'
+            return "yellow"
 
     def format_time(self, time_in_ms):
         """

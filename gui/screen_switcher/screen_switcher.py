@@ -21,8 +21,9 @@ class CustomScreenSwitcher(ScreenManager):
             self.clock_event.cancel()
 
         # Start a new clock event that updates the currently active screen
-        self.clock_event = Clock.schedule_interval(self.update_active_screen, 1)
-      #  self.change_screen = Clock.schedule_interval(self.debugchange, 5) use is no keyboard is avaliable for raspbeery
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.16)
+
+    #  self.change_screen = Clock.schedule_interval(self.debugchange, 5) use is no keyboard is avaliable for raspbeery
 
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists
@@ -48,14 +49,11 @@ class CustomScreenSwitcher(ScreenManager):
             self.current_screen.on_pre_enter()
 
     def on_key_down(self, window, key, *args):
-        if key == ord('k'):
+        if key == ord("k"):
             self.switch_to_next()
 
-
     # use if no keyboard is avalible
-   # def debugchange(self, window, *args, **kwargs):
-   #     self.switch_to_next()
 
 
-
-
+# def debugchange(self, window, *args, **kwargs):
+#     self.switch_to_next()
