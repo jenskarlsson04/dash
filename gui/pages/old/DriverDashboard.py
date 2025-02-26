@@ -12,8 +12,8 @@ from kivy.core.window import Window
 import canparser
 from can_reader import subscribe_can_message
 from can_reader import publish_message
-from pages.time_table_manager import TimeTableManager
-from widgets.custom_progress_bar import CustomProgressBar
+from gui.pages.time_table_manager import TimeTableManager
+from gui.widgets.custom_progress_bar import CustomProgressBar
 
 
 # Main Dashboard Page

@@ -1,20 +1,17 @@
 import os
-
-os.environ["KIVY_NO_FILELOG"] = "1"  # eliminate file log
+os.environ['KIVY_NO_FILELOG'] = '1'  # eliminate file log
 from kivy.config import Config
-Config.set("graphics", "width", "1024")
-Config.set("graphics", "height", "600")
-Config.set("graphics", "dpi", "96")
-Config.set("graphics", "show_cursor", "0")
-from pages.Dash2 import Dash2
-from pages.Inverter import Inverter
-from pages.TSAC import TSAC
-from pages.Dash import Dash
+#Config.set('graphics', 'fullscreen', 1)
+Config.set('graphics', 'width', 1024)
+Config.set('graphics', 'height', 600)
+Config.set('graphics', 'dpi', '96')  # Adjust as needed
 
 from kivy.app import App
-from screen_switcher.screen_switcher import (
-    CustomScreenSwitcher,
-)  # Renamed to CentralizedScreenSwitcher
+from gui.pages.Dash import Dash
+from gui.pages.Inverter import Inverter
+from gui.pages.Orion import Orion
+from gui.pages.TSCU import TSCU
+from gui.screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
 
 
 class MainApp(App):
