@@ -22,7 +22,7 @@ from gui.widgets import BatteryWidget
 import canparser
 from can_reader import subscribe_can_message
 
-# Import "custom" error messages
+# Import error messages and CAN data
 from gui.shared_data import SharedDataDriver
 
 
@@ -410,7 +410,7 @@ class Dash2(Screen):
         # Update other values
         self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         self.speed_value_label.text = f"{self.SharedData.speed}"
-        self.LV_value_label.text = f"{self.SharedData.lvvoltage} V"
+        self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
         self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
         self.status_value_label.text = f"{self.state}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
@@ -421,7 +421,7 @@ class Dash2(Screen):
             next_error = self.pending_error_messages.pop(0)
             self.error_popup = DismissablePopup(
                 title="Critical Error Alert",
-                content=Label(text=next_error, font_size="80sp", color=(1, 0, 0, 1)),
+                content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
                 size_hint=(0.8, 0.3),
             )
             self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
