@@ -1,40 +1,4 @@
-from dataclasses import dataclass
-import Simalted_GPIO as pigpio
-
-
-@dataclass
-class GPIO_PIN:
-    pin: int
-
-
-
-class GIPOConfiguration:
-
-    _instance = None  # Store the single instance
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self):
-
-        self.pi = pigpio.pi()
-
-        self.btn_lap = GPIO_PIN(22)
-        self.btn_screen = GPIO_PIN(27)
-
-
-        self.__init_gpio_input(self.btn_lap, self.btn_screen)
-
-    def __init_gpio_input(self, *args: GPIO_PIN):
-        for gpio in args:
-            self.pi.set_mode(gpio.pin, pigpio.INPUT)
-
-    def __init_gpio_output(self, *args: GPIO_PIN):
-        pass
-
-
+from GPIO_reader.gpio_class import GPIO_PIN
 
 
 listeners = {}
