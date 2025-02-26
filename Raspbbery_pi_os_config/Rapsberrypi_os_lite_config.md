@@ -73,6 +73,11 @@ Now run
 sudo apt install python3-kivy libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libmtdev-dev libgl1-mesa-dev libgles2-mesa-dev libdrm-dev libgbm-dev libudev-dev
 ```
 
+Now install gpio package: 
+```bash
+sudo apt install pigpio python3-pigpio -y && sudo pigpiod
+```
+
 # CAN setup
 
 Add to boot/firmware/config.txt:
