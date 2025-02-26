@@ -1,11 +1,10 @@
-from dataclasses import dataclass
 import time
 from GPIO_reader.gpio_subscription import publish_message
-from GPIO_reader import btn_lap, btn_screen
+from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
 GPIO_DEBUG = False
 
-if GPIO_DEBUG:
+if not GPIO_DEBUG:
     import GPIO_reader.Simalted_GPIO as pigpio
 else:
     import pigpio
@@ -14,10 +13,9 @@ def set_debug():
     global GPIO_DEBUG
     GPIO_DEBUG = True
 
-@dataclass
-class GPIO_PIN:
-    pin: int
 
+btn_lap = GPIO_PIN(22)
+btn_screen = GPIO_PIN(27)
 
 
 class GIPOConfiguration:

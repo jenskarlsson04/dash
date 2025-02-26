@@ -75,7 +75,7 @@ sudo apt install python3-kivy libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev li
 
 Now install gpio package: 
 ```bash
-sudo apt install pigpio python3-pigpio -y
+sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 ```
 
 # CAN setup
