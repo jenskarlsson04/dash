@@ -4,7 +4,7 @@ from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
 GPIO_DEBUG = False
 
-if not GPIO_DEBUG:
+if GPIO_DEBUG:
     print("WARNING: DEBUG MODE ON")
     import GPIO_reader.Simalted_GPIO as pigpio
 else:
