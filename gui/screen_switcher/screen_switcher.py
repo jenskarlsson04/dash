@@ -4,8 +4,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from itertools import cycle
 from kivy.core.window import Window
 from kivy.clock import Clock
-
-from GPIO_reader.gpio_subscription import subscribe_gpio_pint
+from GPIO_reader import subscribe_gpio_pint, btn_screen
 
 
 class CustomScreenSwitcher(ScreenManager):
@@ -17,8 +16,7 @@ class CustomScreenSwitcher(ScreenManager):
 
         self.clock_event = None
 
-
-#        subscribe_gpio_pint(21)
+        subscribe_gpio_pint(btn_screen, self.switch_to_next)
 
     def on_current_screen(self, *args):
         # Cancel any existing clock event before starting a new one

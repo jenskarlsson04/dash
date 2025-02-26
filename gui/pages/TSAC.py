@@ -52,7 +52,7 @@ class TSAC(Screen):
             valign="middle",
         )
         header_layout.add_widget(self.debug_label)
-        header_layout.add_widget(self.logo_image)
+#       header_layout.add_widget(self.logo_image)
         header_layout.add_widget(self.tscu_label)
 
         # 2. SEPARATOR (Linje direkt under headern) - integrated here
