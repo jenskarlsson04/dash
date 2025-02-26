@@ -50,6 +50,7 @@ class GIPOConfiguration:
 
 
 
+
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
