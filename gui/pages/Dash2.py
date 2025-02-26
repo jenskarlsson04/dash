@@ -1,7 +1,5 @@
 import random
 
-from docutils.nodes import pending
-
 # Import kivy
 from kivy.uix.scrollview import ScrollView
 from kivy.app import App
@@ -25,7 +23,7 @@ import canparser
 from can_reader import subscribe_can_message
 
 # Import "custom" error messages
-from shared_data import SharedDataDriver
+from gui.shared_data import SharedDataDriver
 
 
 class DismissablePopup(Popup):

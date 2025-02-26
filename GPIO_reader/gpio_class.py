@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import time
 from threading import Thread
-import Simalted_GPIO as pigpio
+import GPIO_reader as pigpio
 from GPIO_reader.gpio_subscription import publish_message
 
 

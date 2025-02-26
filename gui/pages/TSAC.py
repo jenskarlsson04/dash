@@ -7,7 +7,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 import os
 from gui.widgets.OutlinedBox import OutlinedBox
-from shared_data import SharedDataDriver
+from gui.shared_data import SharedDataDriver
 
 
 class TSAC(Screen):
@@ -29,14 +29,20 @@ class TSAC(Screen):
             halign="left",
             valign="middle",
         )
-        image_path = os.path.join("./gui/images/logo.png")
-        self.logo_image = Image(
-            source=image_path,
-            opacity=0.15,
-            allow_stretch=True,
-            keep_ratio=True,
-            size_hint_x=0.4,
-        )
+
+
+        # ADD A TEXT AND VALUE INSTEAD
+
+
+        # REMOVED FOR VALUE INSTEAD
+        #image_path = os.path.join("./gui/images/logo.png")
+        #self.logo_image = Image(
+        #    source=image_path,
+        #    opacity=0.15,
+        #    allow_stretch=True,
+        #    keep_ratio=True,
+        #    size_hint_x=0.4,
+        #)
         self.tscu_label = Label(
             text="TSAC",
             font_size="70sp",

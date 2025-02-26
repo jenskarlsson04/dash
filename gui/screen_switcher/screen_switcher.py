@@ -5,6 +5,8 @@ from itertools import cycle
 from kivy.core.window import Window
 from kivy.clock import Clock
 
+from GPIO_reader.gpio_subscription import subscribe_gpio_pint
+
 
 class CustomScreenSwitcher(ScreenManager):
     def __init__(self, **kwargs):
@@ -14,6 +16,9 @@ class CustomScreenSwitcher(ScreenManager):
         Window.bind(on_key_down=self.on_key_down)
 
         self.clock_event = None
+
+
+        subscribe_gpio_pint(21)
 
     def on_current_screen(self, *args):
         # Cancel any existing clock event before starting a new one
