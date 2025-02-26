@@ -20,10 +20,10 @@ class MainApp(App):
         sm = CustomScreenSwitcher()
 
         # Add screens to the screen manager
-        sm.add_screen(Dash2(name="dashboard2"))
         sm.add_screen(Inverter(name="inverter"))
         sm.add_screen(Dash(name="Dashboard"))
         sm.add_screen(TSAC(name="tsac"))
+        sm.add_screen(Dash2(name="dashboard2"))
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
