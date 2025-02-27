@@ -30,6 +30,37 @@ class TSAC(Screen):
             valign="middle",
         )
 
+        imd_status_container = BoxLayout(
+            orientation="horizontal", size_hint=(0.3, 0)
+        )  # change #1
+        self.imd_status_text_label = Label(  # 2
+            text="IMD Ω",
+            font_size="40sp",
+            halign="center",
+            valign="middle",
+            size_hint=(1, 0),
+            color=(0, 1, 1, 1),
+        )
+        self.imd_status_text_label.bind(size=self._update_text_size)  # change to #2
+        imd_status_container.add_widget(
+            self.imd_status_text_label
+        )  # change to #1 and #2
+
+        imd_status = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0)
+        )  # 3
+        self.imd_status_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="center",
+            valign="middle",
+            size_hint_x=0.7,
+            color=(1, 1, 1, 1),
+        )
+        self.imd_status_label.bind(size=self._update_text_size)  # change to #4
+        imd_status.add_widget(self.imd_status_label)
+        imd_status_container.add_widget(imd_status)
+
 
         # ADD A TEXT AND VALUE INSTEAD
 
@@ -52,6 +83,7 @@ class TSAC(Screen):
             valign="middle",
         )
         header_layout.add_widget(self.debug_label)
+        header_layout.add_widget(imd_status_container)
 #       header_layout.add_widget(self.logo_image)
         header_layout.add_widget(self.tscu_label)
 
