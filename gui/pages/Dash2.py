@@ -60,9 +60,6 @@ class Dash2(Screen):
     def __init__(self, **kwargs):
         super(Dash2, self).__init__(**kwargs)
         self.SharedData = SharedDataDriver()
-        # Initialize Time Table Manager
-        subscribe_can_message(canparser.VcuStateData, self.update_status)
-        subscribe_can_message(canparser.OrionPowerData, self.update_soc)
 
         self.time_table_manager = TimeTableManager(total_laps=22)
 
@@ -347,8 +344,6 @@ class Dash2(Screen):
         self.top_progress_bar2.set_value(self.SharedData.speed)
         self.top_progress_bar3.set_value(self.SharedData.speed)
 
-        self.lvbat = self.SharedData.lvvoltage
-
         # Old lap time logic
         new_lap_time = self.generate_random_time()
         result = self.time_table_manager.add_lap_time(new_lap_time)
@@ -412,7 +407,7 @@ class Dash2(Screen):
         self.speed_value_label.text = f"{self.SharedData.speed}"
         self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
         self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
-        self.status_value_label.text = f"{self.state}"
+        self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
 
     def show_next_error_popup(self):
@@ -444,14 +439,6 @@ class Dash2(Screen):
         milliseconds = time_in_ms % 1000
         return f"{minutes:02}:{seconds:02}:{milliseconds:03}"
 
-
-
-
-    def update_status(self, message):
-        self.state = message.parsed_data.state.name
-
-    def update_soc(self, message):
-        self.soc = round(100 * (message.parsed_data.pack_soc_ratio))
 
     def _update_text_size(self, instance, value):
         # Set text_size to the width only so the text does not wrap vertically
