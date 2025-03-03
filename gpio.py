@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # GPIO pin number where the button is connected
-BUTTON_PIN = 17
+BUTTON_PIN = 22
 
 # Setup
 GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
