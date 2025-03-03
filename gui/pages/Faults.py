@@ -22,7 +22,6 @@ from gui.widgets import OutlinedBox
 
 # Import error messages and CAN data
 from gui.shared_data import SharedDataDriver
-from gui.pages.Stats import STATS
 
 
 class DismissablePopup(Popup):
