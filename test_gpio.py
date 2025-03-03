@@ -2,7 +2,7 @@ import pigpio
 import time
 
 # GPIO pin to monitor
-GPIO_PIN = 17  # Change this to the GPIO number you want to test
+GPIO_PIN = 16  # Change this to the GPIO number you want to test
 
 # Initialize pigpio
 pi = pigpio.pi()
