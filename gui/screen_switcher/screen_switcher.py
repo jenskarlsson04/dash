@@ -16,6 +16,7 @@ class CustomScreenSwitcher(ScreenManager):
 
         self.clock_event = None
 
+
         subscribe_gpio_pint(btn_screen, self.switch_to_next)
 
     def on_current_screen(self, *args):
