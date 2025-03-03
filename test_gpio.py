@@ -1,4 +1,4 @@
-from GPIO_reader import subscribe_gpio_pint, btn_screen
+#from GPIO_reader import subscribe_gpio_pint, btn_screen
 import pigpio
 
 pin = 16
