@@ -293,10 +293,10 @@ class Dash2(Screen):
         right_upper.add_widget(error_title_layout)
 
         self.scroll_view_errors = ScrollView(
-            size_hint=(1, 0.8), do_scroll_x=False, do_scroll_y=False
+            size_hint=(1, 0.9), do_scroll_x=False, do_scroll_y=False
         )
         self.errors_content_layout = BoxLayout(
-            orientation="vertical", spacing=3, size_hint_y=None
+            orientation="vertical", spacing=1, size_hint_y=None
         )
         self.errors_content_layout.bind(
             minimum_height=self.errors_content_layout.setter("height")
