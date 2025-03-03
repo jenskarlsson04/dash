@@ -296,7 +296,7 @@ class Dash2(Screen):
             size_hint=(1, 0.8), do_scroll_x=False, do_scroll_y=False
         )
         self.errors_content_layout = BoxLayout(
-            orientation="vertical", spacing=10, size_hint_y=None
+            orientation="vertical", spacing=3, size_hint_y=None
         )
         self.errors_content_layout.bind(
             minimum_height=self.errors_content_layout.setter("height")
