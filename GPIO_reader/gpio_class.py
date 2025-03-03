@@ -62,18 +62,18 @@ class GIPOConfiguration:
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
     def __handle_press_down(self, pin: int):
-
+        print(pin)
         self.time_button_press_down[pin] = time.time()
 
     def __handle_press_up(self, pin: int):
+        if pin in self.time_button_press_down:
+            start_time = self.time_button_press_down.get(pin)
 
-        start_time = self.time_button_press_down[pin]
+            end_time = time.time()
 
-        end_time = time.time()
+            duration = end_time - start_time
 
-        duration = end_time - start_time
-
-        publish_message(pin, duration)
+            publish_message(pin, duration)
 
     def __callback_handle_gpio_event(self, gpio, level, tick):
         """
