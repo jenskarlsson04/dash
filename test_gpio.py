@@ -1,7 +1,7 @@
 #from GPIO_reader import subscribe_gpio_pint, btn_screen
 import pigpio
 
-pin = 16
+pin = 6
 
 def run(gpio, level, tick):
 

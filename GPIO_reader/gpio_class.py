@@ -16,7 +16,7 @@ def set_debug():
 
 
 btn_lap = GPIO_PIN(22)
-btn_screen = GPIO_PIN(16)
+btn_screen = GPIO_PIN(6)
 
 
 class GIPOConfiguration:
