@@ -47,16 +47,12 @@ class GIPOConfiguration:
         self.pi.set_mode(self.btn_lap.pin, pigpio.INPUT)
         self.pi.set_mode(self.btn_screen.pin, pigpio.INPUT)
 
-        self.pi.set_pull_up_down(self.btn_lap, pigpio.PUD_UP)
-        self.pi.set_pull_up_down(self.btn_screen, pigpio.PUD_UP)
+        self.pi.set_pull_up_down(self.btn_lap.pin, pigpio.PUD_UP)
+        self.pi.set_pull_up_down(self.btn_screen.pin, pigpio.PUD_UP)
 
-        #Attach callbacks rising edge
-        self.pi.callback(self.btn_lap.pin, pigpio.RISING_EDGE, self.__callback_handle_gpio_event)
-        self.pi.callback(self.btn_screen.pin, pigpio.RISING_EDGE, self.__callback_handle_gpio_event)
-
-        # falling edge
-        self.pi.callback(self.btn_lap.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
-        self.pi.callback(self.btn_screen.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
+        #Attach callbacks
+        self.pi.callback(self.btn_lap.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event)
+        self.pi.callback(self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event)
 
 
 
