@@ -1,31 +1,35 @@
-#from GPIO_reader import subscribe_gpio_pint, btn_screen
 import pigpio
+import time
 
-pin = 16
+# GPIO pin to monitor
+GPIO_PIN = 13  # Change this to the GPIO number you want to test
 
-def run(gpio, level, tick):
-
-    print("GPIO triggered")
-
+# Initialize pigpio
 pi = pigpio.pi()
 
-"""
-Configure pigpio
-"""
-# Set gpio as pull-down resistors
-pi.set_mode(pin, pigpio.PUD_UP)
+if not pi.connected:
+    print("Error: pigpio daemon is not running!")
+    exit(1)
 
-# Attach callbacks rising edge
-pi.callback(pin, pigpio.RISING_EDGE, run)
+# Configure GPIO as input with pull-up resistor
+pi.set_mode(GPIO_PIN, pigpio.INPUT)
+pi.set_pull_up_down(GPIO_PIN, pigpio.PUD_UP)  # Use pull-up for button input
 
-# falling edge
-pi.callback(pin, pigpio.FALLING_EDGE, run)
+# Callback function to execute when the GPIO state changes
+def gpio_callback(gpio, level, tick):
+    state = "HIGH" if level else "LOW"
+    print(f"GPIO {gpio} changed to {state} at tick {tick}")
 
+# Set up callback to detect changes
+cb = pi.callback(GPIO_PIN, pigpio.EITHER_EDGE, gpio_callback)
 
+print(f"Monitoring GPIO {GPIO_PIN}... Press Ctrl+C to exit.")
 
-#subscribe_gpio_pint(btn_screen, run)
-
-
-if __name__ == "__main__":
+try:
     while True:
-        pass
+        time.sleep(1)  # Keep script running
+except KeyboardInterrupt:
+    print("\nExiting...")
+finally:
+    cb.cancel()  # Stop the callback
+    pi.stop()  # Cleanup pigpio resources
