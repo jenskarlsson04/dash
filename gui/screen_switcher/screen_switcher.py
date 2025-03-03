@@ -41,7 +41,7 @@ class CustomScreenSwitcher(ScreenManager):
         self.add_widget(widget)
         self.cycle_screen = cycle(self.list_of_screens)
 
-    def switch_to_next(self):
+    def switch_to_next(self, pin, duration):
         # Stop the clock on the current screen before switching
         if hasattr(self.current_screen, "on_pre_leave"):
             self.current_screen.on_pre_leave()
