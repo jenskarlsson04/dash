@@ -13,7 +13,7 @@ if not pi.connected:
 
 # Configure GPIO as input with pull-up resistor
 pi.set_mode(GPIO_PIN, pigpio.INPUT)
-pi.set_pull_up_down(GPIO_PIN, pigpio.PUD_UP)  # Use pull-up for button input
+pi.set_pull_up_down(GPIO_PIN, pigpio.PUD_DOWN)  # Use pull-up for button input
 
 # Callback function to execute when the GPIO state changes
 def gpio_callback(gpio, level, tick):
