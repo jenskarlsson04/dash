@@ -23,7 +23,7 @@ pi.callback(pin, pigpio.FALLING_EDGE, run)
 
 
 
-subscribe_gpio_pint(btn_screen, run)
+#subscribe_gpio_pint(btn_screen, run)
 
 
 if __name__ == "__main__":
