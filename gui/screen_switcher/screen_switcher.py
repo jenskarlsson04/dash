@@ -15,7 +15,9 @@ class CustomScreenSwitcher(ScreenManager):
         Window.bind(on_key_down=self.on_key_down)
 
         self.clock_event = None
-
+## FLIP  PIN 13
+## START PIN 12
+## LAP PIN 16, ny svart 13
 
         subscribe_gpio_pint(btn_screen, self.switch_to_next)
 
