@@ -3,6 +3,9 @@ from can_reader import subscribe_can_message
 import time
 from kivy.clock import Clock  # Prototype: For CAN data timeout checking
 
+from can_simulator_er25.src.generators.inverter import inverter_errors
+
+
 class SharedDataDriver:
     _instance = None
 
@@ -20,10 +23,13 @@ class SharedDataDriver:
         self.faults = set()
 
 
+
         #Set default values
         self.tscu_state = "N/A"
         self.tscu_mode = "N/A"
-        self.tscu_errors = []
+        self.tscu_errors = ["N/A"]
+        self.inv_errors = ["N/A errors"]
+        self.inv_warnings = ["N/A warn"]
         self.airplus_state = "N/A"
         self.airminus_state = "N/A"
         self.inv95p = "N/A"
@@ -39,6 +45,7 @@ class SharedDataDriver:
         self.packtemp_max = "N/A"
         self.speed = 0
         self.lvvoltage_low = True
+        self.vcu_mode = "N/A"
 
 
 
@@ -59,6 +66,8 @@ class SharedDataDriver:
             "tscu":    {"threshold": 4, "faults": ["TSCU has error", ".TSCU has error"]},
             "orionpower":    {"threshold": 4, "faults": ["PACK LOW Voltage", ".PACK LOW Voltage",
                                                          "LOW SOC", ".LOW SOC"]},
+            "vcu":      {"threshold": 4, "faults" : []},
+
         }
 
         # Pre-populate last_update for all channels with the current time
@@ -80,12 +89,12 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
-        subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
+        #subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
-        subscribe_can_message(canparser.VcuStateData, self.vcu)
+#        subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
 
     def check_can_data(self, dt):
@@ -145,7 +154,12 @@ class SharedDataDriver:
 
     def inverter_error(self, message):
         self.last_update["inverter_error"] = time.time()
-        self.inverter_error = message.parsed_data.has_error
+        if message.parsed_data.decoded_errors:
+            self.inv_errors = [error.type for error in message.parsed_data.decoded_errors]
+        if message.parsed_data.decoded_warnings:
+            self.inv_warnings = [
+                warning.type for warning in message.parsed_data.decoded_warnings
+            ]
         self.inverter_warning = message.parsed_data.has_warning
         if self.inverter_error:
             self.faults.add("Inverter has error")
@@ -228,7 +242,7 @@ class SharedDataDriver:
             self.pre = "N/A"
             self.sdc = "N/A"
             self.tsact = "N/A"
-            self.tscu_errors = "N/A"
+            self.tscu_errors = ["N/A"]
         else:
             self.tscu_state = message.parsed_data.state.name
             self.tscu_mode = message.parsed_data.mode.name
@@ -240,7 +254,8 @@ class SharedDataDriver:
                 self.sdc = "OPEN"
             self.tsact = message.parsed_data.state_tsact
             self.pre = message.parsed_data.state_r_pre
-            self.tscu_errors = message.parsed_data.decoded_errors
+            if message.parsed_data.decoded_errors:
+                self.tscu_errors = [error.type for error in message.parsed_data.decoded_errors]
             if message.parsed_data.state_r_air_p:
                 self.airplus_state = "OPEN"
             else: self.airplus_state = "CLOSED"
@@ -283,8 +298,9 @@ class SharedDataDriver:
             self.faults.discard(".PACK LOW Voltage")
 
 
-    def vcu(self, message):
-        self.last_update["vcu"] = time.time()
+    #def vcu(self, message):
+     #   self.last_update["vcu"] = time.time()
+     #   self.vcu_mode = message.parsed_data.state.name
 
 if __name__ == "__main__":
     from can_reader.simulated_can_class import SimulatedCanClass
