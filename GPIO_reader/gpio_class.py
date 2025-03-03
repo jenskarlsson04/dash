@@ -64,6 +64,7 @@ class GIPOConfiguration:
     def __handle_press_down(self, pin: int):
         print(pin)
         self.time_button_press_down[pin] = time.time()
+        print(self.time_button_press_down)
 
     def __handle_press_up(self, pin: int):
         if pin in self.time_button_press_down:
