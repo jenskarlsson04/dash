@@ -3,7 +3,7 @@ import pigpio
 
 pin = 16
 
-def run():
+def run(gpio, level, tick):
 
     print("GPIO triggered")
 
