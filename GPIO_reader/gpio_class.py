@@ -44,8 +44,8 @@ class GIPOConfiguration:
         Configure pigpio
         """
         #Set gpio as pull-down resistors
-        self.pi.set_mode(self.btn_lap.pin, pigpio.PUD_DOWN)
-        self.pi.set_mode(self.btn_screen.pin, pigpio.PUD_DOWN)
+        self.pi.set_mode(self.btn_lap.pin, pigpio.PUD_UP)
+        self.pi.set_mode(self.btn_screen.pin, pigpio.PUD_UP)
 
         #Attach callbacks rising edge
         self.pi.callback(self.btn_lap.pin, pigpio.RISING_EDGE, self.__callback_handle_gpio_event)
