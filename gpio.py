@@ -17,7 +17,7 @@ try:
     while True:
         print("\nGPIO Status:")
         for pin in GPIO_PINS:
-            state = "HIGH" if GPIO.input(pin) else "LOW"
+            state = "HIGH" if GPIO.input(pin) else ""
             print(f"GPIO {pin}: {state}")
         time.sleep(1)  # Scan every 1 second
 except KeyboardInterrupt:
