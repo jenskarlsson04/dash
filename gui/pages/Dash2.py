@@ -399,7 +399,7 @@ class Dash2(Screen):
             self.errors_content_layout.add_widget(label)
 
             if i < len(errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=5)
+                spacer = Widget(size_hint_y=None, height=0)
                 self.errors_content_layout.add_widget(spacer)
 
         # Update other values
