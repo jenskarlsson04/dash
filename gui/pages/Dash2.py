@@ -164,7 +164,7 @@ class Dash2(Screen):
         left_middle.add_widget(self.soc_text_label)
 
         soc_value_layout = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.4), spacing=5
+            orientation="horizontal", size_hint=(1, 0.6)
         )
         self.soc_value_label = Label(
             text="N/A",
@@ -187,7 +187,7 @@ class Dash2(Screen):
             font_size="50sp",
             halign="center",
             valign="top",
-            size_hint=(1, 0.4),
+            size_hint=(1, 0.28),
             color=(0, 1, 1, 1),
         )
         self.speed_text_label.bind(size=self._update_text_size)
@@ -312,7 +312,7 @@ class Dash2(Screen):
             font_size="50sp",
             halign="center",
             valign="top",
-            size_hint=(1, 0.4),
+            size_hint=(1, 0.3),
             color=(0, 1, 1, 1),
         )
         self.LV_text_label.bind(size=self._update_text_size)
