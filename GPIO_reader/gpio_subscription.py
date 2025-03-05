@@ -1,4 +1,5 @@
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
+from kivy.clock import mainthread
 
 
 listeners = {}
@@ -14,7 +15,7 @@ def subscribe_gpio_pint(gpio: GPIO_PIN, callback):
     else:
         listeners[gpio.pin] = [callback]
 
-
+@mainthread
 def publish_message(gpio_pin: int, puls_length: int):
     """
     Publish on a GPIO pin.
@@ -22,6 +23,9 @@ def publish_message(gpio_pin: int, puls_length: int):
     if gpio_pin in listeners:
         for callback in listeners[gpio_pin]:
             callback(puls_length)
+
+
+
 
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@ class CustomScreenSwitcher(ScreenManager):
         self.clock_event = None
 
         # Use the thread-safe version for the GPIO callback.
-        subscribe_gpio_pint(btn_screen, self.switch_to_next_threadsafe)
+        subscribe_gpio_pint(btn_screen, self.switch_to_next)
 
     def on_current_screen(self, *args):
         # Cancel any existing clock event before starting a new one
@@ -35,7 +35,7 @@ class CustomScreenSwitcher(ScreenManager):
         self.add_widget(widget)
         self.cycle_screen = cycle(self.list_of_screens)
 
-    def switch_to_next(self, pin=None):
+    def switch_to_next(self, time):
         # Stop the clock on the current screen before switching.
         if hasattr(self.current_screen, "on_pre_leave"):
             self.current_screen.on_pre_leave()
@@ -47,10 +47,6 @@ class CustomScreenSwitcher(ScreenManager):
         # Start the clock on the newly active screen.
         if hasattr(self.current_screen, "on_pre_enter"):
             self.current_screen.on_pre_enter()
-
-    def switch_to_next_threadsafe(self, pin):
-        # Schedule the screen switch on the main thread.
-        Clock.schedule_once(lambda dt: self.switch_to_next(pin), 0)
 
     def on_key_down(self, window, key, *args):
         # Keyboard events occur on the main thread.

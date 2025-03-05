@@ -55,16 +55,11 @@ class GIPOConfiguration:
         self.pi.callback(self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event)
 
 
-
-
-
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
     def __handle_press_down(self, pin: int):
-        print(pin)
         self.time_button_press_down[pin] = time.time()
-        print(self.time_button_press_down)
 
     def __handle_press_up(self, pin: int):
         if pin in self.time_button_press_down:
@@ -80,11 +75,10 @@ class GIPOConfiguration:
         """
         Change place on press down and upp if pull up or pull down
         """
-        print(type(gpio))
         if level == 1:
-            self.__handle_press_down(gpio)
-        else:
             self.__handle_press_up(gpio)
+        else:
+            self.__handle_press_down(gpio)
 
 gpio = GIPOConfiguration()
 
