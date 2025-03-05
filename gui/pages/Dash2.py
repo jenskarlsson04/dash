@@ -296,7 +296,7 @@ class Dash2(Screen):
             size_hint=(1, 0.9), do_scroll_x=False, do_scroll_y=False
         )
         self.errors_content_layout = BoxLayout(
-            orientation="vertical", spacing=1, size_hint_y=0.5
+            orientation="vertical", spacing=1, size_hint_y=None
         )
         self.errors_content_layout.bind(
             minimum_height=self.errors_content_layout.setter("height")
@@ -399,7 +399,7 @@ class Dash2(Screen):
             self.errors_content_layout.add_widget(label)
 
             if i < len(errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=30)
+                spacer = Widget(size_hint_y=None, height=5)
                 self.errors_content_layout.add_widget(spacer)
 
         # Update other values
@@ -412,15 +412,16 @@ class Dash2(Screen):
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
-        if self.pending_error_messages:
-            next_error = self.pending_error_messages.pop(0)
-            self.error_popup = DismissablePopup(
-                title="Critical Error Alert",
-                content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
-                size_hint=(0.8, 0.3),
-            )
-            self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
-            self.error_popup.open()
+        #if self.pending_error_messages:
+         #   next_error = self.pending_error_messages.pop(0)
+          #  self.error_popup = DismissablePopup(
+           #     title="Critical Error Alert",
+            #    content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
+              #  size_hint=(0.8, 0.3),
+            #)
+            #self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
+            #self.error_popup.open()
+        pass
 
     def on_error_popup_dismiss(self, instance):
         self.error_popup = None
