@@ -287,7 +287,7 @@ class Faults(Screen):
             self.custom_errors_content_layout.add_widget(label)
 
             if i < len(custom_errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=30)
+                spacer = Widget(size_hint_y=None, height=0)
                 self.custom_errors_content_layout.add_widget(spacer)
 
         # INV ERRORS AND WARNINGS
@@ -312,7 +312,7 @@ class Faults(Screen):
             label.bind(size=self._update_text_size)
             self.inv_errors_content_layout.add_widget(label)
             if i < len(inv_faults_to_show) - 1:
-                inv_spacer = Widget(size_hint_y=None, height=20)
+                inv_spacer = Widget(size_hint_y=None, height=0)
                 self.inv_errors_content_layout.add_widget(inv_spacer)
 
         # TSCU faults
@@ -334,7 +334,7 @@ class Faults(Screen):
             label.bind(size=self._update_text_size)
             self.tscu_errors_content_layout.add_widget(label)
             if i < len(tscu_faults_to_show) - 1:
-                tscu_spacer = Widget(size_hint_y=None, height=20)
+                tscu_spacer = Widget(size_hint_y=None, height=0)
                 self.tscu_errors_content_layout.add_widget(tscu_spacer)
 
     def _update_text_size(self, instance, value):
