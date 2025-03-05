@@ -278,7 +278,7 @@ class Faults(Screen):
                 text=custom_display_error,
                 font_size="25sp",
                 size_hint_y=None,
-                height=60,
+                height=50,
                 halign="center",
                 valign="middle",
                 color=custom_error_color,
@@ -304,7 +304,7 @@ class Faults(Screen):
                 text=error,
                 font_size="25sp",
                 size_hint_y=None,
-                height=60,  # increased height for better spacing
+                height=50,  # increased height for better spacing
                 halign="center",
                 valign="middle",
                 color=(1, 0, 0, 1),
@@ -326,7 +326,7 @@ class Faults(Screen):
                 text=error,
                 font_size="25sp",
                 size_hint_y=None,
-                height=60,  # increased height for better spacing
+                height=50,  # increased height for better spacing
                 halign="center",
                 valign="middle",
                 color=(1, 0, 0, 1),
