@@ -60,6 +60,7 @@ class Dash2(Screen):
     def __init__(self, **kwargs):
         super(Dash2, self).__init__(**kwargs)
         self.SharedData = SharedDataDriver()
+        self.Stats = Stats()
 
         self.time_table_manager = TimeTableManager(total_laps=22)
 
@@ -409,6 +410,7 @@ class Dash2(Screen):
         self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
+
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
