@@ -94,7 +94,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
-#        subscribe_can_message(canparser.VcuStateData, self.vcu)
+        #subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
 
     def check_can_data(self, dt):
