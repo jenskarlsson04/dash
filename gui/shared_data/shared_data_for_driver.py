@@ -4,6 +4,7 @@ import time
 from kivy.clock import Clock  # Prototype: For CAN data timeout checking
 
 from can_simulator_er25.src.generators.inverter import inverter_errors
+from FileSave import SaveToFile, STATS_FILENAME, PERSISTENT_FILENAME
 
 
 class SharedDataDriver:
@@ -18,6 +19,13 @@ class SharedDataDriver:
     def __init__(self, **kwargs):
         if self._initialized:
             return
+
+        # Vars for saving data to the files
+        self.stats_file = SaveToFile(STATS_FILENAME)
+        self.pres_stat_file = SaveToFile(PERSISTENT_FILENAME)
+
+
+
         self._initialized = True
 
         self.faults = set()
@@ -47,8 +55,8 @@ class SharedDataDriver:
         self.lvvoltage_low = True
         self.vcu_mode = "N/A"
 
-        self.stats = {}
-        self.pres_stat = {}
+        self.stats = self.stats_file.load()
+        self.pres_stat = self.pres_stat_file.load()
 
 
 
@@ -98,6 +106,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
         #subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
+
 
     def check_can_data(self, dt):
         """
@@ -277,6 +286,10 @@ class SharedDataDriver:
         self.orionsoc = round(100*message.parsed_data.pack_soc_ratio)
         self.orioncurrent = round(message.parsed_data.pack_current_A)
         self.orionvoltage = round(message.parsed_data.pack_voltage_v)
+
+        if self.stats["orion_current_max"] < self.orioncurrent:
+            self.stats["orion_current_max"] = self.orioncurrent
+            self.stats_file.save(self.stats)
 
         # Checks
         if self.orionsoc < 0.12:

@@ -18,6 +18,7 @@ from gui.pages.time_table_manager import TimeTableManager
 from gui.widgets import CustomProgressBar
 from gui.widgets import OutlinedBox
 from gui.widgets import BatteryWidget
+from gui.shared_data import SharedDataDriver
 
 
 #Import data
@@ -28,11 +29,17 @@ from FileSave import SaveToFile, PERSISTENT_FILENAME, STATS_FILENAME
 class Afterdrive(Screen):
     def __init__(self, **kwargs):
         super(Afterdrive, self).__init__(**kwargs)
+
+        self.shared_data = SharedDataDriver()
+
         self.stats_current = SaveToFile(STATS_FILENAME)
         self.stats_pres = SaveToFile(PERSISTENT_FILENAME)
 
         self.presistant_stats =  self.stats_pres.load()
         self.current_stats = self.stats_current.load()
+
+        self.shared_data.stats = self.current_stats
+        self.shared_data.pres_stat = self.presistant_stat
 
         # Use a main layout to contain the dashboard elements
 
