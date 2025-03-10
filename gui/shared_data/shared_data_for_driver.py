@@ -47,6 +47,8 @@ class SharedDataDriver:
         self.lvvoltage_low = True
         self.vcu_mode = "N/A"
 
+        self.stats = {}
+        self.pres_stat = {}
 
 
 
