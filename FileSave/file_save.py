@@ -13,11 +13,19 @@ class SaveToFileMeta(type):
         return cls._instances[filepath]
 
 class SaveToFile(metaclass=SaveToFileMeta):
-    def __init__(self, filepath_from_root_folder: str, save_interval: float = 1.0):
+    def __init__(self, filepath_from_root_folder: str, save_interval: float = 1.0, data_struct: dict = None):
         self.filepath = filepath_from_root_folder
         self.data = {}
         self.lock = threading.Lock()
         self.save_interval = save_interval
+
+        self.hase_changed = False
+
+        self.data_struct = data_struct
+
+        if self.load() == {}:
+            self.reset_file()
+
         self.thread = threading.Thread(target=self._save_loop, daemon=True)
         self.thread.start()
 
@@ -25,12 +33,16 @@ class SaveToFile(metaclass=SaveToFileMeta):
         """Updates the dictionary and schedules a save."""
         with self.lock:
             self.data.update(new_data)
+            self.hase_changed = True
 
     def _save_loop(self):
         """Background loop that periodically saves the data."""
         while True:
             time.sleep(self.save_interval)
-            self._save()
+            if self.hase_changed:
+                self._save()
+                self.hase_changed = False
+
 
     def _save(self):
         """Saves the dictionary to a file atomically."""
@@ -49,6 +61,9 @@ class SaveToFile(metaclass=SaveToFileMeta):
             self.data = orjson.loads(f.read())
 
         return self.data
+
+    def reset_file(self):
+        self.save(self.data_struct)
 
 if __name__ == "__main__":
 
