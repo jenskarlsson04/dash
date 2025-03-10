@@ -10,7 +10,7 @@ from kivy.app import App
 from gui.pages.Dash import Dash
 from gui.pages.Dash2 import Dash2
 from gui.pages.Faults import Faults
-#from gui.pages.Stats import STATS
+#from gui.pages.stats import STATS
 from gui.pages.Inverter import Inverter
 from gui.pages.TSAC import TSAC
 from gui.screen_switcher.screen_switcher import CustomScreenSwitcher  # Renamed to CentralizedScreenSwitcher
