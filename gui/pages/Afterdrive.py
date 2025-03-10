@@ -21,34 +21,35 @@ from gui.widgets import BatteryWidget
 
 
 #Import data
-from stats.Stats import Stats
+from FileSave import SaveToFile, PERSISTENT_FILENAME, STATS_FILENAME
 
 
 # Main Dashboard Page
 class Afterdrive(Screen):
     def __init__(self, **kwargs):
         super(Afterdrive, self).__init__(**kwargs)
-        self.Stats = Stats()
+        self.stats_current = SaveToFile(STATS_FILENAME)
+        self.stats_pres = SaveToFile(PERSISTENT_FILENAME)
 
+        self.presistant_stats =  self.stats_pres.load()
+        self.current_stats = self.stats_current.load()
 
         # Use a main layout to contain the dashboard elements
 
         # Variabler för data hämtat från JSON
 
-        # current_stats = stats.get_stats()
-
         # Tilldela värden till separata variabler
-        # orion_current_max = current_stats["orion_current_max"]
-        # speed_max = current_stats["speed_max"]
-        # pack_temp_max = current_stats["pack_temp_max"]
-        # lv_bat_voltage_min = current_stats["lv_bat_voltage_min"]
-        # pack_voltage_min = current_stats["pack_voltage_min"]
-        # power_max = current_stats["power_max"]
-        # total_run_time = current_stats["total_run_time"]
-        # driving_time = current_stats["driving_time"]
-        # consumed_soc = current_stats["consumed_soc"]
-        # energy_drawn_kwh = current_stats["energy_drawn_kwh"]
-        # distance_driven_m = current_stats["distance_driven_m"]
+        self.orion_current_max = self.current_stats["orion_current_max"]
+        self.speed_max = self.current_stats["speed_max"]
+        self.pack_temp_max = self.current_stats["pack_temp_max"]
+        self.lv_bat_voltage_min = self.current_stats["lv_bat_voltage_min"]
+        self.pack_voltage_min = self.current_stats["pack_voltage_min"]
+        self.watt_max = self.current_stats["power_max"]
+        self.total_run_time = self.current_stats["total_run_time"]
+        self.driving_time = self.current_stats["driving_time"]
+        self.consumed_soc = self.current_stats["consumed_soc"]
+        self.energy_drawn_kwh = self.current_stats["energy_drawn_kwh"]
+        self.distance_driven_m = self.current_stats["distance_driven_m"]
 
         # Huvudlayout: Vertikal BoxLayout med header, separator och innehåll
 
@@ -677,7 +678,8 @@ class Afterdrive(Screen):
 
     def refresh(self):
         # Uppdatera temperaturer
-        pass
+
+        self.pack_max_value_label.text = f"{int(self.pack_temp_max)}"
 
     def _update_separator(self, instance, value):
         # Update the separator line's points based on the widget's current position and size
