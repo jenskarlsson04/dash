@@ -12,6 +12,9 @@ stats = FileSave.SaveToFile(FileSave.STATS_FILENAME)
 
 stats.load()
 
+
+
+
 def run():
     main_app.run()
 

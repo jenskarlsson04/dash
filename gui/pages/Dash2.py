@@ -60,7 +60,6 @@ class Dash2(Screen):
     def __init__(self, **kwargs):
         super(Dash2, self).__init__(**kwargs)
         self.SharedData = SharedDataDriver()
-        self.Stats = Stats()
 
         self.time_table_manager = TimeTableManager(total_laps=22)
 

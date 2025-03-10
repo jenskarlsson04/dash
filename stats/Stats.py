@@ -20,8 +20,8 @@ class Stats:
             "orion_current_max": 0,
             "speed_max": 0,
             "pack_temp_max": 0,
-            "lv_bat_voltage_min": float("inf"),
-            "pack_voltage_min": float("inf"),
+            "lv_bat_voltage_min": None,
+            "pack_voltage_min": None,
             "power_max": 0,
             "total_run_time": 0,
             "driving_time": 0,
@@ -57,31 +57,7 @@ class Stats:
         # Variabel för att styra bakgrundstråden
         self.running = False
 
-    def load_stats(self):
-        if os.path.exists(STATS_FILENAME):
-            try:
-                with open(STATS_FILENAME, "r") as f:
-                    return json.load(f)
-            except Exception as e:
-                print("Fel vid inläsning av stats.json:", e)
-        return None
 
-    def save_stats(self):
-        with open(STATS_FILENAME, "w") as f:
-            json.dump(self.stats, f, indent=2)
-
-    def load_persistent_stats(self):
-        if os.path.exists(PERSISTENT_FILENAME):
-            try:
-                with open(PERSISTENT_FILENAME, "r") as f:
-                    return json.load(f)
-            except Exception as e:
-                print("Fel vid inläsning av persistent_stats.json:", e)
-        return None
-
-    def save_persistent_stats(self):
-        with open(PERSISTENT_FILENAME, "w") as f:
-            json.dump(self.persistent_stats, f, indent=2)
 
     def refresh(self):
         current_time = time.time()
