@@ -1,13 +1,14 @@
 import random
-
+import os
 # Import kivy
-from kivy.uix.scrollview import ScrollView
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
+from kivy.graphics import Color, Line
+from kivy.uix.image import Image
 from kivy.core.window import Window
 
 # Import lap time handler
@@ -18,12 +19,8 @@ from gui.widgets import CustomProgressBar
 from gui.widgets import OutlinedBox
 from gui.widgets import BatteryWidget
 
-# Import can stuff
-import canparser
-from can_reader import subscribe_can_message
 
-# Import error messages and CAN data
-from gui.shared_data import SharedDataDriver
+#Import data
 from stats.Stats import Stats
 
 
@@ -33,11 +30,8 @@ class Afterdrive(Screen):
         super(Afterdrive, self).__init__(**kwargs)
         self.Stats = Stats()
 
-        root_layout = BoxLayout(orientation="vertical")
 
         # Use a main layout to contain the dashboard elements
-        header = BoxLayout(orientation="vertical", size_hint=(1, 0.2))
-        speed_bar = BoxLayout(orientation="horizontal")
 
         # Variabler för data hämtat från JSON
 
@@ -56,104 +50,643 @@ class Afterdrive(Screen):
         # energy_drawn_kwh = current_stats["energy_drawn_kwh"]
         # distance_driven_m = current_stats["distance_driven_m"]
 
-        # Add custom progress bars at the top of the screen
-        self.top_progress_bar1 = CustomProgressBar(
-            size_hint=(0.33, 1),
-            pos_hint={"x": 0, "y": 0},
-            threshold=0,
-            max_value=40,
-            default_color=(0, 1, 0, 1),
-        )
-        self.top_progress_bar2 = CustomProgressBar(
-            size_hint=(0.33, 1),
-            pos_hint={"x": 0.33, "y": 0},
-            threshold=40,
-            max_value=80,
-            default_color=(1, 0.65, 0, 1),
-        )
-        self.top_progress_bar3 = CustomProgressBar(
-            size_hint=(0.33, 1),
-            pos_hint={"x": 0.60, "y": 0},
-            threshold=80,
-            max_value=120,
-            default_color=(1, 0, 0, 1),
-        )
-        speed_bar.add_widget(self.top_progress_bar1)
-        speed_bar.add_widget(self.top_progress_bar2)
-        speed_bar.add_widget(self.top_progress_bar3)
-        header.add_widget(speed_bar)
-        root_layout.add_widget(header)
+        # Huvudlayout: Vertikal BoxLayout med header, separator och innehåll
 
-        main_layout = BoxLayout(orientation="horizontal", spacing=10)
-        root_layout.add_widget(main_layout)
+        main_layout = BoxLayout(orientation="vertical", padding=10, spacing=10)
 
-        # Left section
-        left_section = OutlinedBox(
+        # 1. HEADER (Debug - Logo - Orion)
+        header_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.15))
+        self.debug_label = Label(
+            text="Race",
+            font_size="70sp",
+            size_hint_x=0.3,
+            color=(0, 1, 1, 1),
+            halign="left",
+            valign="middle",
+        )
+
+        # ADD A TEXT AND VALUE INSTEAD
+
+        # REMOVED FOR VALUE INSTEAD
+        image_path = os.path.join("./gui/images/logo.png")
+        self.logo_image = Image(
+            source=image_path,
+            opacity=0.15,
+            allow_stretch=True,
+            keep_ratio=True,
+            size_hint_x=0.4,
+         )
+
+        self.tscu_label = Label(
+            text="Stats",
+            font_size="70sp",
+            size_hint_x=0.3,
+            color=(0, 1, 1, 1),
+            halign="right",
+            valign="middle",
+        )
+        header_layout.add_widget(self.debug_label)
+        header_layout.add_widget(self.logo_image)
+        header_layout.add_widget(self.tscu_label)
+
+        # 2. SEPARATOR (Linje direkt under headern) - integrated here
+        separator = Widget(size_hint=(1, None), height=5)
+        with separator.canvas:
+            Color(1, 1, 2, 0.5)
+            self.separator_line = Line(points=[], width=8)
+        separator.bind(pos=self._update_separator, size=self._update_separator)
+
+        # 3. CONTENT
+        content_layout = BoxLayout(
+            orientation="horizontal", spacing=10, size_hint=(1, 0.85)
+        )
+
+        # Vänster innehåll
+        middle_content = OutlinedBox(
             orientation="vertical", spacing=10, size_hint=(0.33, 1)
         )
 
-        left_upper = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.33)
+        speed_max_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.speed_max_text_label = Label(  # 2
+            text="Speed Max",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.2),
+            color=(0, 1, 1, 1),
+        )
+        self.speed_max_text_label.bind(size=self._update_text_size)  # change to #2
+        speed_max_container.add_widget(
+            self.speed_max_text_label
+        )  # change to #1 and #2
+
+        cell_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        self.cell_max_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.cell_max_value_label.bind(size=self._update_text_size)  # change to #4
+        cell_max_value.add_widget(self.cell_max_value_label)
+        self.speed_max_unit_label = Label(
+            text="kmh",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.speed_max_unit_label.bind(size=self._update_text_size)
+        cell_max_value.add_widget(self.speed_max_unit_label)
+        speed_max_container.add_widget(cell_max_value)
+        middle_content.add_widget(speed_max_container)
+
+
+
+
+        lv_bat_voltage_min_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.lv_bat_low_text_label = Label(  # 2
+            text="LV BAT LOW",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.lv_bat_low_text_label.bind(size=self._update_text_size)  # change to #2
+        lv_bat_voltage_min_container.add_widget(self.lv_bat_low_text_label)  # change to #1 and #2
+
+        lv_bat_low_value_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
+        )  # 3
+        self.lv_bat_low_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.lv_bat_low_value_label.bind(size=self._update_text_size)  # change to #4
+        lv_bat_low_value_layout.add_widget(self.lv_bat_low_value_label)
+        self.lv_bat_unit_label = Label(
+            text="V",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=80,
+            color=(1, 1, 1, 1),
+        )
+        self.lv_bat_unit_label.bind(size=self._update_text_size)
+        lv_bat_low_value_layout.add_widget(self.lv_bat_unit_label)
+        lv_bat_voltage_min_container.add_widget(lv_bat_low_value_layout)
+
+        middle_content.add_widget(lv_bat_voltage_min_container)
+
+        # Motor Temperature-container
+        total_driving_time_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )
+        self.total_driving_time_text_label = Label(
+            text="Total Driving Time",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.total_driving_time_text_label.bind(size=self._update_text_size)
+        total_driving_time_container.add_widget(self.total_driving_time_text_label)
+
+        total_driving_time_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
+        )
+        self.total_driving_time_label = Label(
+            text="N/A",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.3,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.total_driving_time_label.bind(size=self._update_text_size)
+        total_driving_time_layout.add_widget(self.total_driving_time_label)
+
+        total_driving_time_container.add_widget(total_driving_time_layout)
+
+        middle_content.add_widget(total_driving_time_container)
+
+        total_distance_driven_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.total_distance_driven_text_label = Label(  # 2
+            text="Total Distance",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.2),
+            color=(0, 1, 1, 1),
+        )
+        self.total_distance_driven_text_label.bind(size=self._update_text_size)  # change to #2
+        total_distance_driven_container.add_widget(
+            self.total_distance_driven_text_label
+        )  # change to #1 and #2
+
+        cell_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        self.cell_max_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.cell_max_value_label.bind(size=self._update_text_size)  # change to #4
+        cell_max_value.add_widget(self.cell_max_value_label)
+        self.total_distance_driven_unit_label = Label(
+            text="km",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.total_distance_driven_unit_label.bind(size=self._update_text_size)
+        cell_max_value.add_widget(self.total_distance_driven_unit_label)
+        total_distance_driven_container.add_widget(cell_max_value)
+        middle_content.add_widget(total_distance_driven_container)
+
+        run_time_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.run_time_text_label = Label(  # 2
+            text="Total Run Time",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.run_time_text_label.bind(size=self._update_text_size)  # change to #2
+        run_time_container.add_widget(
+            self.run_time_text_label
+        )  # change to #1 and #2
+
+        run_time_value = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
+        )  # 3
+        self.run_time_value_label = Label(  # change to #3, #4
+            text="0",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.4,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.run_time_value_label.bind(size=self._update_text_size)  # change to #4
+        run_time_value.add_widget(self.run_time_value_label)
+        run_time_container.add_widget(run_time_value)
+        middle_content.add_widget(run_time_container)
+
+        left_content = OutlinedBox(
+            orientation="vertical", spacing=5, size_hint=(0.33, 1)
         )
 
+        ## Middle section layout
 
-        left_middle = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.33)
+        pack_max_temp_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.pack_max_temp_text_label = Label(  # 2
+            text="Pack Max",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.2),
+            color=(0, 1, 1, 1),
+        )
+        self.pack_max_temp_text_label.bind(size=self._update_text_size)  # change to #2
+        pack_max_temp_container.add_widget(
+            self.pack_max_temp_text_label
+        )  # change to #1 and #2
+
+        pack_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        self.pack_max_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.pack_max_value_label.bind(size=self._update_text_size)  # change to #4
+        pack_max_value.add_widget(self.pack_max_value_label)
+        self.pack_max_temp_unit_label = Label(
+            text="°C",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.pack_max_temp_unit_label.bind(size=self._update_text_size)
+        pack_max_value.add_widget(self.pack_max_temp_unit_label)
+        pack_max_temp_container.add_widget(pack_max_value)
+        left_content.add_widget(pack_max_temp_container)
+        #här sneela
+
+        pack_soc_used_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )  # change #1
+        self.pack_soc_used_text_label = Label(  # 2
+            text="Pack SOC Used",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.pack_soc_used_text_label.bind(size=self._update_text_size)  # change to #2
+        pack_soc_used_container.add_widget(self.pack_soc_used_text_label)  # change to #1 and #2
+
+        soc_used_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
+        )  # 3
+        self.soc_used_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.soc_used_label.bind(size=self._update_text_size)  # change to #4
+        soc_used_layout.add_widget(self.soc_used_label)
+        self.soc_unit_label = Label(
+            text="%",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=80,
+            color=(1, 1, 1, 1),
+        )
+        self.soc_unit_label.bind(size=self._update_text_size)
+        soc_used_layout.add_widget(self.soc_unit_label)
+        pack_soc_used_container.add_widget(soc_used_layout)
+        left_content.add_widget(pack_soc_used_container)
+
+        pack_voltage_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )
+        self.pack_voltage_text_label = Label(
+            text="Pack Voltage Min",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.pack_voltage_text_label.bind(size=self._update_text_size)
+        pack_voltage_container.add_widget(self.pack_voltage_text_label)
+
+        voltage_value_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
+        )
+        self.voltage_value_label = Label(
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.voltage_value_label.bind(size=self._update_text_size)
+        voltage_value_layout.add_widget(self.voltage_value_label)
+        self.voltage_unit_label = Label(
+            text="V",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.voltage_unit_label.bind(size=self._update_text_size)
+        voltage_value_layout.add_widget(self.voltage_unit_label)
+        pack_voltage_container.add_widget(voltage_value_layout)
+        left_content.add_widget(pack_voltage_container)
+
+
+
+
+
+
+        # LV-bat temp-container
+
+        orion_current_container = BoxLayout(
+            orientation="vertical", size_hint=(1, 0.2)
+        )  # 1/3 av vänster sida
+        self.orion_current_text_label = Label(
+            text="Orion Current Max",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.orion_current_text_label.bind(size=self._update_text_size)
+        orion_current_container.add_widget(self.orion_current_text_label)
+
+        current_value_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.4), spacing=5
+        )
+        self.current_value_value_label = Label(
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,  # Fast bredd så att värdet ser konsekvent ut
+            color=(1, 1, 1, 1),
+        )
+        self.current_value_value_label.bind(size=self._update_text_size)
+        current_value_layout.add_widget(self.current_value_value_label)
+        self.current_unit_label = Label(
+            text="A",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,  # Fast bredd för enhet
+            color=(1, 1, 1, 1),
+        )
+        self.current_unit_label.bind(size=self._update_text_size)
+        current_value_layout.add_widget(self.current_unit_label)
+        orion_current_container.add_widget(current_value_layout)
+        left_content.add_widget(orion_current_container)
+
+        # Cell max temp-container
+        watt_max_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )
+        self.watt_max_text_label = Label(
+            text="Watt max",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.watt_max_text_label.bind(size=self._update_text_size)
+        watt_max_container.add_widget(
+            self.watt_max_text_label
+        )  # change to #1 and #2
+
+        watt_value_value = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.33), spacing=5
+        )  # 3
+        self.watt_value_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.watt_value_value_label.bind(size=self._update_text_size)  # change to #4
+        watt_value_value.add_widget(self.watt_value_value_label)
+        self.watt_max_unit_label = Label(
+            text="kW",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.watt_max_unit_label.bind(size=self._update_text_size)
+        watt_value_value.add_widget(self.watt_max_unit_label)
+        watt_max_container.add_widget(watt_value_value)
+        left_content.add_widget(watt_max_container)
+
+
+
+        # Höger innehåll: Fel- och varningssektioner (placeras högerut)
+        right_content = OutlinedBox(
+            orientation="vertical", spacing=5, size_hint=(0.33, 1)
         )
 
-
-        left_lower = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.33)
+        current_driving_time_state_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )
-
-
-        left_section.add_widget(left_upper)
-        left_section.add_widget(left_middle)
-        left_section.add_widget(left_lower)
-        main_layout.add_widget(left_section)
-
-        # Middle section
-        middle_section = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(0.33, 1)
+        self.current_driving_time_state_text_label = Label(
+            text="Current Driving Time",
+            font_size="35sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
         )
-        middle_upper = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.7)
+        self.current_driving_time_state_text_label.bind(size=self._update_text_size)
+        current_driving_time_state_container.add_widget(self.current_driving_time_state_text_label)
+
+        current_driving_time_state_layout = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.6), spacing=5
         )
-
-        middle_lower = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.345)
+        self.current_driving_time_state_label = Label(
+            text="N/A",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.3,
+            width=160,
+            color=(1, 1, 1, 1),
         )
+        self.current_driving_time_state_label.bind(size=self._update_text_size)
+        current_driving_time_state_layout.add_widget(self.current_driving_time_state_label)
 
-        middle_section.add_widget(middle_upper)
-        middle_section.add_widget(middle_lower)
-        main_layout.add_widget(middle_section)
+        current_driving_time_state_container.add_widget(current_driving_time_state_layout)
 
-        # Right section
-        right_section = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(0.33, 1)
+        right_content.add_widget(current_driving_time_state_container)
+
+        current_distance_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )
-        right_upper = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.7)
+        self.current_distance_text_label = Label(
+            text="Current Distance Driven",
+            font_size="35sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
         )
+        self.current_distance_text_label.bind(size=self._update_text_size)
+        current_distance_container.add_widget(
+            self.current_distance_text_label
+        )  # change to #1 and #2
 
-        right_lower = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.345)
+        cell_min_value = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.33), spacing=5
+        )  # 3
+        self.cell_min_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
         )
+        self.cell_min_value_label.bind(size=self._update_text_size)  # change to #4
+        cell_min_value.add_widget(self.cell_min_value_label)
+        self.current_distance_unit_label = Label(
+            text="km",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.current_distance_unit_label.bind(size=self._update_text_size)
+        cell_min_value.add_widget(self.current_distance_unit_label)
+        current_distance_container.add_widget(cell_min_value)
+        right_content.add_widget(current_distance_container)
 
-        right_section.add_widget(right_upper)
-        right_section.add_widget(right_lower)
-        main_layout.add_widget(right_section)
+        cell_min_temp_container = BoxLayout(
+            orientation="vertical", spacing=5, size_hint=(1, 0.2)
+        )
+        self.cell_min_temp_text_label = Label(
+            text="Energy Used",
+            font_size="40sp",
+            halign="left",
+            valign="middle",
+            size_hint=(1, 0.4),
+            color=(0, 1, 1, 1),
+        )
+        self.cell_min_temp_text_label.bind(size=self._update_text_size)
+        cell_min_temp_container.add_widget(
+            self.cell_min_temp_text_label
+        )  # change to #1 and #2
 
-        self.add_widget(root_layout)
+        cell_min_value = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.33), spacing=5
+        )  # 3
+        self.cell_min_value_label = Label(  # change to #3, #4
+            text="000",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=0.7,
+            width=160,
+            color=(1, 1, 1, 1),
+        )
+        self.cell_min_value_label.bind(size=self._update_text_size)  # change to #4
+        cell_min_value.add_widget(self.cell_min_value_label)
+        self.cell_min_temp_unit_label = Label(
+            text="kWh",
+            font_size="45sp",
+            halign="left",
+            valign="middle",
+            size_hint_x=2,
+            width=60,
+            color=(1, 1, 1, 1),
+        )
+        self.cell_min_temp_unit_label.bind(size=self._update_text_size)
+        cell_min_value.add_widget(self.cell_min_temp_unit_label)
+        cell_min_temp_container.add_widget(cell_min_value)
+        right_content.add_widget(cell_min_temp_container)
 
-    def refresh(self):
-        pass
 
 
+        content_layout.add_widget(left_content)
+        content_layout.add_widget(middle_content)
+        content_layout.add_widget(right_content)
+
+        # Lägg ihop alla delar i huvudlayouten
+        main_layout.add_widget(header_layout)
+        main_layout.add_widget(separator)
+        main_layout.add_widget(content_layout)
+
+        self.add_widget(main_layout)
 
     def _update_text_size(self, instance, value):
         # Set text_size to the width only so the text does not wrap vertically
         instance.text_size = (instance.width, None)
+
+    def refresh(self):
+        # Uppdatera temperaturer
+        pass
+
+    def _update_separator(self, instance, value):
+        # Update the separator line's points based on the widget's current position and size
+        self.separator_line.points = [
+            instance.x,
+            instance.y + instance.height / 2,
+            instance.x + instance.width,
+            instance.y + instance.height / 2,
+        ]
 
 
 # Main App Class
