@@ -34,7 +34,7 @@ class TSAC(Screen):
             orientation="horizontal", size_hint=(0.3, 0)
         )  # change #1
         self.imd_status_text_label = Label(  # 2
-            text="IMD Ω",
+            text="IMD kΩ",
             font_size="40sp",
             halign="center",
             valign="middle",
