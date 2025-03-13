@@ -70,6 +70,10 @@ class Dash2(Screen):
         self.lvbat = 12
         self.state = "N/A"
 
+
+        # Disable error popup
+        self.show_error = False
+
         # For controlling the error popup as a queue:
         self.error_popup = None
         self.pending_error_messages = []  # Queue for error messages (without a dot)
@@ -413,15 +417,15 @@ class Dash2(Screen):
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
-        #if self.pending_error_messages:
-         #   next_error = self.pending_error_messages.pop(0)
-          #  self.error_popup = DismissablePopup(
-           #     title="Critical Error Alert",
-            #    content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
-              #  size_hint=(0.8, 0.3),
-            #)
-            #self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
-            #self.error_popup.open()
+        if self.pending_error_messages and self.showerror:
+            next_error = self.pending_error_messages.pop(0)
+            self.error_popup = DismissablePopup(
+                title="Critical Error Alert",
+                content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
+                size_hint=(0.8, 0.3),
+            )
+            self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
+            self.error_popup.open()
         pass
 
     def on_error_popup_dismiss(self, instance):

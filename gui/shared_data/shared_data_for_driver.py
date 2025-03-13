@@ -224,7 +224,7 @@ class SharedDataDriver:
         self.last_update["analogfront"] = time.time()
         self.speed = round((3.6 * 0.2032)*((message.parsed_data.wheel_speed_l_rad_per_sec+message.parsed_data.wheel_speed_r_rad_per_sec)/2))
         if self.analogfront_fault:
-            self.lvvoltage = "N/A"
+            self.lvvoltage = 0
             self.speed = 0
         else:
             self.lvvoltage = round(message.parsed_data.voltage_volts,1)
@@ -290,7 +290,7 @@ class SharedDataDriver:
         if self.stats["orion_current_max"] < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
             self.stats_file.save(self.stats)
-
+            ## ADD N/A STATUS IF CAN TIMEOUT
         # Checks
         if self.orionsoc < 0.12:
             self.faults.add("LOW SOC")
