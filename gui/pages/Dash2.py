@@ -417,7 +417,7 @@ class Dash2(Screen):
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
-        if self.pending_error_messages and self.showerror:
+        if self.pending_error_messages and self.show_error:
             next_error = self.pending_error_messages.pop(0)
             self.error_popup = DismissablePopup(
                 title="Critical Error Alert",
