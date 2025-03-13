@@ -39,7 +39,7 @@ class Afterdrive(Screen):
         self.current_stats = self.stats_current.load()
 
         self.shared_data.stats = self.current_stats
-        self.shared_data.pres_stat = self.presistant_stat
+        self.shared_data.pres_stat = self.presistant_stats
 
         # Use a main layout to contain the dashboard elements
 
