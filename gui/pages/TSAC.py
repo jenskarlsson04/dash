@@ -62,18 +62,6 @@ class TSAC(Screen):
         imd_status_container.add_widget(imd_status)
 
 
-        # ADD A TEXT AND VALUE INSTEAD
-
-
-        # REMOVED FOR VALUE INSTEAD
-        #image_path = os.path.join("./gui/images/logo.png")
-        #self.logo_image = Image(
-        #    source=image_path,
-        #    opacity=0.15,
-        #    allow_stretch=True,
-        #    keep_ratio=True,
-        #    size_hint_x=0.4,
-        #)
         self.tscu_label = Label(
             text="TSAC",
             font_size="70sp",
@@ -84,10 +72,9 @@ class TSAC(Screen):
         )
         header_layout.add_widget(self.debug_label)
         header_layout.add_widget(imd_status_container)
-#       header_layout.add_widget(self.logo_image)
         header_layout.add_widget(self.tscu_label)
 
-        # 2. SEPARATOR (Linje direkt under headern) - integrated here
+        # 2. SEPARATOR (Linje direkt under headern)
         separator = Widget(size_hint=(1, None), height=5)
         with separator.canvas:
             Color(1, 1, 2, 0.5)
@@ -701,21 +688,12 @@ class TSAC(Screen):
         #LV BAT
         self.lv_bat_value_label.text = f"{self.SharedData.lvvoltage}"
 
-        if self.SharedData.tscu_fault:
-            self.error_amount_label.text = "N/A"
-        else:
-            error_count = len(self.SharedData.tscu_errors)
-            self.error_amount_label.text = f"{error_count}"
+        error_count = len(self.SharedData.tscu_errors)
+        self.error_amount_label.text = f"{error_count}"
 
-
-        if self.SharedData.orionpower_fault:
-            self.current_value_value_label.text = "N/A"
-            self.soc_value_label.text = "N/A"
-            self.voltage_value_label.text = "N/A"
-        else:
-            self.current_value_value_label.text = f"{self.SharedData.orioncurrent}"
-            self.soc_value_label.text = f"{self.SharedData.orionsoc}"
-            self.voltage_value_label.text = f"{self.SharedData.orionvoltage}"
+        self.current_value_value_label.text = f"{self.SharedData.orioncurrent}"
+        self.soc_value_label.text = f"{self.SharedData.orionsoc}"
+        self.voltage_value_label.text = f"{self.SharedData.orionvoltage}"
 
         self.cell_min_value_label.text = f"{self.SharedData.packtemp_min}"
         self.cell_max_value_label.text = f"{self.SharedData.packtemp_max}"

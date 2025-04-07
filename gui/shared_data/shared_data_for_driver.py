@@ -22,6 +22,7 @@ class SharedDataDriver:
         self.stats_file = SaveToFile(STATS_FILENAME)
         self.pres_stat_file = SaveToFile(PERSISTENT_FILENAME)
 
+        Clock.schedule_interval(self.check_can_data, 1)
         self._initialized = True
         self.faults = set()
 
@@ -57,17 +58,39 @@ class SharedDataDriver:
         # Define a configuration for each expected channel: threshold (seconds) and fault messages
         # IF YOU WANT TO ADD SOMETHING, YOU NEED TO ADD IT TO channels_config AND channel_to_attr.
         self.channels_config = {
-            "oriontemp":     {"threshold": 4, "faults": ["High pack temp", ".High pack temp"]},
-            "motortemp":     {"threshold": 4, "faults": ["High motor temp", ".High motor temp"]},
+            "oriontemp": {
+                "threshold": 4,
+                "faults": ["High pack temp", ".High pack temp"],
+            },
+            "motortemp": {
+                "threshold": 4,
+                "faults": ["High motor temp", ".High motor temp"],
+            },
             "inverter_error": {"threshold": 4, "faults": ["Inverter has error"]},
-            "inverter_temp": {"threshold": 4, "faults": ["High inverter temp", ".High inverter temp"]},
-            "brake_press":   {"threshold": 4, "faults": ["Low Brake pressure", ".Low Brake pressure"]},
+            "inverter_temp": {
+                "threshold": 4,
+                "faults": ["High inverter temp", ".High inverter temp"],
+            },
+            "brake_press": {
+                "threshold": 4,
+                "faults": ["Low Brake pressure", ".Low Brake pressure"],
+            },
             # "cooling_temp": {"threshold": 4, "faults": ["High cooling temp", ".High cooling temp"]},
-            "analogfront":   {"threshold": 4, "faults": ["LV Bat LOW Voltage", ".LV Bat LOW Voltage"]},
-            "tscu":          {"threshold": 4, "faults": ["TSCU has error", ".TSCU has error"]},
-            "orionpower":    {"threshold": 4, "faults": ["PACK LOW Voltage", ".PACK LOW Voltage",
-                                                         "LOW SOC", ".LOW SOC"]},
-            "vcu":           {"threshold": 4, "faults": []},
+            "analogfront": {
+                "threshold": 4,
+                "faults": ["LV Bat LOW Voltage", ".LV Bat LOW Voltage"],
+            },
+            "tscu": {"threshold": 4, "faults": ["TSCU has error", ".TSCU has error"]},
+            "orionpower": {
+                "threshold": 4,
+                "faults": [
+                    "PACK LOW Voltage",
+                    ".PACK LOW Voltage",
+                    "LOW SOC",
+                    ".LOW SOC",
+                ],
+            },
+            "vcu": {"threshold": 4, "faults": []},
         }
 
         # Pre-populate last_update for all channels with the current time
@@ -75,14 +98,11 @@ class SharedDataDriver:
         current = time.time()
         for channel in self.channels_config:
             self.last_update[channel] = current
-            # Create a boolean flag for each channel (e.g. self.oriontemp_fault)
-            setattr(self, f"{channel}_fault", False)
 
         self.can_error = False
         self.can_connected = True
 
-        # Check every 1 second
-        Clock.schedule_interval(self.check_can_data, 1)
+
 
         # Subscribe to CAN messages
         subscribe_can_message(canparser.OrionTempData, self.oriontemp)
@@ -90,14 +110,24 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
-        # subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
+        subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
-        # subscribe_can_message(canparser.VcuStateData, self.vcu)
+        subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
 
-    def update_faults(value, severe_fault, less_servere, servere_fault_msg, less_servere_msg, faults_set, inverted=False):
+
+
+    def update_faults(
+        value,
+        severe_fault,
+        less_servere,
+        servere_fault_msg,
+        less_servere_msg,
+        faults_set,
+        inverted=False,
+    ):
         """
         Updates the fault set based on the value.
         For non-inverted comparisons (higher value is worse):
@@ -137,9 +167,18 @@ class SharedDataDriver:
             "inverter_error": ["inv_errors", "inv_warnings", "inverter_warning"],
             "inverter_temp": ["inverter_temp"],
             "brake_press": ["brake_press"],
-            "analogfront": ["lvvoltage", "speed"],
-            "tscu": ["tscu_state", "tscu_mode", "airplus_state", "airminus_state",
-                     "inv95p", "pre", "sdc", "tsact", "tscu_errors"],
+            "analogfront": ["lvvoltage"],
+            "tscu": [
+                "tscu_state",
+                "tscu_mode",
+                "airplus_state",
+                "airminus_state",
+                "inv95p",
+                "pre",
+                "sdc",
+                "tsact",
+                "tscu_errors",
+            ],
             "orionpower": ["orionsoc", "orioncurrent", "orionvoltage"],
             "vcu": ["vcu_mode"],
         }
@@ -167,17 +206,21 @@ class SharedDataDriver:
         self.can_connected = not error_found
 
     def oriontemp(self, message):
-        self.last_update["oriontemp"] = time.time() # used for can timeout mesurement
-        self.packtemp_max = message.parsed_data.pack_max_cell_temp_c # subscribes on the data from the parser
-        self.packtemp_min = message.parsed_data.pack_min_cell_temp_c # subscribes on the data from the parser
+        self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
+        self.packtemp_max = (
+            message.parsed_data.pack_max_cell_temp_c
+        )  # subscribes on the data from the parser
+        self.packtemp_min = (
+            message.parsed_data.pack_min_cell_temp_c
+        )  # subscribes on the data from the parser
 
         SharedDataDriver.update_faults(
             self.packtemp_max,
-            severe_fault=60, # Value for when the fault is red and "servere"
-            less_servere=50, # Value for when the fault is yellow and "less servere"
-            servere_fault_msg="High pack temp", # MSG for servere
-            less_servere_msg=".High pack temp", # MSG for less servere
-            faults_set=self.faults
+            severe_fault=60,  # Value for when the fault is red and "servere"
+            less_servere=50,  # Value for when the fault is yellow and "less servere"
+            servere_fault_msg="High pack temp",  # MSG for servere
+            less_servere_msg=".High pack temp",  # MSG for less servere
+            faults_set=self.faults,
         )
 
     def motortemp(self, message):
@@ -190,15 +233,19 @@ class SharedDataDriver:
             less_servere=50,
             servere_fault_msg="High motor temp",
             less_servere_msg=".High motor temp",
-            faults_set=self.faults
+            faults_set=self.faults,
         )
 
     def inverter_error(self, message):
         self.last_update["inverter_error"] = time.time()
         if message.parsed_data.decoded_errors:
-            self.inv_errors = [error.type for error in message.parsed_data.decoded_errors]
+            self.inv_errors = [
+                error.type for error in message.parsed_data.decoded_errors
+            ]
         if message.parsed_data.decoded_warnings:
-            self.inv_warnings = [warning.type for warning in message.parsed_data.decoded_warnings]
+            self.inv_warnings = [
+                warning.type for warning in message.parsed_data.decoded_warnings
+            ]
         self.inverter_warning = message.parsed_data.has_warning
 
         # Non-threshold based fault handling
@@ -221,7 +268,7 @@ class SharedDataDriver:
             less_servere=50,
             servere_fault_msg="High inverter temp",
             less_servere_msg=".High inverter temp",
-            faults_set=self.faults
+            faults_set=self.faults,
         )
 
     def brake_press(self, message):
@@ -235,7 +282,7 @@ class SharedDataDriver:
             servere_fault_msg="Low Brake pressure",
             less_servere_msg=".Low Brake pressure",
             faults_set=self.faults,
-            inverted=True
+            inverted=True,
         )
 
     def cooling_temp(self, message):
@@ -248,14 +295,21 @@ class SharedDataDriver:
             less_servere=50,
             servere_fault_msg="High cooling temp",
             less_servere_msg=".High cooling temp",
-            faults_set=self.faults
+            faults_set=self.faults,
         )
 
     def analogfront(self, message):
         self.last_update["analogfront"] = time.time()
-        self.speed = round((3.6 * 0.2032) * (
-            (message.parsed_data.wheel_speed_l_rad_per_sec +
-             message.parsed_data.wheel_speed_r_rad_per_sec) / 2))
+        self.speed = round(
+            (3.6 * 0.2032)
+            * (
+                (
+                    message.parsed_data.wheel_speed_l_rad_per_sec
+                    + message.parsed_data.wheel_speed_r_rad_per_sec
+                )
+                / 2
+            )
+        )
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
 
         SharedDataDriver.update_faults(
@@ -265,7 +319,7 @@ class SharedDataDriver:
             servere_fault_msg="LV Bat LOW Voltage",
             less_servere_msg=".LV Bat LOW Voltage",
             faults_set=self.faults,
-            inverted=True
+            inverted=True,
         )
         self.lvvoltage_low = self.lvvoltage < 9.5
 
@@ -281,7 +335,9 @@ class SharedDataDriver:
         self.pre = message.parsed_data.state_r_pre
 
         if message.parsed_data.decoded_errors:
-            self.tscu_errors = [error.type for error in message.parsed_data.decoded_errors]
+            self.tscu_errors = [
+                error.type for error in message.parsed_data.decoded_errors
+            ]
         else:
             self.tscu_errors = ["N/A"]
 
@@ -311,7 +367,7 @@ class SharedDataDriver:
             servere_fault_msg="LOW SOC",
             less_servere_msg=".LOW SOC",
             faults_set=self.faults,
-            inverted=True
+            inverted=True,
         )
 
         # Update voltage faults (inverted: lower voltage is worse)
@@ -322,12 +378,12 @@ class SharedDataDriver:
             servere_fault_msg="PACK LOW Voltage",
             less_servere_msg=".PACK LOW Voltage",
             faults_set=self.faults,
-            inverted=True
+            inverted=True,
         )
 
-    # def vcu(self, message):
-    #    self.last_update["vcu"] = time.time()
-    #    self.vcu_mode = message.parsed_data.state.name
+    def vcu(self, message):
+        self.last_update["vcu"] = time.time()
+        self.vcu_mode = message.parsed_data.state.name
 
 
 if __name__ == "__main__":

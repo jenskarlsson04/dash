@@ -68,7 +68,6 @@ class Dash2(Screen):
         self.lvbat = 12
         self.state = "N/A"
 
-
         # Disable error popup
         self.show_error = False
 
@@ -165,9 +164,7 @@ class Dash2(Screen):
         self.soc_text_label.bind(size=self._update_text_size)
         left_middle.add_widget(self.soc_text_label)
 
-        soc_value_layout = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.6)
-        )
+        soc_value_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.6))
         self.soc_value_label = Label(
             text="N/A",
             font_size="80sp",
@@ -408,10 +405,11 @@ class Dash2(Screen):
         self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         self.speed_value_label.text = f"{self.SharedData.speed}"
         self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
-        self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
+        self.LV_value_label.color = (
+            (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
+        )
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
-
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
@@ -442,7 +440,6 @@ class Dash2(Screen):
         seconds = (time_in_ms % 60000) // 1000
         milliseconds = time_in_ms % 1000
         return f"{minutes:02}:{seconds:02}:{milliseconds:03}"
-
 
     def _update_text_size(self, instance, value):
         # Set text_size to the width only so the text does not wrap vertically

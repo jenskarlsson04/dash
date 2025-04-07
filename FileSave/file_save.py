@@ -6,6 +6,7 @@ import orjson
 
 class SaveToFileMeta(type):
     """Metaclass to ensure one instance per file path."""
+
     _instances = {}
 
     def __call__(cls, filepath, *args, **kwargs):
@@ -15,7 +16,12 @@ class SaveToFileMeta(type):
 
 
 class SaveToFile(metaclass=SaveToFileMeta):
-    def __init__(self, filepath_from_root_folder: str, save_interval: float = 1.0, data: dict = None):
+    def __init__(
+        self,
+        filepath_from_root_folder: str,
+        save_interval: float = 1.0,
+        data: dict = None,
+    ):
         self.filepath = filepath_from_root_folder
         self.data = {}
         self.lock = threading.Lock()

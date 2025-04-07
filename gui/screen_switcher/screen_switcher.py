@@ -23,7 +23,7 @@ class CustomScreenSwitcher(ScreenManager):
             self.clock_event.cancel()
 
         # Start a new clock event that updates the currently active screen
-        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.16)
+        self.clock_event = Clock.schedule_interval(self.update_active_screen, 0.0167)
 
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists.

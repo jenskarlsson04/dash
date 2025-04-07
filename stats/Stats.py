@@ -12,6 +12,7 @@ PERSISTENT_FILENAME = os.path.join(DATA_DIR, "persistent_stats.json")
 # Säkerställ att mappen "data" finns
 os.makedirs(DATA_DIR, exist_ok=True)
 
+
 class Stats:
     def __init__(self):
         self.SharedData = SharedDataDriver()
@@ -29,7 +30,7 @@ class Stats:
             "energy_drawn_kwh": 0,
             "distance_driven_m": 0,
             "extra_value_1": "NOT USED",
-            "extra_value_2": "NOT USED"
+            "extra_value_2": "NOT USED",
         }
 
         loaded_stats = self.load_stats()
@@ -45,10 +46,7 @@ class Stats:
 
         self.persistent_stats = self.load_persistent_stats()
         if self.persistent_stats is None:
-            self.persistent_stats = {
-                "total_driving_time_s": 0,
-                "distance_driven_km": 0
-            }
+            self.persistent_stats = {"total_driving_time_s": 0, "distance_driven_km": 0}
 
         self.initial_soc = None
         self.last_driving_time = time.time()
@@ -56,8 +54,6 @@ class Stats:
 
         # Variabel för att styra bakgrundstråden
         self.running = False
-
-
 
     def refresh(self):
         current_time = time.time()
@@ -133,7 +129,7 @@ class Stats:
         if speed > 5:
             self.stats["driving_time"] += dt
             distance = speed * (dt / 3600)
-            self.stats["distance_driven_m"] += (distance * 1000)
+            self.stats["distance_driven_m"] += distance * 1000
 
             self.persistent_stats["total_driving_time_s"] += dt
             self.persistent_stats["distance_driven_km"] += distance
@@ -164,7 +160,7 @@ class Stats:
             "energy_drawn_kwh": 0,
             "distance_driven_m": 0,
             "extra_value_1": "NOT USED",
-            "extra_value_2": "NOT USED"
+            "extra_value_2": "NOT USED",
         }
         self.stats = default_stats
         self.initial_soc = None

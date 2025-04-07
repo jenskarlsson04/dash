@@ -8,6 +8,7 @@ main_app = MainApp()
 
 simulated_can_class = SimulatedCanClass()
 
+
 def run():
 
     simulated_can_class.run()

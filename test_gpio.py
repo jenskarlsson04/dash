@@ -15,10 +15,12 @@ if not pi.connected:
 pi.set_mode(GPIO_PIN, pigpio.INPUT)
 pi.set_pull_up_down(GPIO_PIN, pigpio.PUD_UP)  # Use pull-up for button input
 
+
 # Callback function to execute when the GPIO state changes
 def gpio_callback(gpio, level, tick):
     state = "HIGH" if level else "LOW"
     print(f"GPIO {gpio} changed to {state} at tick {tick}")
+
 
 # Set up callback to detect changes
 cb = pi.callback(GPIO_PIN, pigpio.EITHER_EDGE, gpio_callback)

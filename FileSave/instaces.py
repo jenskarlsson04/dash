@@ -19,15 +19,11 @@ save_file_data_struct = {
     "energy_drawn_kwh": None,
     "distance_driven_m": None,
     "extra_value_1": None,
-    "extra_value_2": None
+    "extra_value_2": None,
 }
 
 SaveToFile(STATS_FILENAME, data=save_file_data_struct)
 
-presistent_data_struct = {
-    "total_driving_time_s": None,
-    "distance_driven_km": None
-}
+presistent_data_struct = {"total_driving_time_s": None, "distance_driven_km": None}
 
 SaveToFile(PERSISTENT_FILENAME, data=save_file_data_struct)
-

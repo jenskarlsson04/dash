@@ -292,7 +292,7 @@ class Faults(Screen):
 
         # INV ERRORS AND WARNINGS
 
-        inv_fault_count = len(self.SharedData.inv_errors + self.SharedData.inv_warnings)
+        inv_fault_count = (len(self.SharedData.inv_errors) + len(self.SharedData.inv_warnings))
         self.inv_errors_amount_label.text = f"({inv_fault_count})"
         self.inv_errors_content_layout.clear_widgets()
         inv_faults_to_show = list(

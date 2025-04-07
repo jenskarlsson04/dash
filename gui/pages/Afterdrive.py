@@ -1,4 +1,5 @@
 import os
+
 # Import kivy
 from kivy.app import App
 from kivy.uix.label import Label
@@ -15,7 +16,7 @@ from gui.widgets import OutlinedBox
 from gui.shared_data import SharedDataDriver
 
 
-#Import data
+# Import data
 from FileSave import SaveToFile, PERSISTENT_FILENAME, STATS_FILENAME
 
 
@@ -29,7 +30,7 @@ class Afterdrive(Screen):
         self.stats_current = SaveToFile(STATS_FILENAME)
         self.stats_pres = SaveToFile(PERSISTENT_FILENAME)
 
-        self.presistant_stats =  self.stats_pres.load()
+        self.presistant_stats = self.stats_pres.load()
         self.current_stats = self.stats_current.load()
 
         self.shared_data.stats = self.current_stats
@@ -77,7 +78,7 @@ class Afterdrive(Screen):
             allow_stretch=True,
             keep_ratio=True,
             size_hint_x=0.4,
-         )
+        )
 
         self.stats_label = Label(
             text="Stats",
@@ -120,9 +121,7 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.speed_max_text_label.bind(size=self._update_text_size)  # change to #2
-        speed_max_container.add_widget(
-            self.speed_max_text_label
-        )  # change to #1 and #2
+        speed_max_container.add_widget(self.speed_max_text_label)  # change to #1 and #2
 
         speed_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
         self.speed_max_value_label = Label(  # change to #3, #4
@@ -150,8 +149,6 @@ class Afterdrive(Screen):
         speed_max_container.add_widget(speed_max_value)
         middle_content.add_widget(speed_max_container)
 
-
-
         lv_bat_voltage_min_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )  # change #1
@@ -164,7 +161,9 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.lv_bat_low_text_label.bind(size=self._update_text_size)  # change to #2
-        lv_bat_voltage_min_container.add_widget(self.lv_bat_low_text_label)  # change to #1 and #2
+        lv_bat_voltage_min_container.add_widget(
+            self.lv_bat_low_text_label
+        )  # change to #1 and #2
 
         lv_bat_low_value_layout = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.6), spacing=5
@@ -240,12 +239,16 @@ class Afterdrive(Screen):
             size_hint=(1, 0.2),
             color=(0, 1, 1, 1),
         )
-        self.total_distance_driven_text_label.bind(size=self._update_text_size)  # change to #2
+        self.total_distance_driven_text_label.bind(
+            size=self._update_text_size
+        )  # change to #2
         total_distance_driven_container.add_widget(
             self.total_distance_driven_text_label
         )  # change to #1 and #2
 
-        total_distance_driven_value_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        total_distance_driven_value_container = BoxLayout(
+            orientation="horizontal", size_hint=(1, 0.2)
+        )  # 3
         self.distance_driven = Label(  # change to #3, #4
             text="000",
             font_size="45sp",
@@ -267,7 +270,9 @@ class Afterdrive(Screen):
             color=(1, 1, 1, 1),
         )
         self.total_distance_driven_unit_label.bind(size=self._update_text_size)
-        total_distance_driven_container.add_widget(self.total_distance_driven_unit_label)
+        total_distance_driven_container.add_widget(
+            self.total_distance_driven_unit_label
+        )
         middle_content.add_widget(total_distance_driven_container)
 
         run_time_container = BoxLayout(
@@ -282,9 +287,7 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.run_time_text_label.bind(size=self._update_text_size)  # change to #2
-        run_time_container.add_widget(
-            self.run_time_text_label
-        )  # change to #1 and #2
+        run_time_container.add_widget(self.run_time_text_label)  # change to #1 and #2
 
         run_time_value = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.6), spacing=5
@@ -350,7 +353,7 @@ class Afterdrive(Screen):
         pack_max_value.add_widget(self.pack_max_temp_unit_label)
         pack_max_temp_container.add_widget(pack_max_value)
         left_content.add_widget(pack_max_temp_container)
-        #här sneela
+        # här sneela
 
         pack_soc_used_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
@@ -364,7 +367,9 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.pack_soc_used_text_label.bind(size=self._update_text_size)  # change to #2
-        pack_soc_used_container.add_widget(self.pack_soc_used_text_label)  # change to #1 and #2
+        pack_soc_used_container.add_widget(
+            self.pack_soc_used_text_label
+        )  # change to #1 and #2
 
         soc_used_layout = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.6), spacing=5
@@ -436,11 +441,6 @@ class Afterdrive(Screen):
         pack_voltage_container.add_widget(voltage_value_layout)
         left_content.add_widget(pack_voltage_container)
 
-
-
-
-
-
         # LV-bat temp-container
 
         orion_current_container = BoxLayout(
@@ -498,9 +498,7 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.watt_max_text_label.bind(size=self._update_text_size)
-        watt_max_container.add_widget(
-            self.watt_max_text_label
-        )  # change to #1 and #2
+        watt_max_container.add_widget(self.watt_max_text_label)  # change to #1 and #2
 
         watt_value_value = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.33), spacing=5
@@ -530,8 +528,6 @@ class Afterdrive(Screen):
         watt_max_container.add_widget(watt_value_value)
         left_content.add_widget(watt_max_container)
 
-
-
         # Höger innehåll: Fel- och varningssektioner (placeras högerut)
         right_content = OutlinedBox(
             orientation="vertical", spacing=5, size_hint=(0.33, 1)
@@ -549,7 +545,9 @@ class Afterdrive(Screen):
             color=(0, 1, 1, 1),
         )
         self.current_driving_time_state_text_label.bind(size=self._update_text_size)
-        current_driving_time_state_container.add_widget(self.current_driving_time_state_text_label)
+        current_driving_time_state_container.add_widget(
+            self.current_driving_time_state_text_label
+        )
 
         current_driving_time_state_layout = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.6), spacing=5
@@ -564,9 +562,13 @@ class Afterdrive(Screen):
             color=(1, 1, 1, 1),
         )
         self.current_driving_time_state_label.bind(size=self._update_text_size)
-        current_driving_time_state_layout.add_widget(self.current_driving_time_state_label)
+        current_driving_time_state_layout.add_widget(
+            self.current_driving_time_state_label
+        )
 
-        current_driving_time_state_container.add_widget(current_driving_time_state_layout)
+        current_driving_time_state_container.add_widget(
+            current_driving_time_state_layout
+        )
 
         right_content.add_widget(current_driving_time_state_container)
 
@@ -598,7 +600,9 @@ class Afterdrive(Screen):
             width=160,
             color=(1, 1, 1, 1),
         )
-        self.energy_used_value_value_label.bind(size=self._update_text_size)  # change to #4
+        self.energy_used_value_value_label.bind(
+            size=self._update_text_size
+        )  # change to #4
         energy_used_value_value.add_widget(self.energy_used_value_value_label)
         self.current_distance_unit_label = Label(
             text="km",
@@ -658,8 +662,6 @@ class Afterdrive(Screen):
         energy_used_container.add_widget(energy_used_value)
         right_content.add_widget(energy_used_container)
 
-
-
         content_layout.add_widget(left_content)
         content_layout.add_widget(middle_content)
         content_layout.add_widget(right_content)
@@ -684,7 +686,6 @@ class Afterdrive(Screen):
         self.pack_soc_used_text_label = f"{int(self.consumed_soc)}"
         self.voltage_value_label.text = f"{int(self.pack_voltage_min)}"
         self.energy_used_value_label.text = f"{int(self.energy_drawn_kwh)}"
-        
 
     def _update_separator(self, instance, value):
         # Update the separator line's points based on the widget's current position and size
