@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.core.window import Window
 
 # Import lap time handler
-from gui.pages.time_table_manager import TimeTableManager
+from gui.widgets.time_table_manager import TimeTableManager
 
 # Import Custom widgets
 from gui.widgets import CustomProgressBar
@@ -19,8 +19,6 @@ from gui.widgets import OutlinedBox
 from gui.widgets import BatteryWidget
 
 # Import can stuff
-import canparser
-from can_reader import subscribe_can_message
 
 # Import error messages and CAN data
 from gui.shared_data import SharedDataDriver

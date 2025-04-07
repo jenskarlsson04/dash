@@ -1,4 +1,3 @@
-import random
 import os
 # Import kivy
 from kivy.app import App
@@ -6,18 +5,13 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
-from kivy.uix.popup import Popup
 from kivy.graphics import Color, Line
 from kivy.uix.image import Image
-from kivy.core.window import Window
 
 # Import lap time handler
-from gui.pages.time_table_manager import TimeTableManager
 
 # Import Custom widgets
-from gui.widgets import CustomProgressBar
 from gui.widgets import OutlinedBox
-from gui.widgets import BatteryWidget
 from gui.shared_data import SharedDataDriver
 
 
@@ -85,7 +79,7 @@ class Afterdrive(Screen):
             size_hint_x=0.4,
          )
 
-        self.tscu_label = Label(
+        self.stats_label = Label(
             text="Stats",
             font_size="70sp",
             size_hint_x=0.3,
@@ -95,7 +89,7 @@ class Afterdrive(Screen):
         )
         header_layout.add_widget(self.debug_label)
         header_layout.add_widget(self.logo_image)
-        header_layout.add_widget(self.tscu_label)
+        header_layout.add_widget(self.stats_label)
 
         # 2. SEPARATOR (Linje direkt under headern) - integrated here
         separator = Widget(size_hint=(1, None), height=5)
@@ -130,8 +124,8 @@ class Afterdrive(Screen):
             self.speed_max_text_label
         )  # change to #1 and #2
 
-        cell_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
-        self.cell_max_value_label = Label(  # change to #3, #4
+        speed_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        self.speed_max_value_label = Label(  # change to #3, #4
             text="000",
             font_size="45sp",
             halign="left",
@@ -140,8 +134,8 @@ class Afterdrive(Screen):
             width=160,
             color=(1, 1, 1, 1),
         )
-        self.cell_max_value_label.bind(size=self._update_text_size)  # change to #4
-        cell_max_value.add_widget(self.cell_max_value_label)
+        self.speed_max_value_label.bind(size=self._update_text_size)  # change to #4
+        speed_max_value.add_widget(self.speed_max_value_label)
         self.speed_max_unit_label = Label(
             text="kmh",
             font_size="45sp",
@@ -152,10 +146,9 @@ class Afterdrive(Screen):
             color=(1, 1, 1, 1),
         )
         self.speed_max_unit_label.bind(size=self._update_text_size)
-        cell_max_value.add_widget(self.speed_max_unit_label)
-        speed_max_container.add_widget(cell_max_value)
+        speed_max_value.add_widget(self.speed_max_unit_label)
+        speed_max_container.add_widget(speed_max_value)
         middle_content.add_widget(speed_max_container)
-
 
 
 
@@ -252,8 +245,8 @@ class Afterdrive(Screen):
             self.total_distance_driven_text_label
         )  # change to #1 and #2
 
-        cell_max_value = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
-        self.cell_max_value_label = Label(  # change to #3, #4
+        total_distance_driven_value_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.2))  # 3
+        self.distance_driven = Label(  # change to #3, #4
             text="000",
             font_size="45sp",
             halign="left",
@@ -262,8 +255,8 @@ class Afterdrive(Screen):
             width=160,
             color=(1, 1, 1, 1),
         )
-        self.cell_max_value_label.bind(size=self._update_text_size)  # change to #4
-        cell_max_value.add_widget(self.cell_max_value_label)
+        self.distance_driven.bind(size=self._update_text_size)  # change to #4
+        total_distance_driven_value_container.add_widget(self.distance_driven)
         self.total_distance_driven_unit_label = Label(
             text="km",
             font_size="45sp",
@@ -274,8 +267,7 @@ class Afterdrive(Screen):
             color=(1, 1, 1, 1),
         )
         self.total_distance_driven_unit_label.bind(size=self._update_text_size)
-        cell_max_value.add_widget(self.total_distance_driven_unit_label)
-        total_distance_driven_container.add_widget(cell_max_value)
+        total_distance_driven_container.add_widget(self.total_distance_driven_unit_label)
         middle_content.add_widget(total_distance_driven_container)
 
         run_time_container = BoxLayout(
@@ -594,10 +586,10 @@ class Afterdrive(Screen):
             self.current_distance_text_label
         )  # change to #1 and #2
 
-        cell_min_value = BoxLayout(
+        energy_used_value_value = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.33), spacing=5
         )  # 3
-        self.cell_min_value_label = Label(  # change to #3, #4
+        self.energy_used_value_value_label = Label(  # change to #3, #4
             text="000",
             font_size="45sp",
             halign="left",
@@ -606,8 +598,8 @@ class Afterdrive(Screen):
             width=160,
             color=(1, 1, 1, 1),
         )
-        self.cell_min_value_label.bind(size=self._update_text_size)  # change to #4
-        cell_min_value.add_widget(self.cell_min_value_label)
+        self.energy_used_value_value_label.bind(size=self._update_text_size)  # change to #4
+        energy_used_value_value.add_widget(self.energy_used_value_value_label)
         self.current_distance_unit_label = Label(
             text="km",
             font_size="45sp",
@@ -618,14 +610,14 @@ class Afterdrive(Screen):
             color=(1, 1, 1, 1),
         )
         self.current_distance_unit_label.bind(size=self._update_text_size)
-        cell_min_value.add_widget(self.current_distance_unit_label)
-        current_distance_container.add_widget(cell_min_value)
+        energy_used_value_value.add_widget(self.current_distance_unit_label)
+        current_distance_container.add_widget(energy_used_value_value)
         right_content.add_widget(current_distance_container)
 
-        cell_min_temp_container = BoxLayout(
+        energy_used_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )
-        self.cell_min_temp_text_label = Label(
+        self.energy_used_text_label = Label(
             text="Energy Used",
             font_size="40sp",
             halign="left",
@@ -633,15 +625,15 @@ class Afterdrive(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.cell_min_temp_text_label.bind(size=self._update_text_size)
-        cell_min_temp_container.add_widget(
-            self.cell_min_temp_text_label
+        self.energy_used_text_label.bind(size=self._update_text_size)
+        energy_used_container.add_widget(
+            self.energy_used_text_label
         )  # change to #1 and #2
 
-        cell_min_value = BoxLayout(
+        energy_used_value = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.33), spacing=5
         )  # 3
-        self.cell_min_value_label = Label(  # change to #3, #4
+        self.energy_used_value_label = Label(  # change to #3, #4
             text="000",
             font_size="45sp",
             halign="left",
@@ -650,9 +642,9 @@ class Afterdrive(Screen):
             width=160,
             color=(1, 1, 1, 1),
         )
-        self.cell_min_value_label.bind(size=self._update_text_size)  # change to #4
-        cell_min_value.add_widget(self.cell_min_value_label)
-        self.cell_min_temp_unit_label = Label(
+        self.energy_used_value_label.bind(size=self._update_text_size)  # change to #4
+        energy_used_value.add_widget(self.energy_used_value_label)
+        self.energy_used_unit_label = Label(
             text="kWh",
             font_size="45sp",
             halign="left",
@@ -661,10 +653,10 @@ class Afterdrive(Screen):
             width=60,
             color=(1, 1, 1, 1),
         )
-        self.cell_min_temp_unit_label.bind(size=self._update_text_size)
-        cell_min_value.add_widget(self.cell_min_temp_unit_label)
-        cell_min_temp_container.add_widget(cell_min_value)
-        right_content.add_widget(cell_min_temp_container)
+        self.energy_used_unit_label.bind(size=self._update_text_size)
+        energy_used_value.add_widget(self.energy_used_unit_label)
+        energy_used_container.add_widget(energy_used_value)
+        right_content.add_widget(energy_used_container)
 
 
 
@@ -687,6 +679,12 @@ class Afterdrive(Screen):
         # Uppdatera temperaturer
 
         self.pack_max_value_label.text = f"{int(self.pack_temp_max)}"
+        self.speed_max_value_label.text = f"{int(self.speed_max)}"
+        self.lv_bat_low_value_label.text = f"{int(self.lv_bat_voltage_min)}"
+        self.pack_soc_used_text_label = f"{int(self.consumed_soc)}"
+        self.voltage_value_label.text = f"{int(self.pack_voltage_min)}"
+        self.energy_used_value_label.text = f"{int(self.energy_drawn_kwh)}"
+        
 
     def _update_separator(self, instance, value):
         # Update the separator line's points based on the widget's current position and size

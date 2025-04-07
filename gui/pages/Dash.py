@@ -5,7 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
-from gui.pages.time_table_manager import TimeTableManager
+from gui.widgets.time_table_manager import TimeTableManager
 from gui.widgets.custom_progress_bar import CustomProgressBar
 from gui.widgets.BatteryWidget import BatteryWidget
 from gui.widgets.Statusbar import Statusbar
