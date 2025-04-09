@@ -115,8 +115,8 @@ class Stats:
         self.update_driving_time()
         self.update_energy()
 
-        self.save_stats()
-        self.save_persistent_stats()
+        #self.save_stats()
+        #self.save_persistent_stats()
 
     def update_driving_time(self):
         current_time = time.time()

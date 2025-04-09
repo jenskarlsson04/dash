@@ -23,6 +23,7 @@ class SharedDataDriver:
         self.pres_stat_file = SaveToFile(PERSISTENT_FILENAME)
 
         Clock.schedule_interval(self.check_can_data, 1)
+        Clock.schedule_interval(self.calculate_efficiency_score, 1)
         self._initialized = True
         self.faults = set()
 
@@ -51,6 +52,8 @@ class SharedDataDriver:
 
         self.stats = self.stats_file.load()
         self.pres_stat = self.pres_stat_file.load()
+        self.last_drive_update = time.time()
+        self.last_energy_time = time.time()
 
         # -----------------------------
         # CAN error tracking
@@ -183,12 +186,12 @@ class SharedDataDriver:
             "vcu": ["vcu_mode"],
         }
 
-        current_time = time.time()
+        self.last_can_update = time.time()
         error_found = False
 
         for channel, config in self.channels_config.items():
             threshold = config["threshold"]
-            if current_time - self.last_update[channel] > threshold:
+            if self.last_can_update - self.last_update[channel] > threshold:
                 error_found = True
                 # Clear previous fault messages for this channel
                 for fault in config["faults"]:
@@ -204,6 +207,56 @@ class SharedDataDriver:
 
         self.can_error = error_found
         self.can_connected = not error_found
+
+    def calculate_efficiency_score(self, dt):
+        self.vehicle_mass_kg = 240
+        self.acc_x_g = 0.4
+
+        force_n = self.acc_x_g * self.vehicle_mass_kg * 9.81
+        velocity_m_per_s = self.speed / 3.6
+        work_joules = force_n * velocity_m_per_s
+
+        try:
+            input_power_w = float(self.orionvoltage) * float(self.orioncurrent)
+            score = work_joules / input_power_w if input_power_w > 0 else 0
+        except (ValueError, TypeError):
+            score = 0
+
+        # Initialize accumulators if missing
+        if "effscore_total" not in self.stats:
+            self.stats["effscore_total"] = 0.0
+        if "effscore_count" not in self.stats:
+            self.stats["effscore_count"] = 0
+
+        # Update total and count
+        self.stats["effscore_total"] += score
+        self.stats["effscore_count"] += 1
+
+        # Compute average
+        avg_score = self.stats["effscore_total"] / self.stats["effscore_count"]
+        self.stats["effscore"] = max(0.0, min(avg_score, 1.0))
+
+        self.stats_file.save(self.stats)
+
+    # Add this new method to the class:
+    def update_drive_metrics(self):
+        current_time = time.time()
+        delta_time = current_time - self.last_drive_update
+        self.last_drive_update = current_time
+        speed = 10
+        if speed > 0:
+            # Add time
+            self.stats["driving_time"] += delta_time
+            self.pres_stat["total_driving_time_s"] += delta_time
+
+            # Add distance
+            distance_m = (self.speed * delta_time) / 3.6  # speed in km/h
+            self.stats["distance_driven_m"] += distance_m
+            self.pres_stat["distance_driven_m"] += distance_m
+
+            # Save updates
+            self.stats_file.save(self.stats)
+            self.pres_stat_file.save(self.pres_stat)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
@@ -222,6 +275,9 @@ class SharedDataDriver:
             less_servere_msg=".High pack temp",  # MSG for less servere
             faults_set=self.faults,
         )
+        if self.packtemp_max > self.stats["pack_temp_max"]:
+            self.stats["pack_temp_max"] = self.packtemp_max
+
 
     def motortemp(self, message):
         self.last_update["motortemp"] = time.time()
@@ -310,7 +366,17 @@ class SharedDataDriver:
                 / 2
             )
         )
+        #self.update_driving_time()
+        if self.speed > self.stats["speed_max"]:
+            self.stats["speed_max"] = self.speed
+
+
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
+        #Save to stats
+        if self.lvvoltage < self.stats["lv_bat_voltage_min"]:
+            self.stats["lv_bat_voltage_min"] = self.lvvoltage
+
+        self.update_drive_metrics()
 
         SharedDataDriver.update_faults(
             self.lvvoltage,
@@ -349,6 +415,26 @@ class SharedDataDriver:
         else:
             self.faults.discard("TSCU has error")
 
+    def update_consumed_soc(self):
+        try:
+            soc = int(self.orionsoc)
+        except (ValueError, TypeError):
+            soc = 0
+
+        # First-time initialization
+        if not hasattr(self, "last_soc"):
+            self.last_soc = soc
+
+        # If SOC dropped, count the drop as consumption
+        delta = self.last_soc - soc
+        if delta > 0:
+            self.stats["consumed_soc"] += delta
+
+        # Update last seen SOC
+        self.last_soc = soc
+
+        self.stats_file.save(self.stats)
+
     def orionpower(self, message):
         self.last_update["orionpower"] = time.time()
         self.orionsoc = round(100 * message.parsed_data.pack_soc_ratio)
@@ -358,6 +444,30 @@ class SharedDataDriver:
         if self.stats["orion_current_max"] < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
             self.stats_file.save(self.stats)
+
+        if self.orionvoltage < self.stats["pack_voltage_min"]:
+            self.stats["pack_voltage_min"] = self.orionvoltage
+            self.stats_file.save(self.stats)
+
+        self.power = (self.orionvoltage * self.orioncurrent) / 1000
+
+        if self.power > self.stats["power_max"]:
+            self.stats["power_max"] = self.power
+            self.stats_file.save(self.stats)
+        
+        current_time = time.time()
+        dt_energy = current_time - self.last_energy_time
+        self.last_energy_time = current_time
+        try:
+            voltage = float(self.orionvoltage)
+            current_val = float(self.orioncurrent)
+            power = (voltage * current_val)
+        except (ValueError, TypeError):
+            power = 0
+        self.stats["energy_drawn_wh"] += power * (dt_energy / 3600)
+        self.stats_file.save(self.stats)
+        self.update_consumed_soc()
+
 
         # Update SOC faults (inverted: lower SOC is worse)
         SharedDataDriver.update_faults(
@@ -384,6 +494,29 @@ class SharedDataDriver:
     def vcu(self, message):
         self.last_update["vcu"] = time.time()
         self.vcu_mode = message.parsed_data.state.name
+
+
+
+
+
+    def reset(self):
+        self.stats = {
+    "orion_current_max": 0,
+    "speed_max": 0,
+    "pack_temp_max": 0,
+    "lv_bat_voltage_min": 999,
+    "pack_voltage_min": 999,
+    "power_max": 0,
+    "effscore": 0,
+    "driving_time": 0,
+    "consumed_soc": 0,
+    "energy_drawn_wh": 0,
+    "distance_driven_m": 0,
+    "effscore_total": 0,
+    "effscore_count": 0,
+}
+
+
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ class SaveToFile(metaclass=SaveToFileMeta):
     def __init__(
         self,
         filepath_from_root_folder: str,
-        save_interval: float = 1.0,
+        save_interval: float = 0.1,
         data: dict = None,
     ):
         self.filepath = filepath_from_root_folder

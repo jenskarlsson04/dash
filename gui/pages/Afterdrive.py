@@ -8,6 +8,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
 from kivy.graphics import Color, Line
 from kivy.uix.image import Image
+from kivy.core.window import Window
 
 # Import lap time handler
 
@@ -24,6 +25,7 @@ from FileSave import SaveToFile, PERSISTENT_FILENAME, STATS_FILENAME
 class Afterdrive(Screen):
     def __init__(self, **kwargs):
         super(Afterdrive, self).__init__(**kwargs)
+        Window.bind(on_key_down=self._on_key_down)
 
         self.shared_data = SharedDataDriver()
 
@@ -31,27 +33,12 @@ class Afterdrive(Screen):
         self.stats_pres = SaveToFile(PERSISTENT_FILENAME)
 
         self.presistant_stats = self.stats_pres.load()
-        self.current_stats = self.stats_current.load()
-
-        self.shared_data.stats = self.current_stats
-        self.shared_data.pres_stat = self.presistant_stats
+        self.current_stats = self.stats_current.load() #Uppdateras dessa helatiden efter att den har loadats???
 
         # Use a main layout to contain the dashboard elements
 
-        # Variabler för data hämtat från JSON
 
-        # Tilldela värden till separata variabler
-        self.orion_current_max = self.current_stats["orion_current_max"]
-        self.speed_max = self.current_stats["speed_max"]
-        self.pack_temp_max = self.current_stats["pack_temp_max"]
-        self.lv_bat_voltage_min = self.current_stats["lv_bat_voltage_min"]
-        self.pack_voltage_min = self.current_stats["pack_voltage_min"]
-        self.watt_max = self.current_stats["power_max"]
-        self.total_run_time = self.current_stats["total_run_time"]
-        self.driving_time = self.current_stats["driving_time"]
-        self.consumed_soc = self.current_stats["consumed_soc"]
-        self.energy_drawn_kwh = self.current_stats["energy_drawn_kwh"]
-        self.distance_driven_m = self.current_stats["distance_driven_m"]
+
 
         # Huvudlayout: Vertikal BoxLayout med header, separator och innehåll
 
@@ -260,26 +247,16 @@ class Afterdrive(Screen):
         )
         self.distance_driven.bind(size=self._update_text_size)  # change to #4
         total_distance_driven_value_container.add_widget(self.distance_driven)
-        self.total_distance_driven_unit_label = Label(
-            text="km",
-            font_size="45sp",
-            halign="left",
-            valign="middle",
-            size_hint_x=2,
-            width=60,
-            color=(1, 1, 1, 1),
-        )
-        self.total_distance_driven_unit_label.bind(size=self._update_text_size)
-        total_distance_driven_container.add_widget(
-            self.total_distance_driven_unit_label
-        )
+        total_distance_driven_container.add_widget(total_distance_driven_value_container)
+
         middle_content.add_widget(total_distance_driven_container)
+
 
         run_time_container = BoxLayout(
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )  # change #1
         self.run_time_text_label = Label(  # 2
-            text="Total Run Time",
+            text="Effscore",
             font_size="40sp",
             halign="left",
             valign="middle",
@@ -385,17 +362,6 @@ class Afterdrive(Screen):
         )
         self.soc_used_label.bind(size=self._update_text_size)  # change to #4
         soc_used_layout.add_widget(self.soc_used_label)
-        self.soc_unit_label = Label(
-            text="%",
-            font_size="45sp",
-            halign="left",
-            valign="middle",
-            size_hint_x=2,
-            width=80,
-            color=(1, 1, 1, 1),
-        )
-        self.soc_unit_label.bind(size=self._update_text_size)
-        soc_used_layout.add_widget(self.soc_unit_label)
         pack_soc_used_container.add_widget(soc_used_layout)
         left_content.add_widget(pack_soc_used_container)
 
@@ -490,7 +456,7 @@ class Afterdrive(Screen):
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )
         self.watt_max_text_label = Label(
-            text="Watt max",
+            text="Max Power",
             font_size="40sp",
             halign="left",
             valign="middle",
@@ -604,17 +570,6 @@ class Afterdrive(Screen):
             size=self._update_text_size
         )  # change to #4
         energy_used_value_value.add_widget(self.energy_used_value_value_label)
-        self.current_distance_unit_label = Label(
-            text="km",
-            font_size="45sp",
-            halign="left",
-            valign="middle",
-            size_hint_x=2,
-            width=60,
-            color=(1, 1, 1, 1),
-        )
-        self.current_distance_unit_label.bind(size=self._update_text_size)
-        energy_used_value_value.add_widget(self.current_distance_unit_label)
         current_distance_container.add_widget(energy_used_value_value)
         right_content.add_widget(current_distance_container)
 
@@ -648,17 +603,7 @@ class Afterdrive(Screen):
         )
         self.energy_used_value_label.bind(size=self._update_text_size)  # change to #4
         energy_used_value.add_widget(self.energy_used_value_label)
-        self.energy_used_unit_label = Label(
-            text="kWh",
-            font_size="45sp",
-            halign="left",
-            valign="middle",
-            size_hint_x=2,
-            width=60,
-            color=(1, 1, 1, 1),
-        )
-        self.energy_used_unit_label.bind(size=self._update_text_size)
-        energy_used_value.add_widget(self.energy_used_unit_label)
+
         energy_used_container.add_widget(energy_used_value)
         right_content.add_widget(energy_used_container)
 
@@ -677,15 +622,40 @@ class Afterdrive(Screen):
         # Set text_size to the width only so the text does not wrap vertically
         instance.text_size = (instance.width, None)
 
-    def refresh(self):
-        # Uppdatera temperaturer
 
+
+    def refresh(self):
+
+        self.orion_current_max = self.current_stats["orion_current_max"] # Fråga oliver hur fan dessa uppdateras?
+        self.speed_max = self.current_stats["speed_max"]
+        self.pack_temp_max = self.current_stats["pack_temp_max"]
+        self.lv_bat_voltage_min = self.current_stats["lv_bat_voltage_min"]
+        self.pack_voltage_min = self.current_stats["pack_voltage_min"]
+        self.watt_max = self.current_stats["power_max"]
+        self.total_run_time = self.presistant_stats["total_driving_time_s"]
+        self.driving_time = self.current_stats["driving_time"]
+        self.consumed_soc = self.current_stats["consumed_soc"]
+        self.energy_drawn_kwh = self.current_stats["energy_drawn_wh"]
+        self.distance_driven_m = self.current_stats["distance_driven_m"]
+        self.total_distance_driven_m = self.presistant_stats["distance_driven_m"]
+        self.effscore = self.current_stats["effscore"]
+
+        # Updatera lables
         self.pack_max_value_label.text = f"{int(self.pack_temp_max)}"
         self.speed_max_value_label.text = f"{int(self.speed_max)}"
         self.lv_bat_low_value_label.text = f"{int(self.lv_bat_voltage_min)}"
         self.pack_soc_used_text_label = f"{int(self.consumed_soc)}"
         self.voltage_value_label.text = f"{int(self.pack_voltage_min)}"
-        self.energy_used_value_label.text = f"{int(self.energy_drawn_kwh)}"
+        self.energy_used_value_label.text = self._format_energy(self.energy_drawn_kwh)
+        self.current_value_value_label.text = f"{int(self.orion_current_max)}"
+        self.energy_used_value_value_label.text = self._format_distance(self.distance_driven_m)
+        self.distance_driven.text = self._format_distance(self.total_distance_driven_m)
+        self.total_driving_time_label.text = self._format_time(self.total_run_time)
+        self.current_driving_time_state_label.text = self._format_time(self.driving_time)
+        self.run_time_value_label.text = f"{self.effscore:.3f}"
+        self.watt_value_value_label.text = f"{int(self.watt_max)}"
+        self.soc_used_label.text = f"{int(self.consumed_soc)} %"
+
 
     def _update_separator(self, instance, value):
         # Update the separator line's points based on the widget's current position and size
@@ -695,6 +665,41 @@ class Afterdrive(Screen):
             instance.x + instance.width,
             instance.y + instance.height / 2,
         ]
+
+    def _format_time(self, total_seconds):
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        seconds = int(total_seconds % 60)
+        return f"{hours}h:{minutes:02}m:{seconds:01}s"
+
+    def _format_distance(self, meters):
+        if meters >= 1000:
+            km = int(meters // 1000)
+            m = int(meters % 1000)
+            return f"{km} km : {m} m"
+        else:
+            return f"{int(meters)} m"
+
+    def _format_energy(self, energy_wh):
+        kwh = int(energy_wh // 1000)
+        wh = int(energy_wh % 1000)
+        return f"{kwh} kWh : {wh} Wh"
+
+    #File resetter
+
+    def _on_key_down(self, window, key, scancode, codepoint, modifier):
+        if codepoint == 'o':
+            self.reset_file()
+
+    def reset_file(self):
+        print("Resetting stats...")
+
+        # Reset the actual files
+        self.stats_current.reset_file()
+
+        # Reload the cleared data from disk
+        self.current_stats = self.stats_current.load()
+        self.shared_data.reset()
 
 
 # Main App Class
