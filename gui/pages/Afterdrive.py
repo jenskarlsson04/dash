@@ -140,7 +140,7 @@ class Afterdrive(Screen):
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )  # change #1
         self.lv_bat_low_text_label = Label(  # 2
-            text="LV BAT LOW",
+            text="LV Voltage Min",
             font_size="40sp",
             halign="left",
             valign="middle",
@@ -293,7 +293,7 @@ class Afterdrive(Screen):
             orientation="vertical", spacing=5, size_hint=(1, 0.2)
         )  # change #1
         self.pack_max_temp_text_label = Label(  # 2
-            text="Pack Max",
+            text="Pack Temp Max",
             font_size="40sp",
             halign="left",
             valign="middle",
