@@ -2,12 +2,14 @@ import time
 from GPIO_reader.gpio_subscription import publish_message
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
-GPIO_DEBUG = False
+GPIO_DEBUG = True
 
-if not GPIO_DEBUG:
+if GPIO_DEBUG:
+    print("WARNING: DEBUG MODE ON")
     import GPIO_reader.Simalted_GPIO as pigpio
 else:
     import pigpio
+
 
 def set_debug():
     global GPIO_DEBUG
@@ -15,7 +17,7 @@ def set_debug():
 
 
 btn_lap = GPIO_PIN(22)
-btn_screen = GPIO_PIN(27)
+btn_screen = GPIO_PIN(13)
 
 
 class GIPOConfiguration:
@@ -42,51 +44,50 @@ class GIPOConfiguration:
         """
         Configure pigpio
         """
-        #Set gpio as pull-down resistors
-        self.pi.set_mode(self.btn_lap.pin, pigpio.PUD_DOWN)
-        self.pi.set_mode(self.btn_screen.pin, pigpio.PUD_DOWN)
+        # Set gpio as pull-down resistors
+        self.pi.set_mode(self.btn_lap.pin, pigpio.INPUT)
+        self.pi.set_mode(self.btn_screen.pin, pigpio.INPUT)
 
-        #Attach callbacks rising edge
-        self.pi.callback(self.btn_lap.pin, pigpio.RISING_EDGE, self.__callback_handle_gpio_event)
-        self.pi.callback(self.btn_screen.pin, pigpio.RISING_EDGE, self.__callback_handle_gpio_event)
+        self.pi.set_pull_up_down(self.btn_lap.pin, pigpio.PUD_UP)
+        self.pi.set_pull_up_down(self.btn_screen.pin, pigpio.PUD_UP)
 
-        # falling edge
-        self.pi.callback(self.btn_lap.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
-        self.pi.callback(self.btn_screen.pin, pigpio.FALLING_EDGE, self.__callback_handle_gpio_event)
-
-
-
-
+        # Attach callbacks
+        self.pi.callback(
+            self.btn_lap.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
+        )
+        self.pi.callback(
+            self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
+        )
 
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
-    def __handle_press_down(self, pin: int):
 
+    def __handle_press_down(self, pin: int):
         self.time_button_press_down[pin] = time.time()
 
     def __handle_press_up(self, pin: int):
+        if pin in self.time_button_press_down:
+            start_time = self.time_button_press_down.get(pin)
 
-        start_time = self.time_button_press_down[pin]
+            end_time = time.time()
 
-        end_time = time.time()
+            duration = end_time - start_time
 
-        duration = end_time - start_time
-
-        publish_message(pin, duration)
+            publish_message(pin, duration)
 
     def __callback_handle_gpio_event(self, gpio, level, tick):
         """
         Change place on press down and upp if pull up or pull down
         """
         if level == 1:
-            self.__handle_press_down(gpio)
-        else:
             self.__handle_press_up(gpio)
+        else:
+            self.__handle_press_down(gpio)
+
 
 gpio = GIPOConfiguration()
 
 if __name__ == "__main__":
 
     gpio = GIPOConfiguration()
-

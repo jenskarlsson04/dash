@@ -2,3 +2,4 @@
 Kivy
 canparser==1.7.0
 python-can
+orjson

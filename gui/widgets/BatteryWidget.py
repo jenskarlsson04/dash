@@ -2,15 +2,20 @@ from kivy.uix.widget import Widget
 from kivy.graphics import Rectangle, Color
 from kivy.properties import StringProperty, BooleanProperty
 
+
 class BatteryWidget(Widget):
     battery_color = StringProperty("green")  # Dynamic property for the color
-    show_terminal = BooleanProperty(True)      # Toggle for showing the terminal
-    show_outline = BooleanProperty(True)       # Toggle for showing the outline
+    show_terminal = BooleanProperty(True)  # Toggle for showing the terminal
+    show_outline = BooleanProperty(True)  # Toggle for showing the outline
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bind(pos=self.update_graphics, size=self.update_graphics)
-        self.bind(battery_color=self.update_graphics, show_terminal=self.update_graphics, show_outline=self.update_graphics)
+        self.bind(
+            battery_color=self.update_graphics,
+            show_terminal=self.update_graphics,
+            show_outline=self.update_graphics,
+        )
         self.update_graphics()
 
     def update_graphics(self, *args):

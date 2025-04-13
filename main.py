@@ -6,6 +6,12 @@ main_app = MainApp()
 can_class = CanClass()
 can_class.start_read_can()
 
+import FileSave
+
+stats = FileSave.SaveToFile(FileSave.STATS_FILENAME)
+
+stats.load()
+
 
 def run():
     main_app.run()
