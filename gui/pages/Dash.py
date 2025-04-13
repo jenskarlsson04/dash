@@ -21,7 +21,7 @@ class Dash(Screen):
 
         # Can subscribtions
 
-        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.update_speed)
+#        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.update_speed)
         subscribe_can_message(canparser.OrionPowerData, self.update_soc)
 
 

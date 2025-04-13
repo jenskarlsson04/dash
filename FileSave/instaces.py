@@ -22,12 +22,12 @@ save_file_data_struct = {
     "extra_value_2": None
 }
 
-SaveToFile(STATS_FILENAME, data=save_file_data_struct)
+SaveToFile(STATS_FILENAME, data_struct=save_file_data_struct)
 
 presistent_data_struct = {
     "total_driving_time_s": None,
     "distance_driven_km": None
 }
 
-SaveToFile(PERSISTENT_FILENAME, data=save_file_data_struct)
+SaveToFile(PERSISTENT_FILENAME, data_struct=save_file_data_struct)
 

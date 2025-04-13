@@ -1,19 +1,18 @@
 [Unit]
-Description=Kivy App
-After=multi-user.target
+Description=Kivy Dashboard
+After=network.target
+#After=multi-user.target
 
 [Service]
-User=dash  # Change this if needed
-WorkingDirectory=/home/dash/dash
-ExecStart=/usr/bin/python3 /home/dash/dash/test_main.py
-Environment="DISPLAY="
-Environment="KIVY_GL_BACKEND=gl"
-Environment="KIVY_WINDOW=sdl2"
+ExecStart=/usr/bin/python3 /home/dash/dash/main.py
+WorkingDirectory=/home/dash
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+Environment="PYTHONUNBUFFERED=1"
 Environment="SDL_VIDEODRIVER=kmsdrm"
-Restart=on-failure
-StandardOutput=journal
-StandardError=journal
-TimeoutStartSec=10
+Environment="KIVY_GL_BACKEND=kivy.core.window.window_sdl2"
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target

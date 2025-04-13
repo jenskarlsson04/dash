@@ -100,7 +100,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
         #subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
-        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
+#        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)

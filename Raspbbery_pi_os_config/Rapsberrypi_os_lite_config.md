@@ -38,13 +38,30 @@ sudo systemctl disable alsa-state.service
 
 sudo systemctl disable man-db.service
 
+### Turn off network wait
+
+sudo systemctl mask systemd-networkd-wait-online.service
+
 # Configure splash screen. 
 
 Add `initramfs initramfs.img` into `/boot/firmware/config.txt` in the top of the file
 
+and 
+```
+hdmi_force_hotplug=1  # Forces HDMI even if no display is detected
+hdmi_group=2          # Set to DMT (computer monitor mode)
+hdmi_mode=82          # 1080p resolution (change as needed)
+
+framebuffer_width=1920
+framebuffer_height=1080
+
+boot_delay=0
+disable_splash=1
+```
+
 Add to `/boot/firmware/cmdline.txt` the same line but with a space between whats in the file and what you are adding 
 
-`logo.nologo loglevel=0 splash silent quiet` 
+`logo.nologo loglevel=0 splash silent quiet vt.global_cursor_default=0` 
 
 Copy the image splash.png to `/boot/firmware/`
 
@@ -81,14 +98,14 @@ sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 # CAN setup
 
 Add to boot/firmware/config.txt:
-`dtoverlay=mcp2515-can0, oscillator=16000000, interrupt=25`
+`dtoverlay=mcp251xfd,oscillator=20000000,interrupt=25`
 
 config the can interface, run:
-`sudo ip link set can0 up type can bitrate 500000`
+`sudo ip link set can0 up type can bitrate 5000000`
 
 Configure ptyhon code:
 ```ptyhon
 import can
 
-can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
+can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=5000000)
 ```
