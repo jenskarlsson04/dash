@@ -97,15 +97,31 @@ sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 
 # CAN setup
 
+Run `sudo apt update && sudo apt upgrade`  
+
 Add to boot/firmware/config.txt:
 `dtoverlay=mcp251xfd,oscillator=20000000,interrupt=25`
 
 config the can interface, run:
-`sudo ip link set can0 up type can bitrate 5000000`
+`sudo ip link set can0 up type can bitrate 500000`
 
 Configure ptyhon code:
 ```ptyhon
 import can
 
-can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=5000000)
+can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
+```
+
+Now reboot and check with this command `lsmod | grep can` is you get 
+
+`can_dev                45056  1 mcp251xfd`
+
+If you get this you need to add additional config for the can, i don't know why but i needed to.
+
+create a new file with `sudo nano /etc/modules-load.d/can.conf` and add following code to it 
+
+```
+can
+can_raw
+can_dev
 ```
