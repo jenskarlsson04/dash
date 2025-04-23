@@ -99,10 +99,10 @@ sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 
 Run `sudo apt update && sudo apt upgrade`  
 
-Add to boot/firmware/config.txt:
+Add to /boot/firmware/config.txt:
 `dtoverlay=mcp251xfd,oscillator=20000000,interrupt=25`
 
-config the can interface, run:
+after rebooting, to config the can interface, run:
 `sudo ip link set can0 up type can bitrate 500000`
 
 Configure ptyhon code:

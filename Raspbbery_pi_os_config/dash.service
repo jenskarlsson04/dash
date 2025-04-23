@@ -4,6 +4,7 @@ After=network.target
 #After=multi-user.target
 
 [Service]
+ExecStartPre=/usr/local/bin/myscript.sh # scpript before staring the app
 ExecStart=/usr/bin/python3 /home/dash/dash/main.py
 WorkingDirectory=/home/dash
 StandardOutput=inherit
