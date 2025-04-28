@@ -11,6 +11,7 @@ RISING_EDGE = 0
 FALLING_EDGE = 1
 EITHER_EDGE = 2
 
+
 class FakePi:
     def __init__(self):
         self.pins = {}  # Stores GPIO states
@@ -69,7 +70,9 @@ class FakePi:
 
             # Restore old value
             self.pins[gpio]["value"] = old_value
-            self._trigger_callbacks(gpio, FALLING_EDGE if edge == RISING_EDGE else RISING_EDGE)
+            self._trigger_callbacks(
+                gpio, FALLING_EDGE if edge == RISING_EDGE else RISING_EDGE
+            )
         else:
             print(f"[FAKE] Warning: GPIO {gpio} not initialized!")
 
@@ -83,6 +86,7 @@ class FakePi:
     def stop(self):
         """Stops the fake pigpio instance"""
         print("[FAKE] Stopping pigpio")
+
 
 # Drop-in replacement for pigpio.pi()
 def pi():

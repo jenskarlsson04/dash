@@ -11,7 +11,7 @@ from kivy.uix.popup import Popup
 from kivy.core.window import Window
 
 # Import lap time handler
-from gui.pages.time_table_manager import TimeTableManager
+from gui.widgets.time_table_manager import TimeTableManager
 
 # Import Custom widgets
 from gui.widgets import CustomProgressBar
@@ -19,8 +19,6 @@ from gui.widgets import OutlinedBox
 from gui.widgets import BatteryWidget
 
 # Import can stuff
-import canparser
-from can_reader import subscribe_can_message
 
 # Import error messages and CAN data
 from gui.shared_data import SharedDataDriver
@@ -69,6 +67,9 @@ class Dash2(Screen):
         self.laps = 22
         self.lvbat = 12
         self.state = "N/A"
+
+        # Disable error popup
+        self.show_error = False
 
         # For controlling the error popup as a queue:
         self.error_popup = None
@@ -163,9 +164,7 @@ class Dash2(Screen):
         self.soc_text_label.bind(size=self._update_text_size)
         left_middle.add_widget(self.soc_text_label)
 
-        soc_value_layout = BoxLayout(
-            orientation="horizontal", size_hint=(1, 0.6)
-        )
+        soc_value_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.6))
         self.soc_value_label = Label(
             text="N/A",
             font_size="80sp",
@@ -406,22 +405,23 @@ class Dash2(Screen):
         self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         self.speed_value_label.text = f"{self.SharedData.speed}"
         self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
-        self.LV_value_label.color = (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
+        self.LV_value_label.color = (
+            (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
+        )
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
 
-
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""
-        #if self.pending_error_messages:
-         #   next_error = self.pending_error_messages.pop(0)
-          #  self.error_popup = DismissablePopup(
-           #     title="Critical Error Alert",
-            #    content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
-              #  size_hint=(0.8, 0.3),
-            #)
-            #self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
-            #self.error_popup.open()
+        if self.pending_error_messages and self.show_error:
+            next_error = self.pending_error_messages.pop(0)
+            self.error_popup = DismissablePopup(
+                title="Critical Error Alert",
+                content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
+                size_hint=(0.8, 0.3),
+            )
+            self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
+            self.error_popup.open()
         pass
 
     def on_error_popup_dismiss(self, instance):
@@ -440,7 +440,6 @@ class Dash2(Screen):
         seconds = (time_in_ms % 60000) // 1000
         milliseconds = time_in_ms % 1000
         return f"{minutes:02}:{seconds:02}:{milliseconds:03}"
-
 
     def _update_text_size(self, instance, value):
         # Set text_size to the width only so the text does not wrap vertically
