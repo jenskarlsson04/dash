@@ -1,53 +1,72 @@
+# File 
+
+## Flashing the image
+
+When flashing the raspberry pi SD card choose the Raspberry pi OS lite as the base os. 
+Then when asked to set custom configs, choose yes, after that set the username to `dash` and set the password that you want
+Then I recomend that you set up the wifi connection, so that its possible to connect via ssh
+
+
+
+
 ## Turn off system services
 
+```bash
 systemctl disable keyboard-setup.service
-
 systemctl disable console-setup.service
+```
 
 ### Turn off bluetooth
-
+```bash
 sudo systemctl disable bluetooth.service
-
 sudo systemctl disable hciuart.service
+```
 
 ### Turn off Swap file (fake ram)
 
+```bash
 sudo dphys-swapfile swapoff
-
 sudo dphys-swapfile uninstall
-
 sudo systemctl disable dphys-swapfile.service
-
 sudo apt purge dphys-swapfile -y
+```
 
 ### Turn off updates
-
+```bash
 sudo systemctl disable rpi-eeprom-update.service
+```
 
 ### Turn off Modem (4G)
 
+```bash
 sudo systemctl disable ModemManager.service
-
 sudo apt purge modemmanager -y
+```
 
 ### Turn off audio manager
 
+```bash
 sudo systemctl disable alsa-state.service
+```
 
 ### Turn off man page updates
 
+```bash
 sudo systemctl disable man-db.service
+```
 
 ### Turn off network wait
 
+```bash
 sudo systemctl mask systemd-networkd-wait-online.service
+```
 
-# Configure splash screen. 
+## Configure splash screen. 
 
 Add `initramfs initramfs.img` into `/boot/firmware/config.txt` in the top of the file
 
 and 
-```
+```txt
 hdmi_force_hotplug=1  # Forces HDMI even if no display is detected
 hdmi_group=2          # Set to DMT (computer monitor mode)
 hdmi_mode=82          # 1080p resolution (change as needed)
@@ -77,7 +96,7 @@ fullscreen=1
 
 Now add initramfs.img to `/boot/firmware`
 
-# Configure Python
+## Configure Python
 
 Install pip: `sudo apt-get install python3-pip`
 
@@ -95,7 +114,7 @@ Now install gpio package:
 sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 ```
 
-# CAN setup
+## CAN setup
 
 Run `sudo apt update && sudo apt upgrade`  
 
@@ -110,18 +129,4 @@ Configure ptyhon code:
 import can
 
 can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
-```
-
-Now reboot and check with this command `lsmod | grep can` is you get 
-
-`can_dev                45056  1 mcp251xfd`
-
-If you get this you need to add additional config for the can, i don't know why but i needed to.
-
-create a new file with `sudo nano /etc/modules-load.d/can.conf` and add following code to it 
-
-```
-can
-can_raw
-can_dev
 ```

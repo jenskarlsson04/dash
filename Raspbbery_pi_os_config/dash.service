@@ -1,19 +1,22 @@
 [Unit]
 Description=Kivy Dashboard
-After=network.target
-#After=multi-user.target
+After=dev-fb0.device network.target
+Requires=dev-fb0.device
 
 [Service]
-ExecStartPre=/usr/local/bin/myscript.sh # scpript before staring the app
+Type=simple
+Environment="KIVY_METRICS_DENSITY=1"
+Environment="KIVY_GL_BACKEND=gl"
+Environment="SDL_VIDEODRIVER=fbcon"
+Environment="SDL_FBDEV=/dev/fb0"
+Environment="SDL_NOMOUSE=1"
+ExecStartPre=sudo ip link set can0 up type can bitrate 500000 # starts the can bus as a network interface
 ExecStart=/usr/bin/python3 /home/dash/dash/main.py
 WorkingDirectory=/home/dash
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
 User=pi
-Environment="PYTHONUNBUFFERED=1"
-Environment="SDL_VIDEODRIVER=kmsdrm"
-Environment="KIVY_GL_BACKEND=kivy.core.window.window_sdl2"
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target
