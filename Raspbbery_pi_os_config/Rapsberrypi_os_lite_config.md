@@ -130,3 +130,58 @@ import can
 
 can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
 ```
+
+
+
+
+
+
+[Unit]
+Description=Lyfter can0 och k  r Python-script p   Raspberry Pi
+After=network.target
+
+[Service]
+Type=simple
+# L  t bara ExecStartPre k  ras som root (om du vill)
+
+# (ta bort User/Group om du vill k  ra allt som root)
+
+# 1) K  r f  rberedelserna som root
+# 2) Detta beh  vs  ^`^s utan ExecStart f  r du bad-setting:
+ExecStart=/usr/sbin/ip link set can0 up type can bitrate 500000
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+[Unit]
+Description=Run dash-fix Python application
+After=can0-setup.service
+
+[Service]
+Type=simple
+User=dash
+Group=dash
+WorkingDirectory=/home/dash/dash-fix/dash
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+# Show logs in journal
+StandardOutput=journal
+StandardError=journal
+
+# Don ^`^yt restart automatically ^`^tso you can fix the underlying crash
+Restart=no
+
+ExecStart=/usr/bin/python3 main.py
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+

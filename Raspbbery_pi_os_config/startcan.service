@@ -1,0 +1,11 @@
+[Unit]
+Description=Lyfter can0 och k  r Python-script p   Raspberry Pi
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/ip link set can0 up type can bitrate 500000
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

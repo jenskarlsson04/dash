@@ -1,22 +1,16 @@
 [Unit]
 Description=Kivy Dashboard
-After=dev-fb0.device network.target
-Requires=dev-fb0.device
+After=startcan.service
 
 [Service]
 Type=simple
-Environment="KIVY_METRICS_DENSITY=1"
-Environment="KIVY_GL_BACKEND=gl"
-Environment="SDL_VIDEODRIVER=fbcon"
-Environment="SDL_FBDEV=/dev/fb0"
-Environment="SDL_NOMOUSE=1"
-ExecStartPre=sudo ip link set can0 up type can bitrate 500000 # starts the can bus as a network interface
-ExecStart=/usr/bin/python3 /home/dash/dash/main.py
+User=dash
+Group=dash
 WorkingDirectory=/home/dash
+ExecStart=/usr/bin/python3 /home/dash/dash/main.py
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
 
 [Install]
 WantedBy=multi-user.target
