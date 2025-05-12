@@ -438,7 +438,8 @@ class Dash2(Screen):
 
     def generate_random_time(self):
         """Generate a random time in milliseconds between 10 and 180 seconds."""
-        return random.randint(10000, 180000)
+        return 0
+        #return random.randint(10000, 180000)
 
     def format_time(self, time_in_ms):
         """Format time into mm:ss:ms (minutes:seconds:milliseconds)."""
