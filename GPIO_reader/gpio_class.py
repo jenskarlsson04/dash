@@ -59,6 +59,11 @@ class GIPOConfiguration:
             self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
         )
 
+        # Clear invalid press_down states from startup
+        for pin in [self.btn_lap.pin, self.btn_screen.pin]:
+            if self.pi.read(pin) == 1:  # Not pressed
+                self.time_button_press_down.pop(pin, None)
+
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
