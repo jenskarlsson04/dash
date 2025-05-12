@@ -67,6 +67,7 @@ class GIPOConfiguration:
         self.time_button_press_down[pin] = time.time()
 
     def __handle_press_up(self, pin: int):
+        breakpoint()
         if pin in self.time_button_press_down:
             start_time = self.time_button_press_down.get(pin)
 
