@@ -61,7 +61,7 @@ class SharedDataDriver:
         # Define a configuration for each expected channel: threshold (seconds) and fault messages
         # IF YOU WANT TO ADD SOMETHING, YOU NEED TO ADD IT TO channels_config AND channel_to_attr.
         self.channels_config = {
-            "bmst": {
+            "oriontemp": {
                 "threshold": 4,
                 "faults": ["High pack temp", ".High pack temp"],
             },
@@ -70,7 +70,7 @@ class SharedDataDriver:
                 "faults": ["High motor temp", ".High motor temp"],
             },
             "inverter_error": {"threshold": 4, "faults": ["Inverter has error"]},
-            "invt": {
+            "inverter_temp": {
                 "threshold": 4,
                 "faults": ["High inverter temp", ".High inverter temp"],
             },
@@ -84,7 +84,7 @@ class SharedDataDriver:
                 "faults": ["LV Bat LOW Voltage", ".LV Bat LOW Voltage"],
             },
             "tscu": {"threshold": 4, "faults": ["TSCU has error", ".TSCU has error"]},
-            "bmsP": {
+            "orionpower": {
                 "threshold": 4,
                 "faults": [
                     "PACK LOW Voltage",
@@ -105,27 +105,31 @@ class SharedDataDriver:
         self.can_error = False
         self.can_connected = True
 
+
+
         # Subscribe to CAN messages
-        subscribe_can_message(canparser.bmstData, self.bmst)
+        subscribe_can_message(canparser.OrionTempData, self.oriontemp)
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
-        subscribe_can_message(canparser.InverterTemperatureData, self.invt)
+        subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
         subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
-        subscribe_can_message(canparser.bmsPData, self.bmsP)
+        subscribe_can_message(canparser.OrionPowerData, self.orionpower)
         subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
 
+
+
     def update_faults(
-            value,
-            severe_fault,
-            less_servere,
-            servere_fault_msg,
-            less_servere_msg,
-            faults_set,
-            inverted=False,
+        value,
+        severe_fault,
+        less_servere,
+        servere_fault_msg,
+        less_servere_msg,
+        faults_set,
+        inverted=False,
     ):
         """
         Updates the fault set based on the value.
@@ -161,10 +165,10 @@ class SharedDataDriver:
     def check_can_data(self, dt):
         # Map each channel to the list of attributes to update on timeout
         CHANNEL_TO_ATTR = {
-            "bmst": ["packtemp_max", "packtemp_min"],
+            "oriontemp": ["packtemp_max", "packtemp_min"],
             "motortemp": ["motortemp"],
             "inverter_error": ["inv_errors", "inv_warnings", "inverter_warning"],
-            "invt": ["invt"],
+            "inverter_temp": ["inverter_temp"],
             "brake_press": ["brake_press"],
             "analogfront": ["lvvoltage"],
             "tscu": [
@@ -178,7 +182,7 @@ class SharedDataDriver:
                 "tsact",
                 "tscu_errors",
             ],
-            "bmsP": ["orionsoc", "orioncurrent", "orionvoltage"],
+            "orionpower": ["orionsoc", "orioncurrent", "orionvoltage"],
             "vcu": ["vcu_mode"],
         }
 
@@ -252,10 +256,10 @@ class SharedDataDriver:
 
             # Save updates
             self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.pres_stat)
+            self.pres_stat_file.save(self.stats)
 
-    def bmst(self, message):
-        self.last_update["bmst"] = time.time()  # used for can timeout mesurement
+    def oriontemp(self, message):
+        self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
         self.packtemp_max = (
             message.parsed_data.pack_max_cell_temp_c
         )  # subscribes on the data from the parser
@@ -273,6 +277,7 @@ class SharedDataDriver:
         )
         if self.packtemp_max > self.stats["pack_temp_max"]:
             self.stats["pack_temp_max"] = self.packtemp_max
+
 
     def motortemp(self, message):
         self.last_update["motortemp"] = time.time()
@@ -309,12 +314,12 @@ class SharedDataDriver:
         else:
             self.faults.discard(".Inverter has warn")
 
-    def invt(self, message):
-        self.last_update["invt"] = time.time()
-        self.invt = message.parsed_data.temperature_c
+    def inverter_temp(self, message):
+        self.last_update["inverter_temp"] = time.time()
+        self.inverter_temp = message.parsed_data.temperature_c
 
         SharedDataDriver.update_faults(
-            self.invt,
+            self.inverter_temp,
             severe_fault=60,
             less_servere=50,
             servere_fault_msg="High inverter temp",
@@ -354,19 +359,20 @@ class SharedDataDriver:
         self.speed = round(
             (3.6 * 0.2032)
             * (
-                    (
-                            message.parsed_data.wheel_speed_l_rad_per_sec
-                            + message.parsed_data.wheel_speed_r_rad_per_sec
-                    )
-                    / 2
+                (
+                    message.parsed_data.wheel_speed_l_rad_per_sec
+                    + message.parsed_data.wheel_speed_r_rad_per_sec
+                )
+                / 2
             )
         )
-        # self.update_driving_time()
+        #self.update_driving_time()
         if self.speed > self.stats["speed_max"]:
             self.stats["speed_max"] = self.speed
 
+
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
-        # Save to stats
+        #Save to stats
         if self.lvvoltage < self.stats["lv_bat_voltage_min"]:
             self.stats["lv_bat_voltage_min"] = self.lvvoltage
 
@@ -429,8 +435,8 @@ class SharedDataDriver:
 
         self.stats_file.save(self.stats)
 
-    def bmsP(self, message):
-        self.last_update["bmsP"] = time.time()
+    def orionpower(self, message):
+        self.last_update["orionpower"] = time.time()
         self.orionsoc = round(100 * message.parsed_data.pack_soc_ratio)
         self.orioncurrent = round(message.parsed_data.pack_current_A)
         self.orionvoltage = round(message.parsed_data.pack_voltage_v)
@@ -462,6 +468,7 @@ class SharedDataDriver:
         self.stats_file.save(self.stats)
         self.update_consumed_soc()
 
+
         # Update SOC faults (inverted: lower SOC is worse)
         SharedDataDriver.update_faults(
             self.orionsoc,
@@ -488,22 +495,28 @@ class SharedDataDriver:
         self.last_update["vcu"] = time.time()
         self.vcu_mode = message.parsed_data.state.name
 
+
+
+
+
     def reset(self):
         self.stats = {
-            "orion_current_max": 0,
-            "speed_max": 0,
-            "pack_temp_max": 0,
-            "lv_bat_voltage_min": 999,
-            "pack_voltage_min": 999,
-            "power_max": 0,
-            "effscore": 0,
-            "driving_time": 0,
-            "consumed_soc": 0,
-            "energy_drawn_wh": 0,
-            "distance_driven_m": 0,
-            "effscore_total": 0,
-            "effscore_count": 0,
-        }
+    "orion_current_max": 0,
+    "speed_max": 0,
+    "pack_temp_max": 0,
+    "lv_bat_voltage_min": 999,
+    "pack_voltage_min": 999,
+    "power_max": 0,
+    "effscore": 0,
+    "driving_time": 0,
+    "consumed_soc": 0,
+    "energy_drawn_wh": 0,
+    "distance_driven_m": 0,
+    "effscore_total": 0,
+    "effscore_count": 0,
+}
+
+
 
 
 if __name__ == "__main__":
