@@ -42,6 +42,10 @@ class MainApp(App):
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
 
+        # set the first screen to activ, BUG: if removed needs two presses to switch screen,
+        # how does it add the first screen?
+        sm.switch_to_next()
+
         return sm
 
 

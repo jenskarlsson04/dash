@@ -2,7 +2,7 @@ import time
 from GPIO_reader.gpio_subscription import publish_message
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
-GPIO_DEBUG = False
+GPIO_DEBUG = True
 
 if GPIO_DEBUG:
     print("WARNING: DEBUG MODE ON")
