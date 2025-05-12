@@ -105,8 +105,6 @@ class SharedDataDriver:
         self.can_error = False
         self.can_connected = True
 
-
-
         # Subscribe to CAN messages
         subscribe_can_message(canparser.OrionTempData, self.oriontemp)
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
@@ -120,16 +118,14 @@ class SharedDataDriver:
         subscribe_can_message(canparser.VcuStateData, self.vcu)
         # add orion power data
 
-
-
     def update_faults(
-        value,
-        severe_fault,
-        less_servere,
-        servere_fault_msg,
-        less_servere_msg,
-        faults_set,
-        inverted=False,
+            value,
+            severe_fault,
+            less_servere,
+            servere_fault_msg,
+            less_servere_msg,
+            faults_set,
+            inverted=False,
     ):
         """
         Updates the fault set based on the value.
@@ -256,7 +252,7 @@ class SharedDataDriver:
 
             # Save updates
             self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.stats)
+            self.pres_stat_file.save(self.pres_stat)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
@@ -277,7 +273,6 @@ class SharedDataDriver:
         )
         if self.packtemp_max > self.stats["pack_temp_max"]:
             self.stats["pack_temp_max"] = self.packtemp_max
-
 
     def motortemp(self, message):
         self.last_update["motortemp"] = time.time()
@@ -359,20 +354,19 @@ class SharedDataDriver:
         self.speed = round(
             (3.6 * 0.2032)
             * (
-                (
-                    message.parsed_data.wheel_speed_l_rad_per_sec
-                    + message.parsed_data.wheel_speed_r_rad_per_sec
-                )
-                / 2
+                    (
+                            message.parsed_data.wheel_speed_l_rad_per_sec
+                            + message.parsed_data.wheel_speed_r_rad_per_sec
+                    )
+                    / 2
             )
         )
-        #self.update_driving_time()
+        # self.update_driving_time()
         if self.speed > self.stats["speed_max"]:
             self.stats["speed_max"] = self.speed
 
-
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
-        #Save to stats
+        # Save to stats
         if self.lvvoltage < self.stats["lv_bat_voltage_min"]:
             self.stats["lv_bat_voltage_min"] = self.lvvoltage
 
@@ -454,7 +448,7 @@ class SharedDataDriver:
         if self.power > self.stats["power_max"]:
             self.stats["power_max"] = self.power
             self.stats_file.save(self.stats)
-        
+
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time
         self.last_energy_time = current_time
@@ -467,7 +461,6 @@ class SharedDataDriver:
         self.stats["energy_drawn_wh"] += power * (dt_energy / 3600)
         self.stats_file.save(self.stats)
         self.update_consumed_soc()
-
 
         # Update SOC faults (inverted: lower SOC is worse)
         SharedDataDriver.update_faults(
@@ -495,28 +488,22 @@ class SharedDataDriver:
         self.last_update["vcu"] = time.time()
         self.vcu_mode = message.parsed_data.state.name
 
-
-
-
-
     def reset(self):
         self.stats = {
-    "orion_current_max": 0,
-    "speed_max": 0,
-    "pack_temp_max": 0,
-    "lv_bat_voltage_min": 999,
-    "pack_voltage_min": 999,
-    "power_max": 0,
-    "effscore": 0,
-    "driving_time": 0,
-    "consumed_soc": 0,
-    "energy_drawn_wh": 0,
-    "distance_driven_m": 0,
-    "effscore_total": 0,
-    "effscore_count": 0,
-}
-
-
+            "orion_current_max": 0,
+            "speed_max": 0,
+            "pack_temp_max": 0,
+            "lv_bat_voltage_min": 999,
+            "pack_voltage_min": 999,
+            "power_max": 0,
+            "effscore": 0,
+            "driving_time": 0,
+            "consumed_soc": 0,
+            "energy_drawn_wh": 0,
+            "distance_driven_m": 0,
+            "effscore_total": 0,
+            "effscore_count": 0,
+        }
 
 
 if __name__ == "__main__":
