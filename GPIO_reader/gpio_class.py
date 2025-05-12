@@ -78,11 +78,11 @@ class GIPOConfiguration:
 
     def __callback_handle_gpio_event(self, gpio, level, tick):
         """
-        Change place on press down and upp if pull up or pull down
+        Handle GPIO edge events; only trigger press up if there was a press down.
         """
-        if level == 1:
+        if level == 1 and gpio in self.time_button_press_down:
             self.__handle_press_up(gpio)
-        else:
+        elif level == 0:
             self.__handle_press_down(gpio)
 
 
