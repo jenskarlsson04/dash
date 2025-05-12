@@ -13,7 +13,7 @@ else:
 
 def set_debug():
     global GPIO_DEBUG
-    GPIO_DEBUG = True
+    GPIO_DEBUG = False
 
 
 btn_lap = GPIO_PIN(22)

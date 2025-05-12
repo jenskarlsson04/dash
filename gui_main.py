@@ -1,3 +1,4 @@
+
 import os
 os.environ["KIVY_NO_CONSOLELOG"] = "1"
 os.environ["KIVY_NO_FILELOG"] = "1"
@@ -33,7 +34,7 @@ class MainApp(App):
 
         # Add screens to the screen manager
         sm.add_screen(Dash2(name="dashboard2"))
-        sm.add_screen(Afterdrive(name="afterdrive"))
+        #sm.add_screen(Afterdrive(name="afterdrive"))
         sm.add_screen(Faults(name="faults"))
         sm.add_screen(TSAC(name="tsac"))
         sm.add_screen(Inverter(name="inverter"))
@@ -41,6 +42,10 @@ class MainApp(App):
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
+
+        # set the first screen to activ, BUG: if removed needs two presses to switch screen,
+        # how does it add the first screen?
+        sm.switch_to_next()
 
         return sm
 
