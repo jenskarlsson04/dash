@@ -2,7 +2,7 @@ import time
 from GPIO_reader.gpio_subscription import publish_message
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
-GPIO_DEBUG = True
+GPIO_DEBUG = False
 
 if GPIO_DEBUG:
     print("WARNING: DEBUG MODE ON")
@@ -13,7 +13,7 @@ else:
 
 def set_debug():
     global GPIO_DEBUG
-    GPIO_DEBUG = True
+    GPIO_DEBUG = False
 
 
 btn_lap = GPIO_PIN(22)
@@ -59,12 +59,18 @@ class GIPOConfiguration:
             self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
         )
 
+        # Clear invalid press_down states from startup
+        for pin in [self.btn_lap.pin, self.btn_screen.pin]:
+            if self.pi.read(pin) == 1:  # Not pressed
+                self.time_button_press_down.pop(pin, None)
+
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
 
     def __handle_press_down(self, pin: int):
-        self.time_button_press_down[pin] = time.time()
+        if self.pi.read(pin) == 0:  # Ensure pin is truly low
+            self.time_button_press_down[pin] = time.time()
 
     def __handle_press_up(self, pin: int):
         breakpoint()
