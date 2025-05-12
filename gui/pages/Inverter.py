@@ -203,6 +203,22 @@ class Inverter(Screen):
         error_section.add_widget(self.scroll_view_errors)
         right_content.add_widget(error_section)
 
+        # Preallocate error labels
+        self.error_labels = []
+        for _ in range(2):
+            label = Label(
+                text="",
+                font_size="35sp",
+                size_hint_y=None,
+                height=60,
+                halign="right",
+                valign="middle",
+                color=(1, 0, 0, 1),
+            )
+            label.bind(size=self._update_text_size)
+            self.errors_content_layout.add_widget(label)
+            self.error_labels.append(label)
+
         # Varnings-sektion
         warn_section = BoxLayout(orientation="vertical", spacing=20, size_hint=(1, 0.4))
         warn_title_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.4))
@@ -239,6 +255,22 @@ class Inverter(Screen):
         warn_section.add_widget(self.scroll_view_warn)
         right_content.add_widget(warn_section)
 
+        # Preallocate warning labels
+        self.warn_labels = []
+        for _ in range(2):
+            label = Label(
+                text="",
+                font_size="35sp",
+                size_hint_y=None,
+                height=60,
+                halign="right",
+                valign="middle",
+                color=(1, 0, 0, 1),
+            )
+            label.bind(size=self._update_text_size)
+            self.warn_content_layout.add_widget(label)
+            self.warn_labels.append(label)
+
         content_layout.add_widget(left_content)
         content_layout.add_widget(right_content)
 
@@ -258,47 +290,23 @@ class Inverter(Screen):
         self.inverter_temp_value_label.text = f"{self.inverter_temp}"
         self.motortemp_value_label.text = f"{self.motortemp}"
 
-        # Uppdatera fel
+        # Update errors
         error_count = len(self.errors)
         self.errors_amount_label.text = f"({error_count})"
-        self.errors_content_layout.clear_widgets()
-        errors_to_show = self.errors[:2]
-        for i, error in enumerate(errors_to_show):
-            label = Label(
-                text=error,
-                font_size="35sp",
-                size_hint_y=None,
-                height=60,  # increased height for better spacing
-                halign="right",
-                valign="middle",
-                color=(1, 0, 0, 1),
-            )
-            label.bind(size=self._update_text_size)
-            self.errors_content_layout.add_widget(label)
-            if i < len(errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=10)
-                self.errors_content_layout.add_widget(spacer)
+        for i in range(2):
+            if i < error_count:
+                self.error_labels[i].text = self.errors[i]
+            else:
+                self.error_labels[i].text = ""
 
-        # Uppdatera varningar
+        # Update warnings
         warn_count = len(self.warnings)
         self.warn_amount_label.text = f"({warn_count})"
-        self.warn_content_layout.clear_widgets()
-        warnings_to_show = self.warnings[:2]
-        for i, warn in enumerate(warnings_to_show):
-            label = Label(
-                text=warn,
-                font_size="35sp",
-                size_hint_y=None,
-                height=60,  # increased height
-                halign="right",
-                valign="middle",
-                color=(1, 0, 0, 1),
-            )
-            label.bind(size=self._update_text_size)
-            self.warn_content_layout.add_widget(label)
-            if i < len(warnings_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=10)
-                self.warn_content_layout.add_widget(spacer)
+        for i in range(2):
+            if i < warn_count:
+                self.warn_labels[i].text = self.warnings[i]
+            else:
+                self.warn_labels[i].text = ""
 
     # CAN-meddelandeuppdaterare
     def update_motor_temp(self, message):
