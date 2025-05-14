@@ -42,9 +42,17 @@ sudo systemctl disable man-db.service
 
 Add `initramfs initramfs.img` into `/boot/firmware/config.txt` in the top of the file
 
-Add to `/boot/firmware/cmdline.txt` the same line but with a space between whats in the file and what you are adding 
+Now we need to make modifications in the `/boot/firmware/cmdline.txt`, open it with sudo
 
-`logo.nologo loglevel=0 splash silent quiet` 
+first remove the `console=tty1`, this is the first step to remove the login prompt, 
+but if you want to see the ip addr of the raspberry pi skip this step.
+
+and then add:
+`logo.nologo loglevel=0 splash silent quiet vt.global_cursor_default=0` 
+
+now you can save the file.
+
+The second step is to run `sudo systemctl disable getty@tty1.service` to disable the login prompt
 
 Copy the image splash.png to `/boot/firmware/`
 
@@ -58,7 +66,7 @@ image=splash.png
 fullscreen=1
 ```
 
-Now add initramfs.img to `/boot/firmware`
+Now move initramfs.img to `/boot/firmware`
 
 # Configure Python
 
@@ -78,7 +86,7 @@ Now install gpio package:
 sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 ```
 
-# CAN setup
+### CAN setup
 
 Add to boot/firmware/config.txt:
 `dtoverlay=mcp2515-can0, oscillator=16000000, interrupt=25`
@@ -92,3 +100,13 @@ import can
 
 can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
 ```
+
+### Setup the python app
+
+Now wee need to get the dash gir repo, you can send it using scp or download it using git.
+The whole repo should be in a folder called `dash` in the home dir. 
+
+now send the two service files and run `sudo systemctl enable dashconf.service` 
+then change `dashconf.service` with `dash.service`
+
+now you should be able to reboot the raspberry pi and everything should work.
