@@ -27,26 +27,27 @@ class CustomScreenSwitcher(ScreenManager):
 
     def update_active_screen(self, dt):
         # Call a `refresh` method on the active screen, if it exists.
-        if hasattr(self.current_screen, "refresh"):
-            self.current_screen.refresh()
+        self.current_screen.refresh()
 
     def add_screen(self, widget: Screen):
-        self.list_of_screens.append(widget)
-        self.add_widget(widget)
-        self.cycle_screen = cycle(self.list_of_screens)
+        if hasattr(widget, "refresh"):# and hasattr(self.current_screen, "on_pre_leave"):
+            self.list_of_screens.append(widget)
+            self.add_widget(widget)
+            self.cycle_screen = cycle(self.list_of_screens)
+        else:
+            raise Exception("Func does not have attr refresh or on_pre_leave")
 
     def switch_to_next(self, time=None):
         # Stoppa klockan på den aktuella skärmen innan byte.
-        if hasattr(self.current_screen, "on_pre_leave"):
-            self.current_screen.on_pre_leave()
+        #self.current_screen.on_pre_leave()
 
         # Byt till nästa skärm.
         next_screen = next(self.cycle_screen)
         self.current = next_screen.name
 
+
         # Starta klockan på den nya skärmen.
-        if hasattr(self.current_screen, "on_pre_enter"):
-            self.current_screen.on_pre_enter()
+        #self.current_screen.on_pre_enter()
 
     def on_key_down(self, window, key, *args):
         # Keyboard events occur on the main thread.

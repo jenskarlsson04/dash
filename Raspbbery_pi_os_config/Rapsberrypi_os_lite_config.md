@@ -82,6 +82,18 @@ Add to `/boot/firmware/cmdline.txt` the same line but with a space between whats
 
 `logo.nologo loglevel=0 splash silent quiet vt.global_cursor_default=0` 
 
+Now we need to make modifications in the `/boot/firmware/cmdline.txt`, open it with sudo
+
+first remove the `console=tty1`, this is the first step to remove the login prompt, 
+but if you want to see the ip addr of the raspberry pi skip this step.
+
+and then add:
+`logo.nologo loglevel=0 splash silent quiet vt.global_cursor_default=0` 
+
+now you can save the file.
+
+The second step is to run `sudo systemctl disable getty@tty1.service` to disable the login prompt
+
 Copy the image splash.png to `/boot/firmware/`
 
 Create a new file called splash.txt in /boot/firmware/ `/boot/firmware/splash.txt`
@@ -94,7 +106,7 @@ image=splash.png
 fullscreen=1
 ```
 
-Now add initramfs.img to `/boot/firmware`
+Now move initramfs.img to `/boot/firmware`
 
 ## Configure Python
 
@@ -131,57 +143,13 @@ import can
 can_bus = can.interface.Bus(interface='socketcan', channel='can0', bitrate=500000)
 ```
 
+### Setup the python app
 
+Now wee need to get the dash gir repo, you can send it using scp or download it using git.
+*if you are using git, remember to run `pip install -r requirements.txt` and 
+The whole repo should be in a folder called `dash` in the home dir. 
 
+now send the two service files and run `sudo systemctl enable dashconf.service` 
+then change `dashconf.service` with `dash.service`
 
-
-
-[Unit]
-Description=Lyfter can0 och k  r Python-script p   Raspberry Pi
-After=network.target
-
-[Service]
-Type=simple
-# L  t bara ExecStartPre k  ras som root (om du vill)
-
-# (ta bort User/Group om du vill k  ra allt som root)
-
-# 1) K  r f  rberedelserna som root
-# 2) Detta beh  vs  ^`^s utan ExecStart f  r du bad-setting:
-ExecStart=/usr/sbin/ip link set can0 up type can bitrate 500000
-
-Restart=on-failure
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
-
-
-
-
-[Unit]
-Description=Run dash-fix Python application
-After=can0-setup.service
-
-[Service]
-Type=simple
-User=dash
-Group=dash
-WorkingDirectory=/home/dash/dash-fix/dash
-Environment=XDG_RUNTIME_DIR=/run/user/1000
-
-# Show logs in journal
-StandardOutput=journal
-StandardError=journal
-
-# Don ^`^yt restart automatically ^`^tso you can fix the underlying crash
-Restart=no
-
-ExecStart=/usr/bin/python3 main.py
-
-[Install]
-WantedBy=multi-user.target
-
-
-
-
+now you should be able to reboot the raspberry pi and everything should work.

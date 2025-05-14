@@ -1,14 +1,16 @@
 [Unit]
 Description=Kivy Dashboard
-After=startcan.service
+After=dashconf.service
 
 [Service]
 Type=simple
+
+Environment="SDL_NOMOUSE=1"
 User=dash
 Group=dash
-WorkingDirectory=/home/dash
+WorkingDirectory=/home/dash/dash
 ExecStart=/usr/bin/python3 /home/dash/dash/main.py
-StandardOutput=inherit
+StandardOutput=append:/home/dash/full_dash.log
 StandardError=inherit
 Restart=always
 

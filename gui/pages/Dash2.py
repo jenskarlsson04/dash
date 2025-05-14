@@ -300,6 +300,23 @@ class Dash2(Screen):
         self.errors_content_layout.bind(
             minimum_height=self.errors_content_layout.setter("height")
         )
+        # Create a fixed pool of 4 reusable error labels and spacers
+        self.error_labels = []
+        for _ in range(4):
+            label = Label(
+                text="",
+                font_size="35sp",
+                size_hint_y=None,
+                height=60,
+                halign="center",
+                valign="middle",
+                color=(1, 1, 1, 1),
+            )
+            label.bind(size=self._update_text_size)
+            self.error_labels.append(label)
+            self.errors_content_layout.add_widget(label)
+            spacer = Widget(size_hint_y=None, height=0)
+            self.errors_content_layout.add_widget(spacer)
         self.scroll_view_errors.add_widget(self.errors_content_layout)
         right_upper.add_widget(self.scroll_view_errors)
 
@@ -359,7 +376,6 @@ class Dash2(Screen):
         # Update errors
         error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
-        self.errors_content_layout.clear_widgets()
         errors_to_show = list(self.SharedData.faults)
 
         # Only consider errors without a dot for popups.
@@ -376,30 +392,20 @@ class Dash2(Screen):
         if self.error_popup is None and self.pending_error_messages:
             self.show_next_error_popup()
 
-        # Display all errors in the error content layout.
-        for i, error in enumerate(errors_to_show[:4]):
-            if error.startswith("."):
-                display_error = error[1:]  # Remove the leading dot
-                error_color = (1, 0.5, 0, 1)  # Orange
+        # Update the 4 reusable error labels
+        for i in range(4):
+            if i < len(errors_to_show):
+                error = errors_to_show[i]
+                label = self.error_labels[i]
+                if error.startswith("."):
+                    display_error = error[1:]
+                    label.color = (1, 0.5, 0, 1)
+                else:
+                    display_error = error
+                    label.color = (1, 0, 0, 1)
+                label.text = display_error
             else:
-                display_error = error
-                error_color = (1, 0, 0, 1)  # Red
-
-            label = Label(
-                text=display_error,
-                font_size="35sp",
-                size_hint_y=None,
-                height=60,
-                halign="center",
-                valign="middle",
-                color=error_color,
-            )
-            label.bind(size=self._update_text_size)
-            self.errors_content_layout.add_widget(label)
-
-            if i < len(errors_to_show) - 1:
-                spacer = Widget(size_hint_y=None, height=0)
-                self.errors_content_layout.add_widget(spacer)
+                self.error_labels[i].text = ""
 
         # Update other values
         self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
@@ -432,7 +438,8 @@ class Dash2(Screen):
 
     def generate_random_time(self):
         """Generate a random time in milliseconds between 10 and 180 seconds."""
-        return random.randint(10000, 180000)
+        return 0
+        #return random.randint(10000, 180000)
 
     def format_time(self, time_in_ms):
         """Format time into mm:ss:ms (minutes:seconds:milliseconds)."""

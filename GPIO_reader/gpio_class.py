@@ -2,7 +2,7 @@ import time
 from GPIO_reader.gpio_subscription import publish_message
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
-GPIO_DEBUG = False
+GPIO_DEBUG = True
 
 if GPIO_DEBUG:
     print("WARNING: DEBUG MODE ON")
@@ -59,12 +59,14 @@ class GIPOConfiguration:
             self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
         )
 
+
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
 
     def __handle_press_down(self, pin: int):
-        self.time_button_press_down[pin] = time.time()
+        if self.pi.read(pin) == 0:  # Ensure pin is truly low
+            self.time_button_press_down[pin] = time.time()
 
     def __handle_press_up(self, pin: int):
         if pin in self.time_button_press_down:
@@ -78,11 +80,11 @@ class GIPOConfiguration:
 
     def __callback_handle_gpio_event(self, gpio, level, tick):
         """
-        Change place on press down and upp if pull up or pull down
+        Handle GPIO edge events; only trigger press up if there was a press down.
         """
-        if level == 1:
+        if level == 1 and gpio in self.time_button_press_down:
             self.__handle_press_up(gpio)
-        else:
+        elif level == 0:
             self.__handle_press_down(gpio)
 
 

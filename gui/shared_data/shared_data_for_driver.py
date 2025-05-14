@@ -256,7 +256,7 @@ class SharedDataDriver:
 
             # Save updates
             self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.pres_stat)
+            self.pres_stat_file.save(self.stats)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
@@ -454,7 +454,7 @@ class SharedDataDriver:
         if self.power > self.stats["power_max"]:
             self.stats["power_max"] = self.power
             self.stats_file.save(self.stats)
-        
+
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time
         self.last_energy_time = current_time

@@ -13,6 +13,7 @@ from kivy.config import Config
 Config.set("graphics", "width", 1024)
 Config.set("graphics", "height", 600)
 Config.set("graphics", "dpi", "96")  # Adjust as needed
+Config.set("graphics", "show_cursor", 0)
 
 from kivy.app import App
 from gui.pages.Dash import Dash
@@ -41,6 +42,10 @@ class MainApp(App):
 
         # Bind to detect screen changes and reset the clock update
         sm.bind(current=sm.on_current_screen)
+
+        # set the first screen to activ, BUG: if removed needs two presses to switch screen,
+        # how does it add the first screen?
+        sm.switch_to_next()
 
         return sm
 
