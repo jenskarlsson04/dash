@@ -8,7 +8,6 @@ Then I recomend that you set up the wifi connection, so that its possible to con
 
 
 
-
 ## Turn off system services
 
 ```bash
@@ -118,13 +117,29 @@ Now install the python packages with pip
 
 Now run 
 ``` bash
-sudo apt install python3-kivy libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libmtdev-dev libgl1-mesa-dev libgles2-mesa-dev libdrm-dev libgbm-dev libudev-dev
+sudo apt install python3-kivy
 ```
 
 Now install gpio package: 
 ```bash
 sudo apt install pigpio python3-pigpio -y && sudo pigpiod
 ```
+
+Now we need to make pigpiod start on boot, to do this try enabling it `sudo systemctl enable pigpiod.service`
+
+or create a custom service file with this code: 
+
+```bash
+[Unit]
+Description=Daemon required to control GPIO pins via pigpio
+[Service]
+ExecStart=/usr/bin/pigpiod -l
+ExecStop=/bin/systemctl kill pigpiod
+Type=forking
+[Install]
+WantedBy=multi-user.target
+```
+
 
 ## CAN setup
 

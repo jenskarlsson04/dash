@@ -1,13 +1,12 @@
 [Unit]
-Description=Start can and gpio
-After=multi-user.target
+Description=Start can
 
 [Service]
-ExecStart=/bin/sh -c "/usr/bin/ip link set can0 up type can bitrate 500000 && /usr/bin/pigpiod"
+ExecStart=/usr/bin/ip link set can0 up type can bitrate 500000
 Restart=on-failure
 StandardOutput=append:/home/dash/full_dash.log
 StandardError=inherit
 TimeoutStartSec=10
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target

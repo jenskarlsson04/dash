@@ -1,5 +1,6 @@
 [Unit]
 Description=Kivy Dashboard
+Requires=dashconf.service
 After=dashconf.service
 
 [Service]
