@@ -3,6 +3,8 @@ import os
 os.environ["KIVY_NO_CONSOLELOG"] = "1"
 os.environ["KIVY_NO_FILELOG"] = "1"
 os.environ["KIVY_LOG_LEVEL"] = "error"
+os.environ["KIVY_AUDIO"] = "dummy"
+
 
 from kivy.clock import Clock
 # rest of your imports
