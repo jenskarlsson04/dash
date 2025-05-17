@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from itertools import cycle
-from kivy.core.window import Window
+#from kivy.core.window import Window
 from kivy.clock import Clock
 from GPIO_reader import subscribe_gpio_pint, btn_screen
 
@@ -10,7 +10,7 @@ class CustomScreenSwitcher(ScreenManager):
         super(CustomScreenSwitcher, self).__init__(**kwargs)
         self.list_of_screens = []
         self.cycle_screen = None
-        Window.bind(on_key_down=self.on_key_down)
+        #Window.bind(on_key_down=self.on_key_down)
 
         self.clock_event = None
 
