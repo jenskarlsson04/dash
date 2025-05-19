@@ -67,7 +67,7 @@ class Dash2(Screen):
         self.laps = 22
         self.lvbat = 12
         self.state = "N/A"
-        self.batterywid = BatteryWidget()
+        #self.batterywid = BatteryWidget()
 
         # Disable error popup
         self.show_error = False
