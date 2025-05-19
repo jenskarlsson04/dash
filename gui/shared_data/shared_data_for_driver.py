@@ -496,7 +496,6 @@ class SharedDataDriver:
     def vcu(self, message):
         self.last_update["vcu"] = time.time()
         self.vcu_mode = message.parsed_data.state.name
-        print("lol")
 
 
 
