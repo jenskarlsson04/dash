@@ -258,7 +258,7 @@ class SharedDataDriver:
 
             # Save updates
             self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.stats)
+            self.pres_stat_file.save(self.pres_stat)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
