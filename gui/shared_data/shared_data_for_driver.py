@@ -238,7 +238,7 @@ class SharedDataDriver:
         avg_score = self.stats["effscore_total"] / self.stats["effscore_count"]
         self.stats["effscore"] = max(0.0, min(avg_score, 1.0))
 
-        #self.stats_file.save(self.stats)
+        self.stats_file.save(self.stats)
 
     # Add this new method to the class:
     def update_drive_metrics(self):
@@ -257,8 +257,8 @@ class SharedDataDriver:
             self.pres_stat["distance_driven_m"] += distance_m
 
             # Save updates
-            #self.stats_file.save(self.stats)
-            #self.pres_stat_file.save(self.pres_stat)
+            self.stats_file.save(self.stats)
+            self.pres_stat_file.save(self.pres_stat)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
@@ -435,7 +435,7 @@ class SharedDataDriver:
         # Update last seen SOC
         self.last_soc = soc
 
-        #self.stats_file.save(self.stats)
+        self.stats_file.save(self.stats)
 
     def orionpower(self, message):
         self.last_update["orionpower"] = time.time()
@@ -445,17 +445,17 @@ class SharedDataDriver:
 
         if self.stats["orion_current_max"] < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
-            #self.stats_file.save(self.stats)
+            self.stats_file.save(self.stats)
 
         if self.orionvoltage < self.stats["pack_voltage_min"]:
             self.stats["pack_voltage_min"] = self.orionvoltage
-            #self.stats_file.save(self.stats)
+            self.stats_file.save(self.stats)
 
         self.power = (self.orionvoltage * self.orioncurrent) / 1000
 
         if self.power > self.stats["power_max"]:
             self.stats["power_max"] = self.power
-            #self.stats_file.save(self.stats)
+        self.stats_file.save(self.stats)
 
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time
@@ -467,7 +467,7 @@ class SharedDataDriver:
         except (ValueError, TypeError):
             power = 0
         self.stats["energy_drawn_wh"] += power * (dt_energy / 3600)
-        #self.stats_file.save(self.stats)
+        self.stats_file.save(self.stats)
         self.update_consumed_soc()
 
 
