@@ -67,7 +67,7 @@ class Dash2(Screen):
         self.laps = 22
         self.lvbat = 12
         self.state = "N/A"
-        #self.batterywid = BatteryWidget()
+        self.batterywid = BatteryWidget()
 
         # Disable error popup
         self.show_error = False
@@ -225,7 +225,7 @@ class Dash2(Screen):
             size_hint=(1, 0.86),
             pos_hint={"x": 0, "y": 0},
         )
-        #middle_upper.add_widget(self.battery_bar)
+        middle_upper.add_widget(self.battery_bar)
 
         middle_lower = OutlinedBox(
             orientation="vertical", spacing=10, size_hint=(1, 0.345)
@@ -356,18 +356,18 @@ class Dash2(Screen):
         self.add_widget(root_layout)
 
     def refresh(self):
-        self.top_progress_bar1.set_value(self.SharedData.speed)
-        self.top_progress_bar2.set_value(self.SharedData.speed)
-        self.top_progress_bar3.set_value(self.SharedData.speed)
-        #self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
+        #self.top_progress_bar1.set_value(self.SharedData.speed)
+        #self.top_progress_bar2.set_value(self.SharedData.speed)
+        #self.top_progress_bar3.set_value(self.SharedData.speed)
+        self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
 
         # Old lap time logic
-        #new_lap_time = self.generate_random_time()
-        #result = self.time_table_manager.add_lap_time(new_lap_time)
-        #last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
-        #self.lastlap_value_label.color = (
-        #    (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
-        #)
+        new_lap_time = self.generate_random_time()
+        result = self.time_table_manager.add_lap_time(new_lap_time)
+        last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
+        self.lastlap_value_label.color = (
+            (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
+        )
 
         # Update errors
         error_count = len(self.SharedData.faults)
@@ -404,7 +404,7 @@ class Dash2(Screen):
                 self.error_labels[i].text = ""
 
         # Update other values
-#        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
+        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         self.speed_value_label.text = f"{self.SharedData.speed}"
         self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
         self.LV_value_label.color = (
