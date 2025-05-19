@@ -67,6 +67,7 @@ class Dash2(Screen):
         self.laps = 22
         self.lvbat = 12
         self.state = "N/A"
+        self.batterywid = BatteryWidget()
 
         # Disable error popup
         self.show_error = False
@@ -218,14 +219,13 @@ class Dash2(Screen):
             orientation="vertical", spacing=10, size_hint=(0.33, 1)
         )
         middle_upper = OutlinedBox(
-            orientation="vertical", spacing=10, size_hint=(1, 0.7)
+            orientation="horizontal", spacing=10, size_hint=(1, 0.7)
         )
-        self.battery_widget = BatteryWidget(
-            size_hint=(1, 1),
-            show_terminal=False,
-            show_outline=False,
+        self.battery_bar = BatteryWidget(
+            size_hint=(1, 0.86),
+            pos_hint={"x": 0, "y": 0},
         )
-        middle_upper.add_widget(self.battery_widget)
+        middle_upper.add_widget(self.battery_bar)
 
         middle_lower = OutlinedBox(
             orientation="vertical", spacing=10, size_hint=(1, 0.345)
@@ -246,7 +246,7 @@ class Dash2(Screen):
         )
         self.status_value_label = Label(
             text="N/A",
-            font_size="43sp",
+            font_size="34sp",
             halign="left",
             valign="middle",
             size_hint_x=0.3,
@@ -359,6 +359,7 @@ class Dash2(Screen):
         self.top_progress_bar1.set_value(self.SharedData.speed)
         self.top_progress_bar2.set_value(self.SharedData.speed)
         self.top_progress_bar3.set_value(self.SharedData.speed)
+        self.battery_bar.battery_level = self.SharedData.orionsoc / 100
 
         # Old lap time logic
         new_lap_time = self.generate_random_time()
@@ -367,11 +368,6 @@ class Dash2(Screen):
         self.lastlap_value_label.color = (
             (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
         )
-
-        if not result["sufficient_soc"]:
-            self.battery_widget.update_color("red")
-        else:
-            self.battery_widget.update_color("green")
 
         # Update errors
         error_count = len(self.SharedData.faults)
