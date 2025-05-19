@@ -43,7 +43,7 @@ class SharedDataDriver:
         self.lvvoltage = "N/A"
         self.orioncurrent = "N/A"
         self.orionvoltage = "N/A"
-        self.orionsoc = "N/A"
+        self.orionsoc = 0
         self.packtemp_min = "N/A"
         self.packtemp_max = "N/A"
         self.speed = 0
@@ -108,6 +108,7 @@ class SharedDataDriver:
 
 
         # Subscribe to CAN messages
+        subscribe_can_message(canparser.VcuStateData, self.vcu)
         subscribe_can_message(canparser.OrionTempData, self.oriontemp)
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
@@ -117,7 +118,7 @@ class SharedDataDriver:
         #subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
-        subscribe_can_message(canparser.VcuStateData, self.vcu)
+
         # add orion power data
 
 
@@ -196,17 +197,18 @@ class SharedDataDriver:
                 # Clear previous fault messages for this channel
                 for fault in config["faults"]:
                     self.faults.discard(fault)
-                self.faults.add(f"CAN TIMEOUT: {channel}")
+                #self.faults.add(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
                 # Set all associated attributes to "N/A"
                 if channel in CHANNEL_TO_ATTR:
                     for attr in CHANNEL_TO_ATTR[channel]:
                         setattr(self, attr, "N/A")
-            else:
-                self.faults.discard(f"CAN TIMEOUT: {channel}")
+            #else:
+                #self.faults.discard(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
         self.can_error = error_found
         self.can_connected = not error_found
+
 
     def calculate_efficiency_score(self, dt):
         self.vehicle_mass_kg = 240
@@ -256,7 +258,7 @@ class SharedDataDriver:
 
             # Save updates
             self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.stats)
+            self.pres_stat_file.save(self.pres_stat)
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
