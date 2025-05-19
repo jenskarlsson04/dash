@@ -132,7 +132,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.lastlap_text_label.bind(size=self._update_text_size)
+        #self.lastlap_text_label.bind(size=self._update_text_size)
         left_upper.add_widget(self.lastlap_text_label)
 
         lastlap_value_layout = BoxLayout(
@@ -147,7 +147,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        lastlap_value_layout.bind(size=self._update_text_size)
+        #lastlap_value_layout.bind(size=self._update_text_size)
         lastlap_value_layout.add_widget(self.lastlap_value_label)
         left_upper.add_widget(lastlap_value_layout)
 
@@ -162,7 +162,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.soc_text_label.bind(size=self._update_text_size)
+        #self.soc_text_label.bind(size=self._update_text_size)
         left_middle.add_widget(self.soc_text_label)
 
         soc_value_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.6))
@@ -175,7 +175,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        soc_value_layout.bind(size=self._update_text_size)
+        #soc_value_layout.bind(size=self._update_text_size)
         soc_value_layout.add_widget(self.soc_value_label)
         left_middle.add_widget(soc_value_layout)
 
@@ -190,7 +190,7 @@ class Dash2(Screen):
             size_hint=(1, 0.28),
             color=(0, 1, 1, 1),
         )
-        self.speed_text_label.bind(size=self._update_text_size)
+        #self.speed_text_label.bind(size=self._update_text_size)
         left_lower.add_widget(self.speed_text_label)
 
         speed_value_layout = BoxLayout(
@@ -205,7 +205,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        speed_value_layout.bind(size=self._update_text_size)
+        #speed_value_layout.bind(size=self._update_text_size)
         speed_value_layout.add_widget(self.speed_value_label)
         left_lower.add_widget(speed_value_layout)
 
@@ -238,7 +238,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.status_text_label.bind(size=self._update_text_size)
+        #self.status_text_label.bind(size=self._update_text_size)
         middle_lower.add_widget(self.status_text_label)
 
         status_value_layout = BoxLayout(
@@ -253,7 +253,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        status_value_layout.bind(size=self._update_text_size)
+        #status_value_layout.bind(size=self._update_text_size)
         status_value_layout.add_widget(self.status_value_label)
         middle_lower.add_widget(status_value_layout)
 
@@ -331,7 +331,7 @@ class Dash2(Screen):
             size_hint=(1, 0.3),
             color=(0, 1, 1, 1),
         )
-        self.LV_text_label.bind(size=self._update_text_size)
+        #self.LV_text_label.bind(size=self._update_text_size)
         right_lower.add_widget(self.LV_text_label)
         LVBAT_value_layout = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.4), spacing=5
@@ -345,7 +345,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        LVBAT_value_layout.bind(size=self._update_text_size)
+        #LVBAT_value_layout.bind(size=self._update_text_size)
         LVBAT_value_layout.add_widget(self.LV_value_label)
         right_lower.add_widget(LVBAT_value_layout)
 
