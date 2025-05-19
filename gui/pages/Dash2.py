@@ -372,18 +372,17 @@ class Dash2(Screen):
         # Update errors
         error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
-        #errors_to_show = list(self.SharedData.faults)
-        errors_to_show = []
+        errors_to_show = list(self.SharedData.faults)
 
         # Only consider errors without a dot for popups.
-        #active_errors = {err for err in errors_to_show if not err.startswith(".")}
+        active_errors = {err for err in errors_to_show if not err.startswith(".")}
         # Remove errors that have already been shown (permanently)
-        #active_errors = active_errors - self.shown_errors
+        active_errors = active_errors - self.shown_errors
         # For each active error not already pending, add it and mark it as shown.
-        #for err in active_errors:
-        #    if err not in self.pending_error_messages:
-        #        self.pending_error_messages.append(err)
-        #       self.shown_errors.add(err)  # mark permanently as shown
+        for err in active_errors:
+            if err not in self.pending_error_messages:
+                self.pending_error_messages.append(err)
+                self.shown_errors.add(err)  # mark permanently as shown
 
         # If no popup is active, show the next pending error.
         if self.error_popup is None and self.pending_error_messages:
