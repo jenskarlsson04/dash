@@ -356,9 +356,9 @@ class Dash2(Screen):
         self.add_widget(root_layout)
 
     def refresh(self):
-        self.top_progress_bar1.set_value(self.SharedData.speed)
-        self.top_progress_bar2.set_value(self.SharedData.speed)
-        self.top_progress_bar3.set_value(self.SharedData.speed)
+        #self.top_progress_bar1.set_value(self.SharedData.speed)
+        #self.top_progress_bar2.set_value(self.SharedData.speed)
+        #self.top_progress_bar3.set_value(self.SharedData.speed)
         #self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
 
         # Old lap time logic
@@ -376,14 +376,14 @@ class Dash2(Screen):
         errors_to_show = []
 
         # Only consider errors without a dot for popups.
-        active_errors = {err for err in errors_to_show if not err.startswith(".")}
+        #active_errors = {err for err in errors_to_show if not err.startswith(".")}
         # Remove errors that have already been shown (permanently)
-        active_errors = active_errors - self.shown_errors
+        #active_errors = active_errors - self.shown_errors
         # For each active error not already pending, add it and mark it as shown.
-        for err in active_errors:
-            if err not in self.pending_error_messages:
-                self.pending_error_messages.append(err)
-                self.shown_errors.add(err)  # mark permanently as shown
+        #for err in active_errors:
+        #    if err not in self.pending_error_messages:
+        #        self.pending_error_messages.append(err)
+        #       self.shown_errors.add(err)  # mark permanently as shown
 
         # If no popup is active, show the next pending error.
         if self.error_popup is None and self.pending_error_messages:
