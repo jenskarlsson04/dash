@@ -356,9 +356,9 @@ class Dash2(Screen):
         self.add_widget(root_layout)
 
     def refresh(self):
-        #self.top_progress_bar1.set_value(self.SharedData.speed)
-        #self.top_progress_bar2.set_value(self.SharedData.speed)
-        #self.top_progress_bar3.set_value(self.SharedData.speed)
+        self.top_progress_bar1.set_value(self.SharedData.speed)
+        self.top_progress_bar2.set_value(self.SharedData.speed)
+        self.top_progress_bar3.set_value(self.SharedData.speed)
         #self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
 
         # Old lap time logic
