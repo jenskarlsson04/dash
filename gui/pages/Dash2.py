@@ -359,7 +359,7 @@ class Dash2(Screen):
         self.top_progress_bar1.set_value(self.SharedData.speed)
         self.top_progress_bar2.set_value(self.SharedData.speed)
         self.top_progress_bar3.set_value(self.SharedData.speed)
-        self.battery_bar.battery_level = self.SharedData.orionsoc / 100
+        self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
 
         # Old lap time logic
         new_lap_time = self.generate_random_time()
