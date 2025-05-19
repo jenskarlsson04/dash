@@ -372,7 +372,8 @@ class Dash2(Screen):
         # Update errors
         error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
-        errors_to_show = list(self.SharedData.faults)
+        #errors_to_show = list(self.SharedData.faults)
+        errors_to_show = []
 
         # Only consider errors without a dot for popups.
         active_errors = {err for err in errors_to_show if not err.startswith(".")}
