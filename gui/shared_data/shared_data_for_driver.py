@@ -200,9 +200,9 @@ class SharedDataDriver:
                 #self.faults.add(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
                 # Set all associated attributes to "N/A"
-                if channel in CHANNEL_TO_ATTR:
-                    for attr in CHANNEL_TO_ATTR[channel]:
-                        setattr(self, attr, "N/A")
+                #if channel in CHANNEL_TO_ATTR:
+                #    for attr in CHANNEL_TO_ATTR[channel]:
+                #        setattr(self, attr, "N/A")
             #else:
                 #self.faults.discard(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
