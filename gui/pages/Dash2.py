@@ -362,12 +362,12 @@ class Dash2(Screen):
         #self.battery_bar.battery_level = int(self.SharedData.orionsoc) / 100
 
         # Old lap time logic
-        new_lap_time = self.generate_random_time()
-        result = self.time_table_manager.add_lap_time(new_lap_time)
-        last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
-        self.lastlap_value_label.color = (
-            (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
-        )
+        #new_lap_time = self.generate_random_time()
+        #result = self.time_table_manager.add_lap_time(new_lap_time)
+        #last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
+        #self.lastlap_value_label.color = (
+        #    (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
+        #)
 
         # Update errors
         error_count = len(self.SharedData.faults)
@@ -404,7 +404,7 @@ class Dash2(Screen):
                 self.error_labels[i].text = ""
 
         # Update other values
-        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
+#        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         self.speed_value_label.text = f"{self.SharedData.speed}"
         self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
         self.LV_value_label.color = (
