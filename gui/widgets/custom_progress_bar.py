@@ -41,8 +41,12 @@ class CustomProgressBar(Widget):
 
         # Initialize the canvas instructions for the progress bar
         with self.canvas:
-            self._color_instruction = Color(*self.default_color)
-            self._rect = Rectangle(pos=self.pos, size=(0, self.height))
+            self._col_g = Color(0, 1, 0, 1)
+            self._rect_g = Rectangle(pos=self.pos, size=(0, self.height))
+            self._col_o = Color(1, 0.65, 0, 1)
+            self._rect_o = Rectangle(pos=self.pos, size=(0, self.height))
+            self._col_r = Color(1, 0, 0, 1)
+            self._rect_r = Rectangle(pos=self.pos, size=(0, self.height))
 
         self.bind(pos=self.update_progress, size=self.update_progress)
 
@@ -59,26 +63,31 @@ class CustomProgressBar(Widget):
     def update_progress(self, *args):
         """Redraw the progress bar and update its color based on thresholds."""
         if self.value < self.threshold:
-            self._rect.size = (0, self.height)
+            self._rect_g.size = (0, self.height)
+            self._rect_o.size = (0, self.height)
+            self._rect_r.size = (0, self.height)
             return
 
         adjusted_value = self.value - self.threshold
         adjusted_max = self.max_value - self.threshold
         progress_percentage = adjusted_value / adjusted_max
 
-        if self.intervals:
-            if self.value > self.green_threshold:
-                color = (0, 1, 0, 1)
-            elif self.orange_threshold < self.value <= self.green_threshold:
-                color = (1, 0.65, 0, 1)
-            else:
-                color = (1, 0, 0, 1)
-        else:
-            color = self.default_color
+        w = self.width
+        h = self.height
+        seg_w = w / 3
+        total_progress = progress_percentage * 3
+        fill1 = min(total_progress, 1)
+        fill2 = min(max(total_progress - 1, 0), 1)
+        fill3 = min(max(total_progress - 2, 0), 1)
 
-        self._color_instruction.rgba = color
-        self._rect.pos = self.pos
-        self._rect.size = (self.width * progress_percentage, self.height)
+        self._rect_g.pos = self.pos
+        self._rect_g.size = (seg_w * fill1, h)
+
+        self._rect_o.pos = (self.x + seg_w, self.y)
+        self._rect_o.size = (seg_w * fill2, h)
+
+        self._rect_r.pos = (self.x + 2 * seg_w, self.y)
+        self._rect_r.size = (seg_w * fill3, h)
 
     def configure_intervals(self, green_threshold, orange_threshold, intervals=True):
         """
