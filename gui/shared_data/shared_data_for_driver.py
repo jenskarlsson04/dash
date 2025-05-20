@@ -43,7 +43,7 @@ class SharedDataDriver:
         self.lvvoltage = "N/A"
         self.orioncurrent = "N/A"
         self.orionvoltage = "N/A"
-        self.orionsoc = 0
+        self.orionsoc = "N/A"
         self.packtemp_min = "N/A"
         self.packtemp_max = "N/A"
         self.speed = 0
@@ -115,7 +115,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
         subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
-        #subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
+        subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
 
@@ -200,9 +200,9 @@ class SharedDataDriver:
                 #self.faults.add(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
                 # Set all associated attributes to "N/A"
-                #if channel in CHANNEL_TO_ATTR:
-                #    for attr in CHANNEL_TO_ATTR[channel]:
-                #        setattr(self, attr, "N/A")
+                if channel in CHANNEL_TO_ATTR:
+                    for attr in CHANNEL_TO_ATTR[channel]:
+                        setattr(self, attr, "N/A")
             #else:
                 #self.faults.discard(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
