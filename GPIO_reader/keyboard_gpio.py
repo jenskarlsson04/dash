@@ -5,9 +5,11 @@ import time
 class KeyboardGpio:
     def __init__(self):
 
-        # List to bind a key to a virtual gpi pin
+        # List to bind a key to a virtual gpio pin
         self.bind_keys = {
-            "k": 13
+            "k": 13,
+            "o": 27,
+            "l": 22,
         }
 
         self.handle_press_down = {}

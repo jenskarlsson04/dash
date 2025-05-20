@@ -1,5 +1,8 @@
 import random
 
+# Add time import for high-resolution timestamps
+import time
+
 # Import kivy
 from kivy.uix.scrollview import ScrollView
 from kivy.app import App
@@ -10,6 +13,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
 
+from GPIO_reader import btn_lap
+from GPIO_reader.gpio_class import btn_reset
 # Import lap time handler
 from gui.widgets.time_table_manager import TimeTableManager
 
@@ -20,37 +25,12 @@ from gui.widgets import BatteryWidget
 
 # Import can stuff
 
+from GPIO_reader.gpio_subscription import subscribe_gpio_pint
+
 # Import error messages and CAN data
 from gui.shared_data import SharedDataDriver
 
 
-class DismissablePopup(Popup):
-    """
-    A custom popup that dismisses when the "o" key is pressed.
-    """
-
-    def on_open(self):
-        # Request the keyboard when the popup opens.
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        if self._keyboard:
-            self._keyboard.bind(on_key_down=self._on_keyboard_down)
-
-    def on_dismiss(self):
-        # Unbind and release the keyboard when the popup is dismissed.
-        if hasattr(self, "_keyboard") and self._keyboard:
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-            self._keyboard = None
-
-    def _keyboard_closed(self):
-        if hasattr(self, "_keyboard") and self._keyboard:
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        # Dismiss the popup when the "o" key is pressed.
-        if keycode[1] == "o":
-            self.dismiss()
-        return True
 
 
 # Main Dashboard Page
@@ -68,9 +48,11 @@ class Dash2(Screen):
         self.lvbat = 12
         self.state = "N/A"
         self.batterywid = BatteryWidget()
+        self.last_lap_color = "green"
+        self.new_lap_time = 0
 
         # Disable error popup
-        self.show_error = False
+        self.show_error = True
 
         # For controlling the error popup as a queue:
         self.error_popup = None
@@ -78,6 +60,13 @@ class Dash2(Screen):
         self.shown_errors = (
             set()
         )  # Set of active errors (without a dot) that have already been popped
+
+
+        #Sub to GPIO
+
+        subscribe_gpio_pint(btn_lap, self.laptime)
+        subscribe_gpio_pint(btn_reset, self.reset)
+
 
         root_layout = BoxLayout(orientation="vertical")
 
@@ -353,6 +342,7 @@ class Dash2(Screen):
 
         self.add_widget(root_layout)
 
+
     def refresh(self):
         # Update other values
         self.speed_value_label.text = f"{self.SharedData.speed}"
@@ -363,6 +353,7 @@ class Dash2(Screen):
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
         self.top_progress_bar.set_value(self.SharedData.speed)
+
         # Safely update battery level, handling 'N/A' or invalid values
         soc_value = self.SharedData.orionsoc
         try:
@@ -373,18 +364,15 @@ class Dash2(Screen):
             self.battery_bar.battery_level = 0.0
 
         # Old lap time logic
-        new_lap_time = self.generate_random_time()
-        result = self.time_table_manager.add_lap_time(new_lap_time)
-        last_lap_color = self.time_table_manager.compare_last_lap(new_lap_time)
         self.lastlap_value_label.color = (
-            (0, 1, 0, 1) if last_lap_color == "green" else (1, 0.85, 0, 1)
+            (0, 1, 0, 1) if self.last_lap_color == "green" else (1, 0.85, 0, 1)
         )
 
         # Update errors
         error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
         errors_to_show = list(self.SharedData.faults)
-        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
+        self.lastlap_value_label.text = f"{self.format_time(self.new_lap_time)}"
         # Only consider errors without a dot for popups.
         active_errors = {err for err in errors_to_show if not err.startswith(".")}
         # Remove errors that have already been shown (permanently)
@@ -419,7 +407,7 @@ class Dash2(Screen):
         """If there are pending error messages, show the next one in a popup."""
         if self.pending_error_messages and self.show_error:
             next_error = self.pending_error_messages.pop(0)
-            self.error_popup = DismissablePopup(
+            self.error_popup = Popup(
                 title="Critical Error Alert",
                 content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
                 size_hint=(0.8, 0.3),
@@ -434,21 +422,43 @@ class Dash2(Screen):
         if self.pending_error_messages:
             self.show_next_error_popup()
 
-    def generate_random_time(self):
-        """Generate a random time in milliseconds between 10 and 180 seconds."""
-        return 0
-        #return random.randint(10000, 180000)
+    def laptime(self, *args):
+        # Capture a high-resolution monotonic timestamp
+        current_time = time.perf_counter()
+        if not hasattr(self, 'previous_lap_time'):
+            # First invocation: store base time
+            self.previous_lap_time = current_time
+            return
+        # Calculate elapsed time in milliseconds
+        delta_seconds = current_time - self.previous_lap_time
+        self.new_lap_time = delta_seconds * 1000  # convert to ms
+        # Update for next lap
+        self.previous_lap_time = current_time
+        # Record lap time and determine bar color
+        self.result = self.time_table_manager.add_lap_time(self.new_lap_time)
+        self.last_lap_color = self.time_table_manager.compare_last_lap(self.new_lap_time)
+
+
 
     def format_time(self, time_in_ms):
         """Format time into mm:ss:ms (minutes:seconds:milliseconds)."""
-        minutes = time_in_ms // 60000
-        seconds = (time_in_ms % 60000) // 1000
-        milliseconds = time_in_ms % 1000
+        # Ensure milliseconds is an integer
+        ms = int(time_in_ms)
+        minutes = ms // 60000
+        seconds = (ms % 60000) // 1000
+        milliseconds = ms % 1000
         return f"{minutes:02}:{seconds:02}:{milliseconds:03}"
 
     def _update_text_size(self, instance, value):
         # Set text_size to the width only so the text does not wrap vertically
         instance.text_size = (instance.width, None)
+
+    def reset(self, press_time):
+        if press_time < 1 and self.error_popup:
+            self.error_popup.dismiss()
+        return True
+
+
 
 
 # Main App Class

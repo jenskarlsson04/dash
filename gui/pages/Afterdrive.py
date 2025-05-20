@@ -10,11 +10,16 @@ from kivy.graphics import Color, Line
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+from GPIO_reader import btn_lap
+from GPIO_reader.gpio_class import btn_reset
 # Import lap time handler
 
 # Import Custom widgets
 from gui.widgets import OutlinedBox
 from gui.shared_data import SharedDataDriver
+
+#Import gpio for reset
+from GPIO_reader.gpio_subscription import subscribe_gpio_pint
 
 
 # Import data
@@ -25,7 +30,6 @@ from FileSave import SaveToFile, PERSISTENT_FILENAME, STATS_FILENAME
 class Afterdrive(Screen):
     def __init__(self, **kwargs):
         super(Afterdrive, self).__init__(**kwargs)
-        Window.bind(on_key_down=self._on_key_down)
 
         self.shared_data = SharedDataDriver()
 
@@ -34,6 +38,7 @@ class Afterdrive(Screen):
 
         self.presistant_stats = self.stats_pres.load()
         self.current_stats = self.stats_current.load() #Uppdateras dessa helatiden efter att den har loadats???
+        subscribe_gpio_pint(btn_reset, self.reset_file)
 
         # Use a main layout to contain the dashboard elements
 
@@ -687,19 +692,15 @@ class Afterdrive(Screen):
 
     #File resetter
 
-    def _on_key_down(self, window, key, scancode, codepoint, modifier):
-        if codepoint == 'o':
-            self.reset_file()
 
-    def reset_file(self):
-        print("Resetting stats...")
-
+    def reset_file(self, time):
+        if time >= 3:
+            print("Resetting stats...") # DEBUG KEY IS "O" hold for 3 sec
         # Reset the actual files
-        self.stats_current.reset_file()
-
+            self.stats_current.reset_file()
         # Reload the cleared data from disk
-        self.current_stats = self.stats_current.load()
-        self.shared_data.reset()
+            self.current_stats = self.stats_current.load()
+            self.shared_data.reset()
 
 
 # Main App Class

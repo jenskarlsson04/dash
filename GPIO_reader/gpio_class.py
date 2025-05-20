@@ -14,6 +14,7 @@ except ImportError:
 
 btn_lap = GPIO_PIN(22)
 btn_screen = GPIO_PIN(13)
+btn_reset = GPIO_PIN(27)
 
 
 class GIPOConfiguration:
@@ -34,6 +35,7 @@ class GIPOConfiguration:
 
         self.btn_lap = btn_lap
         self.btn_screen = btn_screen
+        self.btn_reset = btn_reset
 
         self.time_button_press_down = {}
 
@@ -43,9 +45,12 @@ class GIPOConfiguration:
         # Set gpio as pull-down resistors
         self.pi.set_mode(self.btn_lap.pin, pigpio.INPUT)
         self.pi.set_mode(self.btn_screen.pin, pigpio.INPUT)
+        self.pi.set_mode(self.btn_reset.pin, pigpio.INPUT)
 
         self.pi.set_pull_up_down(self.btn_lap.pin, pigpio.PUD_UP)
         self.pi.set_pull_up_down(self.btn_screen.pin, pigpio.PUD_UP)
+
+        self.pi.set_mode(self.btn_reset.pin, pigpio.INPUT)
 
         # Attach callbacks
         self.pi.callback(
