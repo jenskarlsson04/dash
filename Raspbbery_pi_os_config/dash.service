@@ -1,19 +1,19 @@
 [Unit]
-Description=Kivy App
-After=multi-user.target
+Description=Kivy Dashboard
+Requires=dashconf.service
+After=dashconf.service
 
 [Service]
-User=dash  # Change this if needed
+Type=simple
+
+Environment="SDL_NOMOUSE=1"
+User=dash
+Group=dash
 WorkingDirectory=/home/dash/dash
-ExecStart=/usr/bin/python3 /home/dash/dash/test_main.py
-Environment="DISPLAY="
-Environment="KIVY_GL_BACKEND=gl"
-Environment="KIVY_WINDOW=sdl2"
-Environment="SDL_VIDEODRIVER=kmsdrm"
-Restart=on-failure
-StandardOutput=journal
-StandardError=journal
-TimeoutStartSec=10
+ExecStart=/usr/bin/python3 /home/dash/dash/main.py
+StandardOutput=append:/home/dash/full_dash.log
+StandardError=inherit
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

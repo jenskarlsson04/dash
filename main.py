@@ -1,6 +1,9 @@
 from gui_main import MainApp
 from can_reader import CanClass
 
+from kivy.core.window import Window
+Window.show_cursor = False
+
 main_app = MainApp()
 
 can_class = CanClass()

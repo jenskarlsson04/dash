@@ -2,18 +2,14 @@ import time
 from GPIO_reader.gpio_subscription import publish_message
 from GPIO_reader.GPIO_datamodel import GPIO_PIN
 
-GPIO_DEBUG = True
+GPIO_DEBUG = False
 
-if GPIO_DEBUG:
-    print("WARNING: DEBUG MODE ON")
-    import GPIO_reader.Simalted_GPIO as pigpio
-else:
+try:
     import pigpio
-
-
-def set_debug():
-    global GPIO_DEBUG
-    GPIO_DEBUG = False
+except ImportError:
+    GPIO_DEBUG = True
+    from GPIO_reader.keyboard_gpio import KeyboardGpio
+    print("WARNING: DEBUG MODE ON. Use keyboard to simulate gpio")
 
 
 btn_lap = GPIO_PIN(22)
@@ -59,7 +55,6 @@ class GIPOConfiguration:
             self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
         )
 
-
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
     """
@@ -87,8 +82,10 @@ class GIPOConfiguration:
         elif level == 0:
             self.__handle_press_down(gpio)
 
-
-gpio = GIPOConfiguration()
+if not GPIO_DEBUG:
+    gpio = GIPOConfiguration()
+else:
+    gpio = KeyboardGpio()
 
 if __name__ == "__main__":
 

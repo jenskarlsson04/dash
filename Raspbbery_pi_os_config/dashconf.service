@@ -1,0 +1,12 @@
+[Unit]
+Description=Start can
+
+[Service]
+ExecStart=/usr/bin/ip link set can0 up type can bitrate 500000
+Restart=on-failure
+StandardOutput=append:/home/dash/full_dash.log
+StandardError=inherit
+TimeoutStartSec=10
+
+[Install]
+WantedBy=basic.target

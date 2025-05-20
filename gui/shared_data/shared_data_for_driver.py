@@ -43,7 +43,7 @@ class SharedDataDriver:
         self.lvvoltage = "N/A"
         self.orioncurrent = "N/A"
         self.orionvoltage = "N/A"
-        self.orionsoc = 0
+        self.orionsoc = "N/A"
         self.packtemp_min = "N/A"
         self.packtemp_max = "N/A"
         self.speed = 0
@@ -455,7 +455,7 @@ class SharedDataDriver:
 
         if self.power > self.stats["power_max"]:
             self.stats["power_max"] = self.power
-            self.stats_file.save(self.stats)
+        self.stats_file.save(self.stats)
 
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time

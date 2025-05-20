@@ -86,11 +86,11 @@ class Dash2(Screen):
         speed_bar = BoxLayout(orientation="horizontal")
 
         # Add custom progress bars at the top of the screen
-        self.top_progress_bar1 = CustomProgressBar(
-            size_hint=(0.33, 1),
+        self.top_progress_bar = CustomProgressBar(
+            size_hint=(1, 1),
             pos_hint={"x": 0, "y": 0},
             threshold=0,
-            max_value=40,
+            max_value=100,
             default_color=(0, 1, 0, 1),
         )
         self.top_progress_bar2 = CustomProgressBar(
@@ -107,9 +107,7 @@ class Dash2(Screen):
             max_value=120,
             default_color=(1, 0, 0, 1),
         )
-        speed_bar.add_widget(self.top_progress_bar1)
-        speed_bar.add_widget(self.top_progress_bar2)
-        speed_bar.add_widget(self.top_progress_bar3)
+        speed_bar.add_widget(self.top_progress_bar)
         header.add_widget(speed_bar)
         root_layout.add_widget(header)
 
@@ -132,7 +130,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.lastlap_text_label.bind(size=self._update_text_size)
+        #self.lastlap_text_label.bind(size=self._update_text_size)
         left_upper.add_widget(self.lastlap_text_label)
 
         lastlap_value_layout = BoxLayout(
@@ -147,7 +145,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        lastlap_value_layout.bind(size=self._update_text_size)
+        #lastlap_value_layout.bind(size=self._update_text_size)
         lastlap_value_layout.add_widget(self.lastlap_value_label)
         left_upper.add_widget(lastlap_value_layout)
 
@@ -162,7 +160,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.soc_text_label.bind(size=self._update_text_size)
+        #self.soc_text_label.bind(size=self._update_text_size)
         left_middle.add_widget(self.soc_text_label)
 
         soc_value_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.6))
@@ -175,7 +173,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        soc_value_layout.bind(size=self._update_text_size)
+        #soc_value_layout.bind(size=self._update_text_size)
         soc_value_layout.add_widget(self.soc_value_label)
         left_middle.add_widget(soc_value_layout)
 
@@ -190,7 +188,7 @@ class Dash2(Screen):
             size_hint=(1, 0.28),
             color=(0, 1, 1, 1),
         )
-        self.speed_text_label.bind(size=self._update_text_size)
+        #self.speed_text_label.bind(size=self._update_text_size)
         left_lower.add_widget(self.speed_text_label)
 
         speed_value_layout = BoxLayout(
@@ -205,7 +203,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        speed_value_layout.bind(size=self._update_text_size)
+        #speed_value_layout.bind(size=self._update_text_size)
         speed_value_layout.add_widget(self.speed_value_label)
         left_lower.add_widget(speed_value_layout)
 
@@ -238,7 +236,7 @@ class Dash2(Screen):
             size_hint=(1, 0.4),
             color=(0, 1, 1, 1),
         )
-        self.status_text_label.bind(size=self._update_text_size)
+        #self.status_text_label.bind(size=self._update_text_size)
         middle_lower.add_widget(self.status_text_label)
 
         status_value_layout = BoxLayout(
@@ -253,7 +251,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        status_value_layout.bind(size=self._update_text_size)
+        #status_value_layout.bind(size=self._update_text_size)
         status_value_layout.add_widget(self.status_value_label)
         middle_lower.add_widget(status_value_layout)
 
@@ -331,7 +329,7 @@ class Dash2(Screen):
             size_hint=(1, 0.3),
             color=(0, 1, 1, 1),
         )
-        self.LV_text_label.bind(size=self._update_text_size)
+        #self.LV_text_label.bind(size=self._update_text_size)
         right_lower.add_widget(self.LV_text_label)
         LVBAT_value_layout = BoxLayout(
             orientation="horizontal", size_hint=(1, 0.4), spacing=5
@@ -345,7 +343,7 @@ class Dash2(Screen):
             width=170,
             color=(1, 1, 1, 1),
         )
-        LVBAT_value_layout.bind(size=self._update_text_size)
+        #LVBAT_value_layout.bind(size=self._update_text_size)
         LVBAT_value_layout.add_widget(self.LV_value_label)
         right_lower.add_widget(LVBAT_value_layout)
 
@@ -356,10 +354,23 @@ class Dash2(Screen):
         self.add_widget(root_layout)
 
     def refresh(self):
-        self.top_progress_bar1.set_value(self.SharedData.speed)
-        self.top_progress_bar2.set_value(self.SharedData.speed)
-        self.top_progress_bar3.set_value(self.SharedData.speed)
-        self.battery_bar.battery_level = self.SharedData.orionsoc / 100
+        # Update other values
+        self.speed_value_label.text = f"{self.SharedData.speed}"
+        self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
+        self.LV_value_label.color = (
+            (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
+        )
+        self.status_value_label.text = f"{self.SharedData.vcu_mode}"
+        self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
+        self.top_progress_bar.set_value(self.SharedData.speed)
+        # Safely update battery level, handling 'N/A' or invalid values
+        soc_value = self.SharedData.orionsoc
+        try:
+            soc_int = int(soc_value)
+            self.battery_bar.battery_level = soc_int / 100.0
+        except (ValueError, TypeError):
+            # Fallback when SOC is not a valid integer
+            self.battery_bar.battery_level = 0.0
 
         # Old lap time logic
         new_lap_time = self.generate_random_time()
@@ -373,7 +384,7 @@ class Dash2(Screen):
         error_count = len(self.SharedData.faults)
         self.errors_amount_label.text = f"({error_count})"
         errors_to_show = list(self.SharedData.faults)
-
+        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
         # Only consider errors without a dot for popups.
         active_errors = {err for err in errors_to_show if not err.startswith(".")}
         # Remove errors that have already been shown (permanently)
@@ -403,15 +414,6 @@ class Dash2(Screen):
             else:
                 self.error_labels[i].text = ""
 
-        # Update other values
-        self.lastlap_value_label.text = f"{self.format_time(new_lap_time)}"
-        self.speed_value_label.text = f"{self.SharedData.speed}"
-        self.LV_value_label.text = f"{self.SharedData.lvvoltage}V"
-        self.LV_value_label.color = (
-            (1, 0, 0, 1) if self.SharedData.lvvoltage_low else (1, 1, 1, 1)
-        )
-        self.status_value_label.text = f"{self.SharedData.vcu_mode}"
-        self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
 
     def show_next_error_popup(self):
         """If there are pending error messages, show the next one in a popup."""

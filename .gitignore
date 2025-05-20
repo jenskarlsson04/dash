@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Rrmoving presistent files
+stats.json
+persistent_stats.json
+
 # C extensions
 *.so
 

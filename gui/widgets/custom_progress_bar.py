@@ -39,6 +39,15 @@ class CustomProgressBar(Widget):
         self.default_color = default_color  # Custom color if intervals are disabled
         self.canvas_color = default_color  # Initialize with the default color
 
+        # Initialize the canvas instructions for the progress bar
+        with self.canvas:
+            self._col_g = Color(0, 1, 0, 1)
+            self._rect_g = Rectangle(pos=self.pos, size=(0, self.height))
+            self._col_o = Color(1, 0.65, 0, 1)
+            self._rect_o = Rectangle(pos=self.pos, size=(0, self.height))
+            self._col_r = Color(1, 0, 0, 1)
+            self._rect_r = Rectangle(pos=self.pos, size=(0, self.height))
+
         self.bind(pos=self.update_progress, size=self.update_progress)
 
     def set_value(self, value):
@@ -53,43 +62,32 @@ class CustomProgressBar(Widget):
 
     def update_progress(self, *args):
         """Redraw the progress bar and update its color based on thresholds."""
-        # Clear the canvas first
-        self.canvas.clear()
-
-        # If value is less than the threshold, do not draw anything
         if self.value < self.threshold:
-            return  # Skip drawing if below the threshold
+            self._rect_g.size = (0, self.height)
+            self._rect_o.size = (0, self.height)
+            self._rect_r.size = (0, self.height)
+            return
 
-        # Calculate the progress relative to the threshold
         adjusted_value = self.value - self.threshold
         adjusted_max = self.max_value - self.threshold
-
-        # Scale the progress value based on the threshold, so the bar starts at 0 when the value crosses the threshold
         progress_percentage = adjusted_value / adjusted_max
 
-        # Determine the color based on the current percentage value
-        if self.intervals:
-            if self.value > self.green_threshold:
-                self.canvas_color = (0, 1, 0, 1)  # Green when above green_threshold
-            elif self.orange_threshold < self.value <= self.green_threshold:
-                self.canvas_color = (
-                    1,
-                    0.65,
-                    0,
-                    1,
-                )  # Orange between orange_threshold and green_threshold
-            else:
-                self.canvas_color = (1, 0, 0, 1)  # Red when below orange_threshold
-        else:
-            # Use the custom default color when intervals are disabled
-            self.canvas_color = self.default_color
+        w = self.width
+        h = self.height
+        seg_w = w / 3
+        total_progress = progress_percentage * 3
+        fill1 = min(total_progress, 1)
+        fill2 = min(max(total_progress - 1, 0), 1)
+        fill3 = min(max(total_progress - 2, 0), 1)
 
-        # Draw the custom progress bar based on the progress percentage
-        with self.canvas:
-            Color(*self.canvas_color)
-            Rectangle(
-                pos=self.pos, size=(self.width * progress_percentage, self.height)
-            )
+        self._rect_g.pos = self.pos
+        self._rect_g.size = (seg_w * fill1, h)
+
+        self._rect_o.pos = (self.x + seg_w, self.y)
+        self._rect_o.size = (seg_w * fill2, h)
+
+        self._rect_r.pos = (self.x + 2 * seg_w, self.y)
+        self._rect_r.size = (seg_w * fill3, h)
 
     def configure_intervals(self, green_threshold, orange_threshold, intervals=True):
         """
