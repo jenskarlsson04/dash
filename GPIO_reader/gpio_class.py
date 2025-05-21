@@ -52,8 +52,8 @@ class GIPOConfiguration:
 
         self.pi.set_pull_up_down(self.btn_lap.pin, pigpio.PUD_UP)
         self.pi.set_pull_up_down(self.btn_screen.pin, pigpio.PUD_UP)
-        self.pi.set_pull_up_down(self.btn_reset.pin, pigpio.PUD_UP)
-        self.pi.set_pull_up_down(self.btn_idk.pin, pigpio.PUD_UP)
+        #self.pi.set_pull_up_down(self.btn_reset.pin, pigpio.PUD_UP)
+        #self.pi.set_pull_up_down(self.btn_idk.pin, pigpio.PUD_UP)
 
         self.pi.set_mode(self.btn_reset.pin, pigpio.INPUT)
 
