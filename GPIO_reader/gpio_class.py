@@ -13,8 +13,8 @@ except ImportError:
 
 
 btn_lap = GPIO_PIN(6)
-btn_screen = GPIO_PIN(5)
-btn_reset = GPIO_PIN(13)
+btn_screen = GPIO_PIN(13)
+btn_reset = GPIO_PIN(19)
 btn_idk = GPIO_PIN(19)
 
 
