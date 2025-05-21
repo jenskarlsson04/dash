@@ -51,8 +51,8 @@ class Dash2(Screen):
         self.last_lap_color = "green"
         self.new_lap_time = 0
 
-        # Disable error popup
-        self.show_error = True
+        # Enable error popup
+        self.show_error = False
 
         # For controlling the error popup as a queue:
         self.error_popup = None
