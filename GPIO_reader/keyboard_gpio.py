@@ -8,8 +8,8 @@ class KeyboardGpio:
         # List to bind a key to a virtual gpio pin
         self.bind_keys = {
             "k": 13,
-            "o": 27,
-            "l": 22,
+            "o": 19,
+            "l": 6,
         }
 
         self.handle_press_down = {}
