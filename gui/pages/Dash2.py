@@ -64,8 +64,8 @@ class Dash2(Screen):
 
         #Sub to GPIO
 
-        subscribe_gpio_pint(btn_lap, self.laptime)
-        subscribe_gpio_pint(btn_reset, self.reset)
+        subscribe_gpio_pint(btn_lap, self.reset) #self.laptime
+        #subscribe_gpio_pint(btn_reset, self.reset)
 
 
         root_layout = BoxLayout(orientation="vertical")
