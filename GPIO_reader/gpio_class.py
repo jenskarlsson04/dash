@@ -7,7 +7,7 @@ GPIO_DEBUG = False
 try:
     import pigpio
 except ImportError:
-    GPIO_DEBUG = True
+    GPIO_DEBUG = False
     from GPIO_reader.keyboard_gpio import KeyboardGpio
     print("WARNING: DEBUG MODE ON. Use keyboard to simulate gpio")
 
