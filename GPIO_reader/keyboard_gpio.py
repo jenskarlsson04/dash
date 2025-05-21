@@ -10,6 +10,7 @@ class KeyboardGpio:
             "k": 13,
             "o": 19,
             "l": 6,
+            "u": 5,
         }
 
         self.handle_press_down = {}

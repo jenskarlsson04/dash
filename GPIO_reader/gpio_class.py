@@ -63,6 +63,12 @@ class GIPOConfiguration:
         self.pi.callback(
             self.btn_screen.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
         )
+        self.pi.callback(
+            self.btn_reset.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
+        )
+        self.pi.callback(
+            self.btn_idk.pin, pigpio.EITHER_EDGE, self.__callback_handle_gpio_event
+        )
 
     """
     Funcs to handle GPIO pins and the interrupts and to calculate the time between
