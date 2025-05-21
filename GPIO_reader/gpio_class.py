@@ -12,10 +12,10 @@ except ImportError:
     print("WARNING: DEBUG MODE ON. Use keyboard to simulate gpio")
 
 
-btn_lap = GPIO_PIN(29)
-btn_screen = GPIO_PIN(31)
-btn_reset = GPIO_PIN(33)
-btn_idk = GPIO_PIN(35)
+btn_lap = GPIO_PIN(5)
+btn_screen = GPIO_PIN(6)
+btn_reset = GPIO_PIN(13)
+btn_idk = GPIO_PIN(19)
 
 
 class GIPOConfiguration:
