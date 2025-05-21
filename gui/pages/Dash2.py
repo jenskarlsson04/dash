@@ -352,7 +352,7 @@ class Dash2(Screen):
         )
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
-        self.top_progress_bar.set_value(self.SharedData.speed)
+        #self.top_progress_bar.set_value(self.SharedData.speed)
 
         # Safely update battery level, handling 'N/A' or invalid values
         soc_value = self.SharedData.orionsoc
