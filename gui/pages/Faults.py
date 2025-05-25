@@ -43,7 +43,7 @@ class Faults(Screen):
         # CUSTOM ERRORS
         left_section = OutlinedBox(orientation="vertical", spacing=10, size_hint=(0.33, 1))
         custom_title_layout = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=10)
-        self.custom_errors_label = Label(text="Errors", font_size="45sp", size_hint_x=0.7, color=(0, 1, 1, 1))
+        self.custom_errors_label = Label(text="ERRORS", font_size="45sp", size_hint_x=0.7, color=(0, 1, 1, 1))
         self.custom_errors_amount_label = Label(text="(0)", font_size="45sp", size_hint_x=0.5, color=(0, 1, 1, 1))
         custom_title_layout.add_widget(self.custom_errors_label)
         custom_title_layout.add_widget(self.custom_errors_amount_label)

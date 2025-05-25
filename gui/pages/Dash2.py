@@ -82,20 +82,6 @@ class Dash2(Screen):
             max_value=100,
             default_color=(0, 1, 0, 1),
         )
-        self.top_progress_bar2 = CustomProgressBar(
-            size_hint=(0.33, 1),
-            pos_hint={"x": 0.33, "y": 0},
-            threshold=40,
-            max_value=80,
-            default_color=(1, 0.65, 0, 1),
-        )
-        self.top_progress_bar3 = CustomProgressBar(
-            size_hint=(0.33, 1),
-            pos_hint={"x": 0.60, "y": 0},
-            threshold=80,
-            max_value=120,
-            default_color=(1, 0, 0, 1),
-        )
         speed_bar.add_widget(self.top_progress_bar)
         header.add_widget(speed_bar)
         root_layout.add_widget(header)
