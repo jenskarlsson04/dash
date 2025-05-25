@@ -104,6 +104,7 @@ class SharedDataDriver:
 
         self.can_error = False
         self.can_connected = True
+        self.test_can = False #if True it prints the channel and the delta of recived msg from can
 
 
 
@@ -203,6 +204,10 @@ class SharedDataDriver:
                 if channel in CHANNEL_TO_ATTR:
                     for attr in CHANNEL_TO_ATTR[channel]:
                         setattr(self, attr, "N/A")
+
+            if self.test_can:
+                print(channel, (self.last_can_update-self.last_update[channel]))
+
             #else:
                 #self.faults.discard(f"CAN TIMEOUT: {channel}") DISABLED DUE TO CLUTTER
 
