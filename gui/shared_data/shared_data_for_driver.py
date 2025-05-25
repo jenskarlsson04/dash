@@ -93,7 +93,7 @@ class SharedDataDriver:
                     ".LOW SOC",
                 ],
             },
-            "vcu": {"threshold": 10, "faults": []},
+            "vcu": {"threshold": 20, "faults": []},
         }
 
         # Pre-populate last_update for all channels with the current time
