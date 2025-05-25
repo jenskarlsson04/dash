@@ -23,6 +23,7 @@ class SharedDataDriver:
         self.pres_stat_file = SaveToFile(PERSISTENT_FILENAME)
 
         Clock.schedule_interval(self.check_can_data, 1)
+        Clock.schedule_interval(self.savefile, 1)
         Clock.schedule_interval(self.calculate_efficiency_score, 1)
         self._initialized = True
         self.faults = set()
@@ -93,7 +94,7 @@ class SharedDataDriver:
                     ".LOW SOC",
                 ],
             },
-            "vcu": {"threshold": 20, "faults": []},
+            "vcu": {"threshold": 5, "faults": []},
         }
 
         # Pre-populate last_update for all channels with the current time
@@ -104,7 +105,7 @@ class SharedDataDriver:
 
         self.can_error = False
         self.can_connected = True
-        self.test_can = False #if True it prints the channel and the delta of recived msg from can
+        self.test_can = True #if True it prints the channel and the delta of recived msg from can
 
 
 
@@ -243,7 +244,7 @@ class SharedDataDriver:
         avg_score = self.stats["effscore_total"] / self.stats["effscore_count"]
         self.stats["effscore"] = max(0.0, min(avg_score, 1.0))
 
-        self.stats_file.save(self.stats)
+
 
     # Add this new method to the class:
     def update_drive_metrics(self):
@@ -262,8 +263,7 @@ class SharedDataDriver:
             self.pres_stat["distance_driven_m"] += distance_m
 
             # Save updates
-            self.stats_file.save(self.stats)
-            self.pres_stat_file.save(self.pres_stat)
+
 
     def oriontemp(self, message):
         self.last_update["oriontemp"] = time.time()  # used for can timeout mesurement
@@ -285,6 +285,9 @@ class SharedDataDriver:
         if self.packtemp_max > self.stats["pack_temp_max"]:
             self.stats["pack_temp_max"] = self.packtemp_max
 
+    def vcu(self, message):
+        self.last_update["vcu"] = time.time()
+        self.vcu_mode = message.parsed_data.state.name
 
     def motortemp(self, message):
         self.last_update["motortemp"] = time.time()
@@ -440,7 +443,7 @@ class SharedDataDriver:
         # Update last seen SOC
         self.last_soc = soc
 
-        self.stats_file.save(self.stats)
+
 
     def orionpower(self, message):
         self.last_update["orionpower"] = time.time()
@@ -450,17 +453,17 @@ class SharedDataDriver:
 
         if self.stats["orion_current_max"] < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
-            self.stats_file.save(self.stats)
+
 
         if self.orionvoltage < self.stats["pack_voltage_min"]:
             self.stats["pack_voltage_min"] = self.orionvoltage
-            self.stats_file.save(self.stats)
+
 
         self.power = (self.orionvoltage * self.orioncurrent) / 1000
 
         if self.power > self.stats["power_max"]:
             self.stats["power_max"] = self.power
-        self.stats_file.save(self.stats)
+
 
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time
@@ -472,7 +475,7 @@ class SharedDataDriver:
         except (ValueError, TypeError):
             power = 0
         self.stats["energy_drawn_wh"] += power * (dt_energy / 3600)
-        self.stats_file.save(self.stats)
+
         self.update_consumed_soc()
 
 
@@ -498,13 +501,10 @@ class SharedDataDriver:
             inverted=True,
         )
 
-    def vcu(self, message):
-        self.last_update["vcu"] = time.time()
-        self.vcu_mode = message.parsed_data.state.name
 
-
-
-
+    def savefile(self, dt):
+        self.stats_file.save(self.stats)
+        self.pres_stat_file.save(self.pres_stat)
 
     def reset(self):
         self.stats = {
