@@ -63,30 +63,30 @@ class SharedDataDriver:
         # IF YOU WANT TO ADD SOMETHING, YOU NEED TO ADD IT TO channels_config AND channel_to_attr.
         self.channels_config = {
             "oriontemp": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": ["High pack temp", ".High pack temp"],
             },
             "motortemp": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": ["High motor temp", ".High motor temp"],
             },
-            "inverter_error": {"threshold": 3, "faults": ["Inverter has error"]},
+            "inverter_error": {"threshold": 2, "faults": ["Inverter has error"]},
             "inverter_temp": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": ["High inverter temp", ".High inverter temp"],
             },
             "brake_press": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": ["Low Brake pressure", ".Low Brake pressure"],
             },
             # "cooling_temp": {"threshold": 4, "faults": ["High cooling temp", ".High cooling temp"]},
             "analogfront": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": ["LV Bat LOW Voltage", ".LV Bat LOW Voltage"],
             },
-            "tscu": {"threshold": 3, "faults": ["TSCU has error", ".TSCU has error"]},
+            "tscu": {"threshold": 2, "faults": ["TSCU has error", ".TSCU has error"]},
             "orionpower": {
-                "threshold": 3,
+                "threshold": 2,
                 "faults": [
                     "PACK LOW Voltage",
                     ".PACK LOW Voltage",
@@ -94,7 +94,7 @@ class SharedDataDriver:
                     ".LOW SOC",
                 ],
             },
-            "vcu": {"threshold": 3, "faults": []},
+            "vcu": {"threshold": 2, "faults": []},
         }
 
         # Pre-populate last_update for all channels with the current time
@@ -105,7 +105,7 @@ class SharedDataDriver:
 
         self.can_error = False
         self.can_connected = True
-        self.test_can = True #if True it prints the channel and the delta of recived msg from can
+        self.test_can = False #if True it prints the channel and the delta of recived msg from can
 
 
 
@@ -116,7 +116,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         subscribe_can_message(canparser.BrakePressureData, self.brake_press)
-        #subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
+        subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
