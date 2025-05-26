@@ -105,7 +105,7 @@ class SharedDataDriver:
 
         self.can_error = False
         self.can_connected = True
-        self.test_can = False #if True it prints the channel and the delta of recived msg from can
+        self.test_can = True #if True it prints the channel and the delta of recived msg from can
 
 
 
