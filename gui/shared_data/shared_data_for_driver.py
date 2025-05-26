@@ -63,30 +63,30 @@ class SharedDataDriver:
         # IF YOU WANT TO ADD SOMETHING, YOU NEED TO ADD IT TO channels_config AND channel_to_attr.
         self.channels_config = {
             "oriontemp": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": ["High pack temp", ".High pack temp"],
             },
             "motortemp": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": ["High motor temp", ".High motor temp"],
             },
-            "inverter_error": {"threshold": 10, "faults": ["Inverter has error"]},
+            "inverter_error": {"threshold": 3, "faults": ["Inverter has error"]},
             "inverter_temp": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": ["High inverter temp", ".High inverter temp"],
             },
             "brake_press": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": ["Low Brake pressure", ".Low Brake pressure"],
             },
             # "cooling_temp": {"threshold": 4, "faults": ["High cooling temp", ".High cooling temp"]},
             "analogfront": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": ["LV Bat LOW Voltage", ".LV Bat LOW Voltage"],
             },
-            "tscu": {"threshold": 10, "faults": ["TSCU has error", ".TSCU has error"]},
+            "tscu": {"threshold": 3, "faults": ["TSCU has error", ".TSCU has error"]},
             "orionpower": {
-                "threshold": 10,
+                "threshold": 3,
                 "faults": [
                     "PACK LOW Voltage",
                     ".PACK LOW Voltage",
@@ -94,7 +94,7 @@ class SharedDataDriver:
                     ".LOW SOC",
                 ],
             },
-            "vcu": {"threshold": 5, "faults": []},
+            "vcu": {"threshold": 3, "faults": []},
         }
 
         # Pre-populate last_update for all channels with the current time
