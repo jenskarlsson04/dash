@@ -115,7 +115,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
-        subscribe_can_message(canparser.BrakePressureData, self.brake_press)
+        #subscribe_can_message(canparser.BrakePressureData, self.brake_press) unused
         subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
@@ -276,7 +276,7 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.packtemp_max,
-            severe_fault=60,  # Value for when the fault is red and "servere"
+            severe_fault=56,  # Value for when the fault is red and "servere"
             less_servere=50,  # Value for when the fault is yellow and "less servere"
             servere_fault_msg="High pack temp",  # MSG for servere
             less_servere_msg=".High pack temp",  # MSG for less servere
@@ -295,8 +295,8 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.motortemp,
-            severe_fault=72,
-            less_servere=70,
+            severe_fault=100,
+            less_servere=85,
             servere_fault_msg="High motor temp",
             less_servere_msg=".High motor temp",
             faults_set=self.faults,
@@ -330,26 +330,26 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.inverter_temp,
-            severe_fault=60,
-            less_servere=50,
+            severe_fault=83,
+            less_servere=72,
             servere_fault_msg="High inverter temp",
             less_servere_msg=".High inverter temp",
             faults_set=self.faults,
         )
 
-    def brake_press(self, message):
-        self.last_update["brake_press"] = time.time()
-        self.brake_press = message.parsed_data.raw_adc
-
-        SharedDataDriver.update_faults(
-            self.brake_press,
-            severe_fault=1500,
-            less_servere=2000,
-            servere_fault_msg="Low Brake pressure",
-            less_servere_msg=".Low Brake pressure",
-            faults_set=self.faults,
-            inverted=True,
-        )
+    #def brake_press(self, message):
+    #    self.last_update["brake_press"] = time.time()
+    #    self.brake_press = message.parsed_data.raw_adc
+#
+    #    SharedDataDriver.update_faults(
+    #        self.brake_press,
+    #        severe_fault=1500,
+    #        less_servere=2000,
+    #        servere_fault_msg="Low Brake pressure",
+    #        less_servere_msg=".Low Brake pressure",
+    #        faults_set=self.faults,
+      #      inverted=True,
+      #  )
 
     def cooling_temp(self, message):
         self.last_update["cooling_temp"] = time.time()
@@ -357,8 +357,8 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.cooling_temp,
-            severe_fault=60,
-            less_servere=50,
+            severe_fault=55,
+            less_servere=45,
             servere_fault_msg="High cooling temp",
             less_servere_msg=".High cooling temp",
             faults_set=self.faults,
@@ -390,8 +390,8 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.lvvoltage,
-            severe_fault=9.5,
-            less_servere=11.5,
+            severe_fault=11.5,
+            less_servere=12,
             servere_fault_msg="LV Bat LOW Voltage",
             less_servere_msg=".LV Bat LOW Voltage",
             faults_set=self.faults,
@@ -482,8 +482,8 @@ class SharedDataDriver:
         # Update SOC faults (inverted: lower SOC is worse)
         SharedDataDriver.update_faults(
             self.orionsoc,
-            severe_fault=0.12,
-            less_servere=0.3,
+            severe_fault=0.05,
+            less_servere=0.15,
             servere_fault_msg="LOW SOC",
             less_servere_msg=".LOW SOC",
             faults_set=self.faults,
@@ -494,7 +494,7 @@ class SharedDataDriver:
         SharedDataDriver.update_faults(
             self.orionvoltage,
             severe_fault=330,
-            less_servere=350,
+            less_servere=450,
             servere_fault_msg="PACK LOW Voltage",
             less_servere_msg=".PACK LOW Voltage",
             faults_set=self.faults,

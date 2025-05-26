@@ -45,9 +45,9 @@ class BatteryWidget(Widget):
                 )
 
             # Determine color based on battery_level
-            if self.battery_level >= 0.6:
+            if self.battery_level >= 0.5:
                 Color(0, 1, 0, 1)  # Green
-            elif self.battery_level >= 0.3:
+            elif self.battery_level >= 0.2:
                 Color(1, 0.65, 0, 1)  # Orange
             else:
                 Color(1, 0, 0, 1)  # Red
