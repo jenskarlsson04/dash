@@ -295,8 +295,8 @@ class SharedDataDriver:
 
         SharedDataDriver.update_faults(
             self.motortemp,
-            severe_fault=55,
-            less_servere=50,
+            severe_fault=72,
+            less_servere=70,
             servere_fault_msg="High motor temp",
             less_servere_msg=".High motor temp",
             faults_set=self.faults,
