@@ -173,7 +173,7 @@ class SharedDataDriver:
             "inverter_error": ["inv_errors", "inv_warnings", "inverter_warning"],
             "inverter_temp": ["inverter_temp"],
             "brake_press": ["brake_press"],
-            "analogfront": ["lvvoltage"],
+            "analogfront": ["lvvoltage"], # add speed
             "tscu": [
                 "tscu_state",
                 "tscu_mode",

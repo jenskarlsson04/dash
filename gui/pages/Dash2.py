@@ -338,7 +338,14 @@ class Dash2(Screen):
         )
         self.status_value_label.text = f"{self.SharedData.vcu_mode}"
         self.soc_value_label.text = f"{self.SharedData.orionsoc}%"
-        self.top_progress_bar.set_value(self.SharedData.speed) # Maybe laggy
+
+        speed_value = self.SharedData.speed
+
+        try:
+            speed_int = int(speed_value)
+            self.top_progress_bar.set_value(speed_int)
+        except (ValueError, TypeError):
+            self.top_progress_bar.set_value(0.0)
 
         # Safely update battery level, handling 'N/A' or invalid values
         soc_value = self.SharedData.orionsoc
@@ -346,7 +353,6 @@ class Dash2(Screen):
             soc_int = int(soc_value)
             self.battery_bar.battery_level = soc_int / 100.0
         except (ValueError, TypeError):
-            # Fallback when SOC is not a valid integer
             self.battery_bar.battery_level = 0.0
 
         # Old lap time logic
