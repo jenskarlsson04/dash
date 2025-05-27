@@ -493,7 +493,7 @@ class SharedDataDriver:
         # Update voltage faults (inverted: lower voltage is worse)
         SharedDataDriver.update_faults(
             self.orionvoltage,
-            severe_fault=330,
+            severe_fault=100, #this value is not intended to be correct
             less_servere=450,
             servere_fault_msg="PACK LOW Voltage",
             less_servere_msg=".PACK LOW Voltage",
