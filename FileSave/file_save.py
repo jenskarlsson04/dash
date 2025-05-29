@@ -72,7 +72,13 @@ class SaveToFile(metaclass=SaveToFileMeta):
                 raw = f.read()
             self.data = orjson.loads(raw)
         except orjson.JSONDecodeError:
-            # Corrupted file: reset to default structure
+            # Corrupted file: back up original and reset to default structure
+            try:
+                # Move corrupted file to a timestamped backup
+                backup_path = f"{self.filepath}.corrupted.{int(time.time())}"
+                os.replace(self.filepath, backup_path)
+            except Exception:
+                pass
             self.data = {}
             self.reset_file()
         except Exception:
