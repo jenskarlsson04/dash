@@ -251,8 +251,7 @@ class SharedDataDriver:
         current_time = time.time()
         delta_time = current_time - self.last_drive_update
         self.last_drive_update = current_time
-        speed = 10
-        if speed > 0:
+        if self.speed > 5:
             # Add time
             self.stats["driving_time"] = self.stats.get("driving_time", 0) + delta_time
             self.pres_stat["total_driving_time_s"] = self.pres_stat.get("total_driving_time_s", 0) + delta_time
