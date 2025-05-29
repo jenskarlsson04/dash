@@ -254,13 +254,13 @@ class SharedDataDriver:
         speed = 10
         if speed > 0:
             # Add time
-            self.stats["driving_time"] += delta_time
-            self.pres_stat["total_driving_time_s"] += delta_time
+            self.stats["driving_time"] = self.stats.get("driving_time", 0) + delta_time
+            self.pres_stat["total_driving_time_s"] = self.pres_stat.get("total_driving_time_s", 0) + delta_time
 
             # Add distance
             distance_m = (self.speed * delta_time) / 3.6  # speed in km/h
-            self.stats["distance_driven_m"] += distance_m
-            self.pres_stat["distance_driven_m"] += distance_m
+            self.stats["distance_driven_m"] = self.stats.get("distance_driven_m", 0) + distance_m
+            self.pres_stat["distance_driven_m"] = self.pres_stat.get("distance_driven_m", 0) + distance_m
 
             # Save updates
 
@@ -282,7 +282,7 @@ class SharedDataDriver:
             less_servere_msg=".High pack temp",  # MSG for less servere
             faults_set=self.faults,
         )
-        if self.packtemp_max > self.stats["pack_temp_max"]:
+        if self.packtemp_max > self.stats.get("pack_temp_max", 0):
             self.stats["pack_temp_max"] = self.packtemp_max
 
     def vcu(self, message):
@@ -377,13 +377,13 @@ class SharedDataDriver:
             )
         )
         #self.update_driving_time()
-        if self.speed > self.stats["speed_max"]:
+        if self.speed > self.stats.get("speed_max", 0):
             self.stats["speed_max"] = self.speed
 
 
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
         #Save to stats
-        if self.lvvoltage < self.stats["lv_bat_voltage_min"]:
+        if self.lvvoltage < self.stats.get("lv_bat_voltage_min", 0):
             self.stats["lv_bat_voltage_min"] = self.lvvoltage
 
         self.update_drive_metrics()
@@ -438,7 +438,7 @@ class SharedDataDriver:
         # If SOC dropped, count the drop as consumption
         delta = self.last_soc - soc
         if delta > 0:
-            self.stats["consumed_soc"] += delta
+            self.stats["consumed_soc"] = self.stats.get("consumed_soc", 0) + delta
 
         # Update last seen SOC
         self.last_soc = soc
@@ -451,19 +451,16 @@ class SharedDataDriver:
         self.orioncurrent = round(message.parsed_data.pack_current_A)
         self.orionvoltage = round(message.parsed_data.pack_voltage_v)
 
-        if self.stats["orion_current_max"] < self.orioncurrent:
+        if self.stats.get("orion_current_max", 0) < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
 
-
-        if self.orionvoltage < self.stats["pack_voltage_min"]:
+        if self.orionvoltage < self.stats.get("pack_voltage_min", 0):
             self.stats["pack_voltage_min"] = self.orionvoltage
-
 
         self.power = (self.orionvoltage * self.orioncurrent) / 1000
 
-        if self.power > self.stats["power_max"]:
+        if self.power > self.stats.get("power_max", 0):
             self.stats["power_max"] = self.power
-
 
         current_time = time.time()
         dt_energy = current_time - self.last_energy_time
@@ -474,10 +471,9 @@ class SharedDataDriver:
             power = (voltage * current_val)
         except (ValueError, TypeError):
             power = 0
-        self.stats["energy_drawn_wh"] += power * (dt_energy / 3600)
+        self.stats["energy_drawn_wh"] = self.stats.get("energy_drawn_wh", 0) + power * (dt_energy / 3600)
 
         self.update_consumed_soc()
-
 
         # Update SOC faults (inverted: lower SOC is worse)
         SharedDataDriver.update_faults(

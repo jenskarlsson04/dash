@@ -55,18 +55,30 @@ class SaveToFile(metaclass=SaveToFileMeta):
         """Saves the dictionary to a file atomically."""
         with self.lock:
             temp_path = self.filepath + ".tmp"
-            with open(temp_path, "wb") as f:
-                f.write(orjson.dumps(self.data))
-
-            os.replace(temp_path, self.filepath)  # Atomic file update
+            try:
+                with open(temp_path, "wb") as f:
+                    f.write(orjson.dumps(self.data))
+                os.replace(temp_path, self.filepath)  # Atomic file update
+            except Exception:
+                # On failure, schedule retry
+                self.hase_changed = True
 
     def load(self) -> dict:
         """Loads the dictionary from a file."""
         if not os.path.exists(self.filepath):
             return {}
-        with open(self.filepath, "rb") as f:
-            self.data = orjson.loads(f.read())
-
+        try:
+            with open(self.filepath, "rb") as f:
+                raw = f.read()
+            self.data = orjson.loads(raw)
+        except orjson.JSONDecodeError:
+            # Corrupted file: reset to default structure
+            self.data = {}
+            self.reset_file()
+        except Exception:
+            # Any other I/O error, leave data empty and schedule a save
+            self.data = {}
+            self.hase_changed = True
         return self.data
 
     def reset_file(self):

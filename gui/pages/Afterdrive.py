@@ -37,7 +37,7 @@ class Afterdrive(Screen):
         self.stats_pres = SaveToFile(PERSISTENT_FILENAME)
 
         self.presistant_stats = self.stats_pres.load()
-        self.current_stats = self.stats_current.load() #Uppdateras dessa helatiden efter att den har loadats???
+        self.current_stats = self.stats_current.load()
         subscribe_gpio_pint(btn_reset, self.reset_file)
 
         # Use a main layout to contain the dashboard elements
@@ -631,19 +631,19 @@ class Afterdrive(Screen):
 
     def refresh(self):
 
-        self.orion_current_max = self.current_stats["orion_current_max"] # Fråga oliver hur fan dessa uppdateras?
-        self.speed_max = self.current_stats["speed_max"]
-        self.pack_temp_max = self.current_stats["pack_temp_max"]
-        self.lv_bat_voltage_min = self.current_stats["lv_bat_voltage_min"]
-        self.pack_voltage_min = self.current_stats["pack_voltage_min"]
-        self.watt_max = self.current_stats["power_max"]
-        self.total_run_time = self.presistant_stats["total_driving_time_s"]
-        self.driving_time = self.current_stats["driving_time"]
-        self.consumed_soc = self.current_stats["consumed_soc"]
-        self.energy_drawn_kwh = self.current_stats["energy_drawn_wh"]
-        self.distance_driven_m = self.current_stats["distance_driven_m"]
-        self.total_distance_driven_m = self.presistant_stats["distance_driven_m"]
-        self.effscore = self.current_stats["effscore"]
+        self.orion_current_max = self.current_stats.get("orion_current_max", 0)
+        self.speed_max = self.current_stats.get("speed_max", 0)
+        self.pack_temp_max = self.current_stats.get("pack_temp_max", 0)
+        self.lv_bat_voltage_min = self.current_stats.get("lv_bat_voltage_min", 0)
+        self.pack_voltage_min = self.current_stats.get("pack_voltage_min", 0)
+        self.watt_max = self.current_stats.get("power_max", 0)
+        self.total_run_time = self.presistant_stats.get("total_driving_time_s", 0)
+        self.driving_time = self.current_stats.get("driving_time", 0)
+        self.consumed_soc = self.current_stats.get("consumed_soc", 0)
+        self.energy_drawn_kwh = self.current_stats.get("energy_drawn_wh", 0)
+        self.distance_driven_m = self.current_stats.get("distance_driven_m", 0)
+        self.total_distance_driven_m = self.presistant_stats.get("distance_driven_m", 0)
+        self.effscore = self.current_stats.get("effscore", 0)
 
         # Updatera lables
         self.pack_max_value_label.text = f"{int(self.pack_temp_max)}"
