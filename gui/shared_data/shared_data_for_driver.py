@@ -56,6 +56,9 @@ class SharedDataDriver:
         self.last_drive_update = time.time()
         self.last_energy_time = time.time()
 
+
+
+
         # -----------------------------
         # CAN error tracking
         # -----------------------------
@@ -124,7 +127,6 @@ class SharedDataDriver:
         # add orion power data
 
 
-
     def update_faults(
         value,
         severe_fault,
@@ -144,21 +146,26 @@ class SharedDataDriver:
           - Else if value < less_servere, adds the less severe fault message.
         Otherwise, clears both fault messages.
         """
+        # Skip fault handling if value is non-numeric (e.g., "N/A")
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return
         if not inverted:
-            if value > severe_fault:
+            if numeric_value > severe_fault:
                 faults_set.add(servere_fault_msg)
                 faults_set.discard(less_servere_msg)
-            elif value > less_servere:
+            elif numeric_value > less_servere:
                 faults_set.add(less_servere_msg)
                 faults_set.discard(servere_fault_msg)
             else:
                 faults_set.discard(servere_fault_msg)
                 faults_set.discard(less_servere_msg)
         else:
-            if value < severe_fault:
+            if numeric_value < severe_fault:
                 faults_set.add(servere_fault_msg)
                 faults_set.discard(less_servere_msg)
-            elif value < less_servere:
+            elif numeric_value < less_servere:
                 faults_set.add(less_servere_msg)
                 faults_set.discard(servere_fault_msg)
             else:
@@ -381,7 +388,9 @@ class SharedDataDriver:
 
 
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
+
         #Save to stats
+
         if self.lvvoltage < self.stats.get("lv_bat_voltage_min", 0):
             self.stats["lv_bat_voltage_min"] = self.lvvoltage
 
@@ -456,7 +465,7 @@ class SharedDataDriver:
         if self.orionvoltage < self.stats.get("pack_voltage_min", 0):
             self.stats["pack_voltage_min"] = self.orionvoltage
 
-        self.power = (self.orionvoltage * self.orioncurrent) / 1000
+        self.power = round((self.orionvoltage * self.orioncurrent) / 1000)
 
         if self.power > self.stats.get("power_max", 0):
             self.stats["power_max"] = self.power
@@ -465,8 +474,8 @@ class SharedDataDriver:
         dt_energy = current_time - self.last_energy_time
         self.last_energy_time = current_time
         try:
-            voltage = float(self.orionvoltage)
-            current_val = float(self.orioncurrent)
+            voltage = round(self.orionvoltage)
+            current_val = round(self.orioncurrent)
             power = (voltage * current_val)
         except (ValueError, TypeError):
             power = 0
