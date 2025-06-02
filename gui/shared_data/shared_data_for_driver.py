@@ -55,7 +55,7 @@ class SharedDataDriver:
         self.pres_stat = self.pres_stat_file.load()
 
         # Attributes for low-pass filtering speed
-        self.speed_filter_alpha = 0.1  # adjust between 0 and 1; lower is smoother
+        self.speed_filter_alpha = 0.55  # adjust between 0 and 1; lower is smoother
         self.filtered_speed = 0.0
         self.last_drive_update = time.time()
         self.last_energy_time = time.time()
