@@ -53,6 +53,10 @@ class SharedDataDriver:
 
         self.stats = self.stats_file.load()
         self.pres_stat = self.pres_stat_file.load()
+
+        # Attributes for low-pass filtering speed
+        self.speed_filter_alpha = 0.1  # adjust between 0 and 1; lower is smoother
+        self.filtered_speed = 0.0
         self.last_drive_update = time.time()
         self.last_energy_time = time.time()
 
@@ -372,7 +376,8 @@ class SharedDataDriver:
 
     def analogfront(self, message):
         self.last_update["analogfront"] = time.time()
-        self.speed = round(
+        # Compute raw speed from wheel speeds
+        raw_speed = round(
             (3.6 * 0.2032)
             * (
                 (
@@ -382,10 +387,15 @@ class SharedDataDriver:
                 / 2
             )
         )
+        # Apply low-pass filter to speed
+        self.filtered_speed = (
+            self.speed_filter_alpha * raw_speed
+            + (1 - self.speed_filter_alpha) * self.filtered_speed
+        )
+        self.speed = round(self.filtered_speed)
         #self.update_driving_time()
         if self.speed > self.stats.get("speed_max", 0):
             self.stats["speed_max"] = self.speed
-
 
         self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
 
@@ -461,6 +471,7 @@ class SharedDataDriver:
 
         if self.stats.get("orion_current_max", 0) < self.orioncurrent:
             self.stats["orion_current_max"] = self.orioncurrent
+
 
         if self.orionvoltage < self.stats.get("pack_voltage_min", 0):
             self.stats["pack_voltage_min"] = self.orionvoltage
