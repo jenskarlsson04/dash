@@ -648,7 +648,7 @@ class Afterdrive(Screen):
         # Updatera lables
         self.pack_max_value_label.text = f"{int(self.pack_temp_max)}"
         self.speed_max_value_label.text = f"{int(self.speed_max)}"
-        self.lv_bat_low_value_label.text = f"{int(self.lv_bat_voltage_min)}"
+        self.lv_bat_low_value_label.text = f"{self.lv_bat_voltage_min}"
         self.pack_soc_used_text_label = f"{int(self.consumed_soc)}"
         self.voltage_value_label.text = f"{int(self.pack_voltage_min)}"
         self.energy_used_value_label.text = self._format_energy(self.energy_drawn_kwh)

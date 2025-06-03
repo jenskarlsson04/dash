@@ -397,7 +397,7 @@ class SharedDataDriver:
         if self.speed > self.stats.get("speed_max", 0):
             self.stats["speed_max"] = self.speed
 
-        self.lvvoltage = round(message.parsed_data.voltage_volts)
+        self.lvvoltage = round(message.parsed_data.voltage_volts, 1)
 
         #Save to stats
 
