@@ -122,7 +122,9 @@ connection
 id=DashWifi
 uuid=7b255ccc-aa98-4674-9cb7-7831032fad77
 type=wifi
+autoconnect-priority=5
 interface-name=wlan0
+timestamp=1749130719
 
 [wifi]
 mode=infrastructure
@@ -144,6 +146,8 @@ method=auto
 ```
 
 then set the right permissions `sudo chmod 600 /etc/NetworkManager/system-connections/DashWifi.nmconnection`
+
+also run: `sudo systemctl restart NetworkManager`
 
 after restarting it should work 
 
@@ -204,7 +208,7 @@ Now wee need to get the dash gir repo, you can send it using scp or download it 
 *if you are using git, remember to run `pip install -r requirements.txt` and 
 The whole repo should be in a folder called `dash` in the home dir. 
 
-now send the two service files and run `sudo systemctl enable dashconf.service` 
-then change `dashconf.service` with `dash.service`
+now send the two service files and run `sudo systemctl enable ./dashconf.service` 
+then change `./dashconf.service` with `./dash.service`
 
 now you should be able to reboot the raspberry pi and everything should work.
