@@ -16,12 +16,13 @@ class SaveToFileMeta(type):
 
 
 class SaveToFile(metaclass=SaveToFileMeta):
-    def __init__(
-        self,
-        filepath_from_root_folder: str,
-        save_interval: float = 0.1,
-        data: dict = None,
-    ):
+    def __init__(self, filepath_from_root_folder: str, save_interval: float = 0.1, data: dict = None,):
+
+        # check if file exists:
+        if not os.path.exists(filepath_from_root_folder):
+            os.makedirs(os.path.dirname(filepath_from_root_folder), exist_ok=True)
+
+
         self.filepath = filepath_from_root_folder
         self.data = {}
         self.lock = threading.Lock()
