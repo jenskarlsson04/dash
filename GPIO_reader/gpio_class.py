@@ -7,7 +7,7 @@ GPIO_DEBUG = False
 try:
     import pigpio
 except ImportError:
-    GPIO_DEBUG = False
+    GPIO_DEBUG = True
     from GPIO_reader.keyboard_gpio import KeyboardGpio
     print("WARNING: DEBUG MODE ON. Use keyboard to simulate gpio")
 
@@ -32,7 +32,10 @@ class GIPOConfiguration:
 
     def __init__(self):
 
-        self.pi = pigpio.pi()
+        try:
+            self.pi = pigpio.pi()
+        except NameError:
+            print("ERROR: No pigpio installed")
 
         self.btn_lap = btn_lap
         self.btn_screen = btn_screen
