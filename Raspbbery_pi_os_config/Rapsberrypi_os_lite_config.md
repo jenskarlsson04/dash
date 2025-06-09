@@ -11,8 +11,8 @@ Then I recomend that you set up the wifi connection, so that its possible to con
 ## Turn off system services
 
 ```bash
-systemctl disable keyboard-setup.service
-systemctl disable console-setup.service
+sudo systemctl disable keyboard-setup.service
+sudo systemctl disable console-setup.service
 ```
 
 ### Turn off bluetooth
@@ -67,11 +67,12 @@ Add `initramfs initramfs.img` into `/boot/firmware/config.txt` in the top of the
 and 
 ```txt
 hdmi_force_hotplug=1  # Forces HDMI even if no display is detected
+hdmi_group=2          # CEA group
 hdmi_group=2          # Set to DMT (computer monitor mode)
 hdmi_mode=82          # 1080p resolution (change as needed)
 
-framebuffer_width=1920
-framebuffer_height=1080
+framebuffer_width=1024
+framebuffer_height=600
 
 boot_delay=0
 disable_splash=1
@@ -106,6 +107,49 @@ fullscreen=1
 ```
 
 Now move initramfs.img to `/boot/firmware`
+
+## Configure WiFi
+
+After adding the first wifi network we can add a second so that the raspberrypi can connect to the meca router
+
+create the file `/etc/NetworkManager/system-connections/DashWifi.nmconnection`
+
+and put this into it: 
+
+``` bash
+connection
+[connection]
+id=DashWifi
+uuid=7b255ccc-aa98-4674-9cb7-7831032fad77
+type=wifi
+autoconnect-priority=5
+interface-name=wlan0
+timestamp=1749130719
+
+[wifi]
+mode=infrastructure
+ssid=DashWifi
+
+[wifi-security]
+auth-alg=open
+key-mgmt=wpa-psk
+psk=qwertyui
+
+[ipv4]
+method=auto
+
+[ipv6]
+addr-gen-mode=default
+method=auto
+
+[proxy]
+```
+
+then set the right permissions `sudo chmod 600 /etc/NetworkManager/system-connections/DashWifi.nmconnection`
+
+also run: `sudo systemctl restart NetworkManager`
+
+after restarting it should work 
 
 ## Configure Python
 
@@ -164,7 +208,7 @@ Now wee need to get the dash gir repo, you can send it using scp or download it 
 *if you are using git, remember to run `pip install -r requirements.txt` and 
 The whole repo should be in a folder called `dash` in the home dir. 
 
-now send the two service files and run `sudo systemctl enable dashconf.service` 
-then change `dashconf.service` with `dash.service`
+now send the two service files and run `sudo systemctl enable ./dashconf.service` 
+then change `./dashconf.service` with `./dash.service`
 
 now you should be able to reboot the raspberry pi and everything should work.

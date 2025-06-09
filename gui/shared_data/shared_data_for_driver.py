@@ -123,7 +123,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         #subscribe_can_message(canparser.BrakePressureData, self.brake_press) unused
-        subscribe_can_message(canparser.CoolingLoopTemperatureData, self.cooling_temp)
+        subscribe_can_message(canparser.VcuCoolingAndBrakeData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
@@ -363,7 +363,7 @@ class SharedDataDriver:
 
     def cooling_temp(self, message):
         self.last_update["cooling_temp"] = time.time()
-        self.cooling_temp = message.parsed_data.temperature_c
+        self.cooling_temp = message.parsed_data.cooling_loop_temp_C
 
         SharedDataDriver.update_faults(
             self.cooling_temp,
