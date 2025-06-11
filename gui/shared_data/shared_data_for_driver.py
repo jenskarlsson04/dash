@@ -50,6 +50,8 @@ class SharedDataDriver:
         self.speed = 0
         self.lvvoltage_low = True
         self.vcu_mode = "N/A"
+        self.inverter_temperature = "N/A"
+        self.motor_temperature = "N/A"
 
         self.stats = self.stats_file.load()
         self.pres_stat = self.pres_stat_file.load()
@@ -121,7 +123,7 @@ class SharedDataDriver:
         subscribe_can_message(canparser.OrionTempData, self.oriontemp)
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
         subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
-        subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
+        #subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         #subscribe_can_message(canparser.BrakePressureData, self.brake_press) unused
         subscribe_can_message(canparser.VcuCoolingAndBrakeData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
@@ -215,7 +217,7 @@ class SharedDataDriver:
                 # Set all associated attributes to "N/A"
                 if channel in CHANNEL_TO_ATTR:
                     for attr in CHANNEL_TO_ATTR[channel]:
-                        setattr(self, attr, "N/A")
+                        setattr(self, attr, ["N/A"])
 
             if self.test_can:
                 print(channel, (self.last_can_update-self.last_update[channel]))
@@ -301,10 +303,10 @@ class SharedDataDriver:
 
     def motortemp(self, message):
         self.last_update["motortemp"] = time.time()
-        self.motortemp = message.parsed_data.temperature_c
+        self.motor_temperature = round(message.parsed_data.temperature_c)
 
         SharedDataDriver.update_faults(
-            self.motortemp,
+            self.motor_temperature,
             severe_fault=100,
             less_servere=85,
             servere_fault_msg="High motor temp",
@@ -336,10 +338,10 @@ class SharedDataDriver:
 
     def inverter_temp(self, message):
         self.last_update["inverter_temp"] = time.time()
-        self.inverter_temp = message.parsed_data.temperature_c
+        self.inverter_temperature = round(message.parsed_data.temperature_c)
 
         SharedDataDriver.update_faults(
-            self.inverter_temp,
+            self.inverter_temperature,
             severe_fault=83,
             less_servere=72,
             servere_fault_msg="High inverter temp",

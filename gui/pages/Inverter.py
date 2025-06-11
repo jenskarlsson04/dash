@@ -10,19 +10,16 @@ from kivy.uix.scrollview import ScrollView
 import os
 import canparser
 from can_reader import subscribe_can_message
+from gui.shared_data import SharedDataDriver
 
 
 class Inverter(Screen):
     def __init__(self, **kwargs):
         super(Inverter, self).__init__(**kwargs)
         # Variabler för data
+        self.SharedData = SharedDataDriver()
         self.inverter_temp = 0
         self.motortemp = 0
-        subscribe_can_message(canparser.MotorTemperatureData, self.update_motor_temp)
-        subscribe_can_message(canparser.InverterErrorsData, self.update_inverter_error)
-        subscribe_can_message(
-            canparser.InverterTemperatureData, self.update_inverter_temp
-        )
         self.errors = []
         self.warnings = []
 
@@ -265,7 +262,7 @@ class Inverter(Screen):
                 height=60,
                 halign="right",
                 valign="middle",
-                color=(1, 0, 0, 1),
+                color=(1, 0.5, 0, 1),
             )
             label.bind(size=self._update_text_size)
             self.warn_content_layout.add_widget(label)
@@ -287,10 +284,13 @@ class Inverter(Screen):
 
     def refresh(self):
         # Uppdatera temperaturer
+        self.inverter_temp = self.SharedData.inverter_temperature
+        self.motortemp = self.SharedData.motor_temperature
         self.inverter_temp_value_label.text = f"{self.inverter_temp}"
         self.motortemp_value_label.text = f"{self.motortemp}"
 
         # Update errors
+        self.errors = list(self.SharedData.inv_errors)
         error_count = len(self.errors)
         self.errors_amount_label.text = f"({error_count})"
         for i in range(2):
@@ -300,6 +300,7 @@ class Inverter(Screen):
                 self.error_labels[i].text = ""
 
         # Update warnings
+        self.warnings = list(self.SharedData.inv_warnings)
         warn_count = len(self.warnings)
         self.warn_amount_label.text = f"({warn_count})"
         for i in range(2):
