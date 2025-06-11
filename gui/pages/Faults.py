@@ -135,8 +135,12 @@ class Faults(Screen):
         self.inv_errors_amount_label.text = f"({len(inv_errors)})"
         for i in range(8):
             if i < len(inv_errors):
-                self.inv_error_labels[i].text = inv_errors[i]
-                self.inv_error_labels[i].color = (1, 0, 0, 1)
+                message = inv_errors[i]
+                self.inv_error_labels[i].text = message
+                if message in self.SharedData.inv_warnings:
+                    self.inv_error_labels[i].color = (1, 0.5, 0, 1)  # yellow for warnings
+                else:
+                    self.inv_error_labels[i].color = (1, 0, 0, 1)  # red for errors
             else:
                 self.inv_error_labels[i].text = ""
 
