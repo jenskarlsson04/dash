@@ -149,7 +149,111 @@ then set the right permissions `sudo chmod 600 /etc/NetworkManager/system-connec
 
 also run: `sudo systemctl restart NetworkManager`
 
-after restarting it should work 
+after restarting it should work.
+
+## Configure Wifi hotspot
+
+Add a fallback mechanism so that if no usable Wi-Fi connection is established within a minute after boot, the Pi automatically brings up a hotspot. This does not interfere with your existing low-level Wi-Fi setup; it only uses NetworkManager to start the hotspot when truly offline.
+1.	Place the fallback script
+Decide where to put it; for example:
+/home/dash/dash/Raspbbery_pi_os_config/hotspot_if_no_ip.sh
+or /usr/local/bin/hotspot_if_no_ip.sh. Adapt ExecStart in the service accordingly.
+2. Create the script file
+``` bash
+sudo nano /home/dash/dash/Raspbbery_pi_os_config/hotspot_if_no_ip.sh
+```
+Paste this:
+``` bash
+#!/bin/bash
+
+IFACE="wlan0"
+HOTSPOT_CONN="DashHotspot"
+TIMEOUT=60
+
+echo "[INFO] Checking for usable Wi-Fi connection on $IFACE..."
+
+for (( i=0; i<TIMEOUT; i++ )); do
+    # Get IPv4 address if any
+    ip_addr=$(ip -4 addr show "$IFACE" | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+    
+    # Check it’s not link-local (169.254.x.x)
+    if [[ -n "$ip_addr" && ! "$ip_addr" =~ ^169\.254\. ]]; then
+        # Find default gateway for this interface
+        gateway=$(ip route | grep "^default" | grep "$IFACE" | awk '{print $3}')
+        if [[ -n "$gateway" ]]; then
+            # Ping gateway to confirm connectivity
+            if ping -c1 -W1 "$gateway" >/dev/null 2>&1; then
+                echo "[OK] Connected: IP $ip_addr, gateway $gateway reachable."
+                exit 0
+            else
+                echo "[WAIT] IP assigned ($ip_addr) but gateway $gateway unreachable..."
+            fi
+        else
+            echo "[WAIT] IP assigned ($ip_addr) but no default gateway found..."
+        fi
+    else
+        echo "[WAIT] No valid IP yet..."
+    fi
+    sleep 1
+done
+
+echo "[FAIL] No usable Wi-Fi after $TIMEOUT seconds. Starting hotspot..."
+nmcli connection up "$HOTSPOT_CONN"
+```
+
+3.	Make the script executable
+``` bash
+sudo chmod +x /home/dash/dash/Raspbbery_pi_os_config/hotspot_if_no_ip.sh
+```
+
+4.	Create the hotspot profile (only once)
+If not already created, run:
+``` bash
+nmcli connection add type wifi ifname wlan0 con-name DashHotspot autoconnect no ssid DashHotspot \
+  wifi.mode ap \
+  wifi.band bg \
+  ipv4.method shared \
+  wifi-sec.key-mgmt wpa-psk \
+  wifi-sec.psk "dash12345"
+```
+5. Create systemd service
+``` bash
+sudo nano /etc/systemd/system/fallback-hotspot.service
+```
+Paste:
+``` bash
+[Unit]
+Description=Fallback to Hotspot if Wi-Fi not working
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/dash/dash/Raspbbery_pi_os_config/hotspot_if_no_ip.sh
+
+[Install]
+WantedBy=multi-user.target
+```
+
+6.	Enable and reload systemd
+``` bash
+sudo systemctl daemon-reexec
+sudo systemctl enable fallback-hotspot.service
+```
+
+You can test immediately:
+``` bash
+sudo systemctl start fallback-hotspot.service
+```
+
+•	If Wi-Fi is already working, you’ll see “[OK] Connected…” and no hotspot startup.
+•	If offline, after ~60 seconds it will start DashHotspot.
+
+
+
+
+
+
 
 ## Configure Python
 
