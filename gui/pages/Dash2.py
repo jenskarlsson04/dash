@@ -365,9 +365,9 @@ class Dash2(Screen):
         self.errors_amount_label.text = f"({error_count})"
         errors_to_show = list(self.SharedData.faults)
         self.lastlap_value_label.text = f"{self.format_time(self.new_lap_time)}"
-        # Only consider errors without a dot for popups.
-        active_errors = {err for err in errors_to_show if not err.startswith(".")}
-        # Remove errors that have already been shown (permanently)
+        # Only consider errors for popups, excluding inverter messages
+        active_errors = {err for err in errors_to_show if err not in ("Inverter has warn", "Inverter has error")}
+
         active_errors = active_errors - self.shown_errors
         # For each active error not already pending, add it and mark it as shown.
         for err in active_errors:
@@ -399,9 +399,17 @@ class Dash2(Screen):
         """If there are pending error messages, show the next one in a popup."""
         if self.pending_error_messages and self.show_error:
             next_error = self.pending_error_messages.pop(0)
+            # Determine display text and color
+            if next_error.startswith("."):
+                display_text = next_error[1:]
+                text_color = (1, 0.5, 0, 1)  # orange
+            else:
+                display_text = next_error
+                text_color = (1, 0, 0, 1)  # red
+
             self.error_popup = Popup(
                 title="Critical Error Alert",
-                content=Label(text=next_error, font_size="70sp", color=(1, 0, 0, 1)),
+                content=Label(text=display_text, font_size="70sp", color=text_color),
                 size_hint=(0.8, 0.3),
             )
             self.error_popup.bind(on_dismiss=self.on_error_popup_dismiss)
