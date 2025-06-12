@@ -10,6 +10,9 @@ from kivy.graphics import Color, Line
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+from kivy.uix.popup import Popup
+from kivy.clock import Clock
+
 from GPIO_reader import btn_lap
 from GPIO_reader.gpio_class import btn_reset
 # Import lap time handler
@@ -701,6 +704,10 @@ class Afterdrive(Screen):
         # Reload the cleared data from disk
             self.current_stats = self.stats_current.load()
             self.shared_data.reset()
+            # Show confirmation popup
+            popup = Popup(title='Stats Status', content=Label(text='Stats reset complete', font_size="70sp"), size_hint=(0.8, 0.3), size=(300, 200), auto_dismiss=True)
+            popup.open()
+            Clock.schedule_once(lambda dt: popup.dismiss(), 1.5)
 
 
 # Main App Class
