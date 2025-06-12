@@ -52,7 +52,7 @@ class Dash2(Screen):
         self.new_lap_time = 0
 
         # Enable error popup
-        self.show_error = False
+        self.show_error = True
 
         # For controlling the error popup as a queue:
         self.error_popup = None
