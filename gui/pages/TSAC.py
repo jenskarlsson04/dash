@@ -688,7 +688,11 @@ class TSAC(Screen):
         #LV BAT
         self.lv_bat_value_label.text = f"{self.SharedData.lvvoltage}"
 
-        error_count = len(self.SharedData.tscu_errors)
+        if isinstance(self.SharedData.tscu_errors, str):
+            tscu_errors = [self.SharedData.tscu_errors]
+        else:
+            tscu_errors = list(self.SharedData.tscu_errors)
+        error_count = len(tscu_errors)
         self.error_amount_label.text = f"{error_count}"
 
         self.current_value_value_label.text = f"{self.SharedData.orioncurrent}"

@@ -119,13 +119,13 @@ class SharedDataDriver:
 
 
         # Subscribe to CAN messages
-        #subscribe_can_message(canparser.VcuStateData, self.vcu)
+        subscribe_can_message(canparser.VcuStateData, self.vcu)
         subscribe_can_message(canparser.OrionTempData, self.oriontemp)
         subscribe_can_message(canparser.MotorTemperatureData, self.motortemp)
-        #subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
+        subscribe_can_message(canparser.InverterErrorsData, self.inverter_error)
         subscribe_can_message(canparser.InverterTemperatureData, self.inverter_temp)
         #subscribe_can_message(canparser.BrakePressureData, self.brake_press) unused
-        #subscribe_can_message(canparser.VcuCoolingAndBrakeData, self.cooling_temp)
+        subscribe_can_message(canparser.VcuCoolingAndBrakeData, self.cooling_temp)
         subscribe_can_message(canparser.AnalogCanConverterSensorReadingsDataF, self.analogfront)
         subscribe_can_message(canparser.TscuData, self.tscu)
         subscribe_can_message(canparser.OrionPowerData, self.orionpower)
