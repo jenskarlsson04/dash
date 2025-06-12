@@ -33,7 +33,7 @@ class SharedDataDriver:
         self.tscu_mode = "N/A"
         self.tscu_errors = ["N/A"]
         self.inv_errors = ["Errors N/A"]
-        self.inv_warnings = ["Warns N/A"]
+        self.inv_warnings = []
         self.airplus_state = "N/A"
         self.airminus_state = "N/A"
         self.inv95p = "N/A"
