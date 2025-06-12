@@ -408,7 +408,7 @@ class Dash2(Screen):
                 text_color = (1, 0, 0, 1)  # red
 
             self.error_popup = Popup(
-                title="Critical Error Alert",
+                title="Error Alert",
                 content=Label(text=display_text, font_size="70sp", color=text_color),
                 size_hint=(0.8, 0.3),
             )
