@@ -380,7 +380,7 @@ class SharedDataDriver:
         self.last_update["analogfront"] = time.time()
         # Compute raw speed from wheel speeds
         raw_speed = round(
-            (3.6 * 0.2081210191)*(message.parsed_data.wheel_speed_r_rad_per_sec)) #only FR wheel due to issues with the converter.
+            (3.6 * 0.2081210191)*(message.parsed_data.wheel_speed_r_rad_per_sec+message.parsed_data.wheel_speed_l_rad_per_sec)/2)
         # Apply low-pass filter to speed
         self.filtered_speed = (
             self.speed_filter_alpha * raw_speed
