@@ -57,7 +57,7 @@ class SharedDataDriver:
         self.pres_stat = self.pres_stat_file.load()
 
         # Attributes for low-pass filtering speed
-        self.speed_filter_alpha = 0.1  # adjust between 0 and 1; lower is smoother
+        self.speed_filter_alpha = 0.05  # adjust between 0 and 1; lower is smoother
         self.filtered_speed = 0.0
         self.last_drive_update = time.time()
         self.last_energy_time = time.time()
@@ -380,15 +380,7 @@ class SharedDataDriver:
         self.last_update["analogfront"] = time.time()
         # Compute raw speed from wheel speeds
         raw_speed = round(
-            (3.6 * 0.2032)
-            * (
-                (
-                    message.parsed_data.wheel_speed_l_rad_per_sec
-                    + message.parsed_data.wheel_speed_r_rad_per_sec
-                )
-                / 2
-            )
-        )
+            (3.6 * 0.2081210191)*message.parsed_data.wheel_speed_r_rad_per_sec)
         # Apply low-pass filter to speed
         self.filtered_speed = (
             self.speed_filter_alpha * raw_speed
