@@ -165,7 +165,7 @@ class Afterdrive(Screen):
             font_size="45sp",
             halign="left",
             valign="middle",
-            size_hint_x=0.7,
+            size_hint_x=0.8,
             width=160,
             color=(1, 1, 1, 1),
         )
