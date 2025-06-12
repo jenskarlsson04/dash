@@ -403,7 +403,7 @@ class SharedDataDriver:
         SharedDataDriver.update_faults(
             self.lvvoltage,
             severe_fault=11.5,
-            less_servere=12,
+            less_servere=13,
             servere_fault_msg="LV Bat LOW Voltage",
             less_servere_msg=".LV Bat LOW Voltage",
             faults_set=self.faults,
