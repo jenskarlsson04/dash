@@ -108,7 +108,10 @@ class Faults(Screen):
 
     def refresh(self):
         # Custom errors
-        custom_errors = list(self.SharedData.faults)
+        if isinstance(self.SharedData.faults, str):
+            custom_errors = [self.SharedData.faults]
+        else:
+            custom_errors = list(self.SharedData.faults)
         self.custom_errors_amount_label.text = f"({len(custom_errors)})"
         for i in range(8):
             if i < len(custom_errors):
@@ -121,7 +124,10 @@ class Faults(Screen):
                 self.custom_error_labels[i].text = ""
 
         # TSCU errors
-        tscu_errors = list(self.SharedData.tscu_errors)
+        if isinstance(self.SharedData.tscu_errors, str):
+            tscu_errors = [self.SharedData.tscu_errors]
+        else:
+            tscu_errors = list(self.SharedData.tscu_errors)
         self.tscu_errors_amount_label.text = f"({len(tscu_errors)})"
         for i in range(8):
             if i < len(tscu_errors):
@@ -131,7 +137,17 @@ class Faults(Screen):
                 self.tscu_error_labels[i].text = ""
 
         # INV errors
-        inv_errors = list(self.SharedData.inv_errors + self.SharedData.inv_warnings)
+        inv_errors_list = self.SharedData.inv_errors
+        inv_warnings_list = self.SharedData.inv_warnings
+        if isinstance(inv_errors_list, str):
+            inv_errors_list = [inv_errors_list]
+        else:
+            inv_errors_list = list(inv_errors_list)
+        if isinstance(inv_warnings_list, str):
+            inv_warnings_list = [inv_warnings_list]
+        else:
+            inv_warnings_list = list(inv_warnings_list)
+        inv_errors = inv_errors_list + inv_warnings_list
         self.inv_errors_amount_label.text = f"({len(inv_errors)})"
         for i in range(8):
             if i < len(inv_errors):

@@ -290,7 +290,10 @@ class Inverter(Screen):
         self.motortemp_value_label.text = f"{self.motortemp}"
 
         # Update errors
-        self.errors = list(self.SharedData.inv_errors)
+        if isinstance(self.SharedData.inv_errors, str):
+            self.errors = [self.SharedData.inv_errors]
+        else:
+            self.errors = list(self.SharedData.inv_errors)
         error_count = len(self.errors)
         self.errors_amount_label.text = f"({error_count})"
         for i in range(2):
@@ -300,7 +303,10 @@ class Inverter(Screen):
                 self.error_labels[i].text = ""
 
         # Update warnings
-        self.warnings = list(self.SharedData.inv_warnings)
+        if isinstance(self.SharedData.inv_warnings, str):
+            self.warnings = [self.SharedData.inv_warnings]
+        else:
+            self.warnings = list(self.SharedData.inv_warnings)
         warn_count = len(self.warnings)
         self.warn_amount_label.text = f"({warn_count})"
         for i in range(2):
